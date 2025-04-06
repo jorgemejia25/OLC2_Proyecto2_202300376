@@ -242,6 +242,188 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         return null;
     }
 
+    public override Object? VisitEquality(GoLangParser.EqualityContext context)
+    {
+        string op = context.op.Text; // Obtener el operador (== o !=)
+        c.Comment($"Equality operation ({op})");
+
+        // Determinar tipos de los operandos
+        bool leftIsFloat = IsFloatExpression(context.expr(0));
+        bool rightIsFloat = IsFloatExpression(context.expr(1));
+        bool leftIsString = context.expr(0) is GoLangParser.StringContext;
+        bool rightIsString = context.expr(1) is GoLangParser.StringContext;
+        bool isFloatOperation = leftIsFloat || rightIsFloat;
+        bool isStringOperation = leftIsString || rightIsString;
+
+        // Visitar operandos
+        Visit(context.expr(0));
+        Visit(context.expr(1));
+
+        // Obtener resultados de la pila
+        c.Pop(Register.X1); // Segundo operando
+        c.Pop(Register.X0); // Primer operando
+
+        string labelPrefix = "equality_op";
+        string trueLabel = $"{labelPrefix}_true_{_labelCounter}";
+        string endLabel = $"{labelPrefix}_end_{_labelCounter++}";
+
+        if (isFloatOperation)
+        {
+            c.Comment("Floating point comparison");
+
+            // Convertir a float si es necesario
+            if (leftIsFloat && !rightIsFloat)
+            {
+                c.Comment("Converting right operand from int to float");
+                c.Fmov(Register.D0, Register.X0);
+                c.Fcvt(Register.D1, Register.X1);
+            }
+            else if (!leftIsFloat && rightIsFloat)
+            {
+                c.Comment("Converting left operand from int to float");
+                c.Fcvt(Register.D0, Register.X0);
+                c.Fmov(Register.D1, Register.X1);
+            }
+            else
+            {
+                // Ambos son flotantes
+                c.Fmov(Register.D0, Register.X0);
+                c.Fmov(Register.D1, Register.X1);
+            }
+
+            // Comparación de flotantes
+            c.Add("FCMP", Register.D0, Register.D1);
+
+            if (op == "==")
+                c.Add("BEQ", trueLabel); // Saltar si iguales
+            else // !=
+                c.Add("BNE", trueLabel); // Saltar si diferentes
+        }
+        else if (isStringOperation)
+        {
+            // Para strings, comparamos las direcciones y longitudes
+            // Nota: Esto es una simplificación. En una implementación completa,
+            // deberíamos hacer una comparación de contenido.
+            c.Comment("String comparison not fully implemented");
+            c.Add("CMP", Register.X0, Register.X1);
+
+            if (op == "==")
+                c.Add("BEQ", trueLabel); // Saltar si iguales
+            else // !=
+                c.Add("BNE", trueLabel); // Saltar si diferentes
+        }
+        else
+        {
+            // Comparación entre enteros o booleanos
+            c.Add("CMP", Register.X0, Register.X1);
+
+            if (op == "==")
+                c.Add("BEQ", trueLabel); // Saltar si iguales
+            else // !=
+                c.Add("BNE", trueLabel); // Saltar si diferentes
+        }
+
+        // Caso falso (0)
+        c.Mov(Register.X0, 0);
+        c.Add("B", endLabel);
+
+        // Caso verdadero (1)
+        c.Add($"{trueLabel}:");
+        c.Mov(Register.X0, 1);
+
+        // Fin
+        c.Add($"{endLabel}:");
+        c.Push(Register.X0);
+
+        return null;
+    }
+
+    public override Object? VisitComparison(GoLangParser.ComparisonContext context)
+    {
+        string op = context.op.Text; // Obtener el operador (>, <, >=, <=)
+        c.Comment($"Comparison operation ({op})");
+
+        // Determinar tipos de los operandos
+        bool leftIsFloat = IsFloatExpression(context.expr(0));
+        bool rightIsFloat = IsFloatExpression(context.expr(1));
+        bool isFloatOperation = leftIsFloat || rightIsFloat;
+
+        // Visitar operandos
+        Visit(context.expr(0));
+        Visit(context.expr(1));
+
+        // Obtener resultados de la pila
+        c.Pop(Register.X1); // Segundo operando
+        c.Pop(Register.X0); // Primer operando
+
+        string labelPrefix = "comparison_op";
+        string trueLabel = $"{labelPrefix}_true_{_labelCounter}";
+        string endLabel = $"{labelPrefix}_end_{_labelCounter++}";
+
+        if (isFloatOperation)
+        {
+            c.Comment("Floating point comparison");
+
+            // Convertir a float si es necesario
+            if (leftIsFloat && !rightIsFloat)
+            {
+                c.Comment("Converting right operand from int to float");
+                c.Fmov(Register.D0, Register.X0);
+                c.Fcvt(Register.D1, Register.X1);
+            }
+            else if (!leftIsFloat && rightIsFloat)
+            {
+                c.Comment("Converting left operand from int to float");
+                c.Fcvt(Register.D0, Register.X0);
+                c.Fmov(Register.D1, Register.X1);
+            }
+            else
+            {
+                // Ambos son flotantes
+                c.Fmov(Register.D0, Register.X0);
+                c.Fmov(Register.D1, Register.X1);
+            }
+
+            // Comparación de flotantes
+            c.Add("FCMP", Register.D0, Register.D1);
+
+            switch (op)
+            {
+                case ">": c.Add("BGT", trueLabel); break;  // Saltar si mayor
+                case "<": c.Add("BLT", trueLabel); break;  // Saltar si menor
+                case ">=": c.Add("BGE", trueLabel); break; // Saltar si mayor o igual
+                case "<=": c.Add("BLE", trueLabel); break; // Saltar si menor o igual
+            }
+        }
+        else
+        {
+            // Comparación entre enteros o booleanos
+            c.Add("CMP", Register.X0, Register.X1);
+
+            switch (op)
+            {
+                case ">": c.Add("BGT", trueLabel); break;  // Saltar si mayor
+                case "<": c.Add("BLT", trueLabel); break;  // Saltar si menor
+                case ">=": c.Add("BGE", trueLabel); break; // Saltar si mayor o igual
+                case "<=": c.Add("BLE", trueLabel); break; // Saltar si menor o igual
+            }
+        }
+
+        // Caso falso (0)
+        c.Mov(Register.X0, 0);
+        c.Add("B", endLabel);
+
+        // Caso verdadero (1)
+        c.Add($"{trueLabel}:");
+        c.Mov(Register.X0, 1);
+
+        // Fin
+        c.Add($"{endLabel}:");
+        c.Push(Register.X0);
+
+        return null;
+    }
+
     // Método para verificar si una operación aditiva/sustractiva es flotante
     private bool IsFloatOperation(GoLangParser.AddSubContext context)
     {
@@ -313,26 +495,26 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
     private bool IsBooleanExpression(GoLangParser.ExprContext context)
     {
         if (context == null) return false;
-        
+
         // Comprobar si es un literal booleano directo
         if (context is GoLangParser.BooleanContext)
             return true;
-        
+
         // Si es una expresión entre paréntesis, verificar su contenido
         if (context is GoLangParser.ParensContext parens)
             return IsBooleanExpression(parens.expr());
-        
+
         // Operaciones lógicas (AND, OR, NOT)
-        if (context is GoLangParser.NotContext || 
-            context is GoLangParser.AndContext || 
+        if (context is GoLangParser.NotContext ||
+            context is GoLangParser.AndContext ||
             context is GoLangParser.OrContext)
             return true;
-        
-        // Operaciones de comparación
-        if (context is GoLangParser.EqualityContext || 
+
+        // Operaciones de comparación y igualdad
+        if (context is GoLangParser.EqualityContext ||
             context is GoLangParser.ComparisonContext)
             return true;
-            
+
         return false;
     }
 

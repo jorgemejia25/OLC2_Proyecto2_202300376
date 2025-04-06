@@ -4,53 +4,108 @@
 _start:
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
-// OR operation (||)
-// Evaluating left operand
+// Equality operation (==)
 // Boolean false
 MOV x0, #0
 STR x0, [SP, #-8]!
+// Boolean false
+MOV x0, #0
+STR x0, [SP, #-8]!
+LDR x1, [SP], #8
 LDR x0, [SP], #8
-// Check if left operand is true
-CMP x0, #0
-BNE or_op_true_0
-or_op_eval_right_0:
-// Evaluating right operand
-// NOT operation (!)
-// AND operation (&&)
-// Evaluating left operand
+CMP x0, x1
+BEQ equality_op_true_0
+MOV x0, #0
+B equality_op_end_0
+equality_op_true_0:
+MOV x0, #1
+equality_op_end_0:
+STR x0, [SP, #-8]!
+// Popping boolean value
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_boolean
+.balign 16     // Garantizar alineamiento después de llamada a función
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Equality operation (==)
+// Boolean false
+MOV x0, #0
+STR x0, [SP, #-8]!
 // Boolean true
 MOV x0, #1
 STR x0, [SP, #-8]!
+LDR x1, [SP], #8
 LDR x0, [SP], #8
-// Check if left operand is false
-CMP x0, #0
-BEQ and_op_false_1
-and_op_eval_right_1:
-// Evaluating right operand
-// Boolean false
+CMP x0, x1
+BEQ equality_op_true_1
 MOV x0, #0
-STR x0, [SP, #-8]!
-LDR x0, [SP], #8
-B and_op_end_1
-and_op_false_1:
-MOV x0, #0
-and_op_end_1:
-STR x0, [SP, #-8]!
-LDR x0, [SP], #8
-// Compare with 0 (false)
-CMP x0, #0
-BEQ not_op_true_2
-MOV x0, #0
-B not_op_end_2
-not_op_true_2:
+B equality_op_end_1
+equality_op_true_1:
 MOV x0, #1
-not_op_end_2:
+equality_op_end_1:
 STR x0, [SP, #-8]!
+// Popping boolean value
 LDR x0, [SP], #8
-B or_op_end_0
-or_op_true_0:
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_boolean
+.balign 16     // Garantizar alineamiento después de llamada a función
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Comparison operation (>=)
+// Constant 10
+MOV x0, #10
+STR x0, [SP, #-8]!
+// Float constant 4.0
+// Load constant 4616189618054758400 (0x4010000000000000)
+MOVZ x0, #0
+MOVK x0, #0, LSL #16
+MOVK x0, #0, LSL #32
+MOVK x0, #16400, LSL #48
+STR x0, [SP, #-8]!
+LDR x1, [SP], #8
+LDR x0, [SP], #8
+// Floating point comparison
+// Converting left operand from int to float
+SCVTF d0, x0
+FMOV d1, x1
+FCMP d0, d1
+BGE comparison_op_true_2
+MOV x0, #0
+B comparison_op_end_2
+comparison_op_true_2:
 MOV x0, #1
-or_op_end_0:
+comparison_op_end_2:
+STR x0, [SP, #-8]!
+// Popping boolean value
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_boolean
+.balign 16     // Garantizar alineamiento después de llamada a función
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Equality operation (==)
+// Constant 10
+MOV x0, #10
+STR x0, [SP, #-8]!
+// Constant 10
+MOV x0, #10
+STR x0, [SP, #-8]!
+LDR x1, [SP], #8
+LDR x0, [SP], #8
+CMP x0, x1
+BEQ equality_op_true_3
+MOV x0, #0
+B equality_op_end_3
+equality_op_true_3:
+MOV x0, #1
+equality_op_end_3:
 STR x0, [SP, #-8]!
 // Popping boolean value
 LDR x0, [SP], #8
