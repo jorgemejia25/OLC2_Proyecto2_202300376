@@ -512,6 +512,104 @@ ten_million_float:
     .double 10000000.0         // Valor de 10^7 para precisión y redondeo
     "              // Decimal point
 
-        }
+        },
+        { "print_boolean", @"
+.text
+.balign 16
+//--------------------------------------------------------------
+// print_boolean - Imprime un valor booleano (""true"" o ""false"")
+//
+// Input:
+//   x0 - El valor booleano (0 = false, cualquier otro = true)
+//--------------------------------------------------------------
+print_boolean:
+    // Guardar registros
+    stp x29, x30, [sp, #-16]!
+    stp x19, x20, [sp, #-16]!
+    
+    // Guardar el valor booleano
+    mov x19, x0
+    
+    // Comprobar si es true (diferente de cero)
+    cmp x19, #0
+    beq print_false
+    
+    // Imprimir ""true""
+    mov x0, #1                // fd = 1 (stdout)
+    adr x1, true_str          // Dirección de la cadena ""true""
+    mov x2, #4                // Longitud de ""true""
+    mov w8, #64               // Syscall write
+    svc #0
+    b done_bool_print
+    
+print_false:
+    // Imprimir ""false""
+    mov x0, #1                // fd = 1 (stdout)
+    adr x1, false_str         // Dirección de la cadena ""false""
+    mov x2, #5                // Longitud de ""false""
+    mov w8, #64               // Syscall write
+    svc #0
+    
+done_bool_print:
+    // Imprimir salto de línea
+    mov x0, #1                // fd = 1 (stdout)
+    adr x1, bool_newline      // Dirección de salto de línea
+    mov x2, #1                // Longitud de salto de línea
+    mov w8, #64               // Syscall write
+    svc #0
+    
+    // Restaurar registros y retornar
+    ldp x19, x20, [sp], #16
+    ldp x29, x30, [sp], #16
+    ret
+
+.align 4
+true_str:
+    .ascii ""true""           // Cadena ""true""
+    
+.align 4
+false_str:
+    .ascii ""false""          // Cadena ""false""
+
+.align 4
+bool_newline:
+    .ascii ""\n""             // Salto de línea
+" },
+        { "print_nil", @"
+.text
+.balign 16
+//--------------------------------------------------------------
+// print_nil - Imprime el valor nil
+//--------------------------------------------------------------
+print_nil:
+    // Guardar registros
+    stp x29, x30, [sp, #-16]!
+    
+    // Imprimir ""nil""
+    mov x0, #1                // fd = 1 (stdout)
+    adr x1, nil_str          // Dirección de la cadena ""nil""
+    mov x2, #3                // Longitud de ""nil""
+    mov w8, #64               // Syscall write
+    svc #0
+    
+    // Imprimir salto de línea
+    mov x0, #1                // fd = 1 (stdout)
+    adr x1, nil_newline      // Dirección de salto de línea
+    mov x2, #1                // Longitud de salto de línea
+    mov w8, #64               // Syscall write
+    svc #0
+    
+    // Restaurar registros y retornar
+    ldp x29, x30, [sp], #16
+    ret
+
+.align 4
+nil_str:
+    .ascii ""nil""            // Cadena ""nil""
+    
+.align 4
+nil_newline:
+    .ascii ""\n""             // Salto de línea
+" }
     };
 }

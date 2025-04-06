@@ -5,10 +5,7 @@ public class ArmGenerator
     private readonly List<string> _instructions = new List<string>();
     private readonly StandardLibrary _stdLib = new StandardLibrary();
 
-    public void Add(string rd, string rs1, string rs2)
-    {
-        _instructions.Add($"ADD {rd}, {rs1}, {rs2}");
-    }
+
 
     public void Fadd(string rd, string rs1, string rs2)
     {
@@ -133,6 +130,23 @@ public class ArmGenerator
         _instructions.Add($"BL print_integer");
     }
 
+    // Método para imprimir valores booleanos
+    public void PrintBoolean(string rs)
+    {
+        _stdLib.Use("print_boolean");
+        Align(16); // Garantizar alineamiento a 16 bytes
+        _instructions.Add($"MOV X0, {rs}");
+        _instructions.Add($"BL print_boolean");
+    }
+
+    // Método para imprimir el valor nil
+    public void PrintNil()
+    {
+        _stdLib.Use("print_nil");
+        Align(16); // Garantizar alineamiento a 16 bytes
+        _instructions.Add($"BL print_nil");
+    }
+
     // Nuevo método para imprimir valores flotantes
     public void PrintFloat(string rs)
     {
@@ -209,6 +223,30 @@ public class ArmGenerator
     {
         // Esta línea ya no es necesaria cuando usamos ADR directamente
         // No agregar nada para mantener compatibilidad con el código existente
+    }
+
+    // Método general para agregar instrucciones personalizadas
+    public void Add(string instruction)
+    {
+        _instructions.Add(instruction);
+    }
+
+    // Sobrecarga para instrucciones con un operando
+    public void Add(string instruction, string operand)
+    {
+        _instructions.Add($"{instruction} {operand}");
+    }
+
+    // Sobrecarga para instrucciones con dos operandos
+    public void Add(string instruction, string op1, string op2)
+    {
+        _instructions.Add($"{instruction} {op1}, {op2}");
+    }
+
+    // Sobrecarga para instrucciones con tres operandos
+    public void Add(string instruction, string op1, string op2, string op3)
+    {
+        _instructions.Add($"{instruction} {op1}, {op2}, {op3}");
     }
 
     public override string ToString()
