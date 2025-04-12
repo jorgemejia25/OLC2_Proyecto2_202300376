@@ -348,6 +348,18 @@ public class ArmGenerator
         _instructions.Add($"B {label}");
     }
 
+    // Método para salto condicional con sufijo
+    public void B(string condition, string label)
+    {
+        _instructions.Add($"B.{condition} {label}");
+    }
+
+    // Método para operación de comparación
+    public void Cmp(string rs1, string rs2)
+    {
+        _instructions.Add($"CMP {rs1}, {rs2}");
+    }
+
     // Método para definir una etiqueta
     public void Label(string label)
     {

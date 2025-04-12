@@ -5,6 +5,8 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
 {
     public ArmGenerator c = new();
 
+    private string _currentBreakLabel = string.Empty;
+    private string _currentContinueLabel = string.Empty;
 
     public CompilerVisitor()
     {
@@ -476,5 +478,414 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         c.PushObject(resultObject);
 
         return null;
+    }
+
+    public override Object? VisitIfStatement(GoLangParser.IfStatementContext context)
+    {
+        c.Comment("If statement");
+
+        // Generar etiquetas únicas para los saltos
+        string elseLabel = $"else_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+        string endIfLabel = $"endif_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+
+        // Evaluar la condición
+        c.Comment("Evaluating condition");
+        Visit(context.expr());
+        var conditionObj = c.PopObject(Register.X0);
+
+        // Si es falso (0), saltar a la sección else
+        c.Comment("Checking condition");
+        c.Cbz(Register.X0, elseLabel);
+
+        // Bloque then - ejecutar si la condición es verdadera
+        c.Comment("Then block");
+
+        // Visitar el bloque then (puede ser un bloque o una instrucción simple)
+        if (context.block() != null)
+        {
+            Visit(context.block());
+        }
+        else if (context.simpleStatement() != null)
+        {
+            Visit(context.simpleStatement());
+        }
+
+        // Saltar al final del if después de ejecutar el bloque then
+        c.B(endIfLabel);
+
+        // Sección else
+        c.Label(elseLabel);
+
+        // Si hay un bloque else, visitarlo
+        if (context.elseBlock() != null)
+        {
+            c.Comment("Else block");
+            Visit(context.elseBlock());
+        }
+
+        // Etiqueta para el final del if
+        c.Label(endIfLabel);
+
+        return null;
+    }
+
+    public override Object? VisitElseBlock(GoLangParser.ElseBlockContext context)
+    {
+        // El elseBlock puede ser otro if (else if), un bloque de código o una instrucción simple
+        if (context.ifStatement() != null)
+        {
+            c.Comment("Else-if branch");
+            Visit(context.ifStatement());
+        }
+        else if (context.block() != null)
+        {
+            c.Comment("Else branch with block");
+            Visit(context.block());
+        }
+        else if (context.simpleStatement() != null)
+        {
+            c.Comment("Else branch with simple statement");
+            Visit(context.simpleStatement());
+        }
+
+        return null;
+    }
+
+    public override Object? VisitWhileStatement(GoLangParser.WhileStatementContext context)
+    {
+        c.Comment("While statement");
+
+        // Generar etiquetas únicas para los saltos
+        string loopStartLabel = $"while_start_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+        string loopEndLabel = $"while_end_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+
+        // Guardar las etiquetas actuales para break y continue
+        string oldBreakLabel = _currentBreakLabel;
+        string oldContinueLabel = _currentContinueLabel;
+
+        // Establecer las nuevas etiquetas para el bucle actual
+        _currentBreakLabel = loopEndLabel;
+        _currentContinueLabel = loopStartLabel;
+
+        // Punto de inicio del bucle donde evaluamos la condición
+        c.Label(loopStartLabel);
+
+        // Evaluar la condición
+        c.Comment("Evaluating while condition");
+        Visit(context.expr());
+        var conditionObj = c.PopObject(Register.X0);
+
+        // Si la condición es falsa (0), saltar al final del bucle
+        c.Comment("Checking condition");
+        c.Cbz(Register.X0, loopEndLabel);
+
+        // Cuerpo del bucle - ejecutar si la condición es verdadera
+        c.Comment("While body");
+
+        // Visitar el cuerpo del bucle (puede ser un bloque o una instrucción simple)
+        if (context.block() != null)
+        {
+            Visit(context.block());
+        }
+        else if (context.simpleStatement() != null)
+        {
+            Visit(context.simpleStatement());
+        }
+
+        // Volver al inicio del bucle para evaluar de nuevo la condición
+        c.Comment("Jump back to loop start");
+        c.B(loopStartLabel);
+
+        // Etiqueta para el final del bucle
+        c.Label(loopEndLabel);
+
+        // Restaurar las etiquetas anteriores para break y continue
+        _currentBreakLabel = oldBreakLabel;
+        _currentContinueLabel = oldContinueLabel;
+
+        return null;
+    }
+
+    public override Object? VisitBreakStatement(GoLangParser.BreakStatementContext context)
+    {
+        if (string.IsNullOrEmpty(_currentBreakLabel))
+        {
+            throw new Exception("Break statement outside of a loop or switch");
+        }
+
+        c.Comment("Break statement");
+        c.B(_currentBreakLabel);
+
+        return null;
+    }
+
+    public override Object? VisitContinueStatement(GoLangParser.ContinueStatementContext context)
+    {
+        if (string.IsNullOrEmpty(_currentContinueLabel))
+        {
+            throw new Exception("Continue statement outside of a loop");
+        }
+
+        c.Comment("Continue statement");
+        c.B(_currentContinueLabel);
+
+        return null;
+    }
+
+    public override Object? VisitComparison(GoLangParser.ComparisonContext context)
+    {
+        c.Comment("Comparison operation");
+        var operation = context.op.Text; // Obtener el operador (<, >, <=, >=)
+
+        // Visitar operandos
+        c.Comment("Visiting left operand");
+        Visit(context.expr(0));
+        c.Comment("Visiting right operand");
+        Visit(context.expr(1));
+
+        c.Comment("Popping operands");
+        var right = c.PopObject(Register.X1);
+        var left = c.PopObject(Register.X0);
+
+        // Generar etiquetas únicas para los saltos
+        string trueLabel = $"cmp_true_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+        string endLabel = $"cmp_end_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+
+        // Realizar la comparación adecuada según el operador
+        c.Comment($"Comparison with operator: {operation}");
+        c.Cmp(Register.X0, Register.X1);
+
+        switch (operation)
+        {
+            case "<":
+                c.B("lt", trueLabel); // B.LT = Branch if Less Than
+                break;
+            case ">":
+                c.B("gt", trueLabel); // B.GT = Branch if Greater Than
+                break;
+            case "<=":
+                c.B("le", trueLabel); // B.LE = Branch if Less than or Equal
+                break;
+            case ">=":
+                c.B("ge", trueLabel); // B.GE = Branch if Greater than or Equal
+                break;
+        }
+
+        // Si llegamos aquí, la comparación es falsa
+        c.Mov(Register.X0, 0);
+        c.B(endLabel);
+
+        // Etiqueta para el caso verdadero
+        c.Label(trueLabel);
+        c.Mov(Register.X0, 1);
+
+        // Etiqueta para el final
+        c.Label(endLabel);
+
+        // Guardar el resultado en la pila
+        c.Push(Register.X0);
+
+        // Crear un objeto para el resultado (siempre booleano)
+        var resultObject = new StackObject
+        {
+            Type = StackObject.StackObjectType.Boolean,
+            Length = 8,
+            Depth = left.Depth,
+            ID = null
+        };
+        c.PushObject(resultObject);
+
+        return null;
+    }
+
+    public override Object? VisitEquality(GoLangParser.EqualityContext context)
+    {
+        c.Comment("Equality operation");
+        var operation = context.op.Text; // Obtener el operador (== o !=)
+
+        // Visitar operandos
+        c.Comment("Visiting left operand");
+        Visit(context.expr(0));
+        c.Comment("Visiting right operand");
+        Visit(context.expr(1));
+
+        c.Comment("Popping operands");
+        var right = c.PopObject(Register.X1);
+        var left = c.PopObject(Register.X0);
+
+        // Generar etiquetas únicas para los saltos
+        string trueLabel = $"eq_true_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+        string endLabel = $"eq_end_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+
+        // Realizar la comparación adecuada según el operador
+        c.Comment($"Equality check with operator: {operation}");
+        c.Cmp(Register.X0, Register.X1);
+
+        if (operation == "==")
+        {
+            c.B("eq", trueLabel); // B.EQ = Branch if EQual
+        }
+        else if (operation == "!=")
+        {
+            c.B("ne", trueLabel); // B.NE = Branch if Not Equal
+        }
+
+        // Si llegamos aquí, la comparación es falsa
+        c.Mov(Register.X0, 0);
+        c.B(endLabel);
+
+        // Etiqueta para el caso verdadero
+        c.Label(trueLabel);
+        c.Mov(Register.X0, 1);
+
+        // Etiqueta para el final
+        c.Label(endLabel);
+
+        // Guardar el resultado en la pila
+        c.Push(Register.X0);
+
+        // Crear un objeto para el resultado (siempre booleano)
+        var resultObject = new StackObject
+        {
+            Type = StackObject.StackObjectType.Boolean,
+            Length = 8,
+            Depth = left.Depth,
+            ID = null
+        };
+        c.PushObject(resultObject);
+
+        return null;
+    }
+
+    public override Object? VisitForStatement(GoLangParser.ForStatementContext context)
+    {
+        c.Comment("For statement");
+
+        // Generar etiquetas únicas para los saltos
+        string loopStartLabel = $"for_start_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+        string loopCondLabel = $"for_cond_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+        string loopBodyLabel = $"for_body_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+        string loopEndLabel = $"for_end_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+        string loopPostLabel = $"for_post_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+
+        // Guardar las etiquetas actuales para break y continue
+        string oldBreakLabel = _currentBreakLabel;
+        string oldContinueLabel = _currentContinueLabel;
+
+        // Establecer las nuevas etiquetas para el bucle actual
+        _currentBreakLabel = loopEndLabel;
+        _currentContinueLabel = loopPostLabel;
+
+        // Determinar qué tipo de bucle for estamos manejando
+        if (context.forCondition() != null)
+        {
+            // Tipo 1: for condición { }
+            c.Comment("For with condition (similar to while)");
+
+            // Punto de inicio del bucle donde evaluamos la condición
+            c.Label(loopStartLabel);
+
+            // Evaluar la condición
+            c.Comment("Evaluating for condition");
+            Visit(context.forCondition().expr());
+            var conditionObj = c.PopObject(Register.X0);
+
+            // Si la condición es falsa (0), saltar al final del bucle
+            c.Comment("Checking condition");
+            c.Cbz(Register.X0, loopEndLabel);
+
+            // Cuerpo del bucle - ejecutar si la condición es verdadera
+            c.Comment("For body");
+            Visit(context.block());
+
+            // Volver al inicio del bucle para evaluar de nuevo la condición
+            c.Comment("Jump back to loop start");
+            c.B(loopStartLabel);
+        }
+        else if (context.forClause() != null)
+        {
+            // Tipo 2: for i := 0; i < 10; i++ { }
+            c.Comment("For with clause (C-style)");
+            var forClause = context.forClause();
+
+            // Crear un nuevo scope para las variables del for
+            c.NewScope();
+
+            // 1. Inicialización (si existe)
+            if (forClause.initStmt() != null)
+            {
+                c.Comment("For initialization");
+                Visit(forClause.initStmt());
+            }
+
+            // 2. Saltar a la verificación de la condición
+            c.B(loopCondLabel);
+
+            // 3. Actualización (post-statement) - se ejecuta después de cada iteración
+            c.Label(loopPostLabel);
+            if (forClause.postStmt() != null)
+            {
+                c.Comment("For post-statement");
+                Visit(forClause.postStmt());
+            }
+
+            // 4. Verificar la condición
+            c.Label(loopCondLabel);
+            if (forClause.expr() != null)
+            {
+                c.Comment("Evaluating for condition");
+                Visit(forClause.expr());
+                var conditionObj = c.PopObject(Register.X0);
+
+                // Si la condición es falsa (0), saltar al final del bucle
+                c.Comment("Checking condition");
+                c.Cbz(Register.X0, loopEndLabel);
+            }
+
+            // 5. Cuerpo del bucle
+            c.Comment("For body");
+            Visit(context.block());
+
+            // 6. Volver a la actualización
+            c.B(loopPostLabel);
+        }
+        else if (context.forRange() != null)
+        {
+            // Tipo 3: for i, v := range slice { }
+            c.Comment("For-range loop not implemented yet");
+            // La implementación completa del for-range requiere soporte para slices
+            // y será implementada en una iteración futura
+        }
+
+        // Etiqueta para el final del bucle
+        c.Label(loopEndLabel);
+
+        // Restaurar las etiquetas anteriores para break y continue
+        _currentBreakLabel = oldBreakLabel;
+        _currentContinueLabel = oldContinueLabel;
+
+        return null;
+    }
+
+    // Implementar el manejo de declaraciones implícitas para variables como i := 0
+    public override Object? VisitImplicitDeclaration(GoLangParser.ImplicitDeclarationContext context)
+    {
+        var id = context.ID().GetText();
+        c.Comment($"Implicit declaration: {id}");
+
+        // Visitar la expresión de la parte derecha
+        Visit(context.expr());
+
+        // Etiquetar el objeto en la pila con el ID de la variable
+        c.TagObject(id);
+
+        return null;
+    }
+
+    public override Object? VisitForCondition(GoLangParser.ForConditionContext context)
+    {
+        // Este método simplemente visita y evalúa la expresión de condición
+        // La lógica principal está en VisitForStatement
+        return Visit(context.expr());
     }
 }
