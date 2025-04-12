@@ -319,6 +319,41 @@ public class ArmGenerator
         _instructions.Add($"ADD {rd}, {rs1}, #{imm}");
     }
 
+    // Método para operación XOR
+    public void Eor(string rd, string rs, int imm)
+    {
+        _instructions.Add($"EOR {rd}, {rs}, #{imm}");
+    }
+
+    public void Eor(string rd, string rs1, string rs2)
+    {
+        _instructions.Add($"EOR {rd}, {rs1}, {rs2}");
+    }
+
+    // Método para comparación con cero y salto si es cero
+    public void Cbz(string reg, string label)
+    {
+        _instructions.Add($"CBZ {reg}, {label}");
+    }
+
+    // Método para comparación con cero y salto si NO es cero (Compare and Branch if Not Zero)
+    public void Cbnz(string reg, string label)
+    {
+        _instructions.Add($"CBNZ {reg}, {label}");
+    }
+
+    // Método para salto incondicional
+    public void B(string label)
+    {
+        _instructions.Add($"B {label}");
+    }
+
+    // Método para definir una etiqueta
+    public void Label(string label)
+    {
+        _instructions.Add($"{label}:");
+    }
+
     // Memory operations
     public void Str(string rs1, string rs2, int offset = 0)
     {
@@ -390,6 +425,21 @@ public class ArmGenerator
         Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
         _instructions.Add($"MOV X0, {rs}");
         _instructions.Add($"BL print_rune");
+    }
+
+    public void PrintBool(string rs)
+    {
+        _stdLib.Use("print_bool");
+        Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
+        _instructions.Add($"MOV X0, {rs}");
+        _instructions.Add($"BL print_bool");
+    }
+
+    public void PrintFloat(string rs)
+    {
+        _stdLib.Use("print_float");
+        Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
+        _instructions.Add($"BL print_float");
     }
 
     public void Comment(string comment)

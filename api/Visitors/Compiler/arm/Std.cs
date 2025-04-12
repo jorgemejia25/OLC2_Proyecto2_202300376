@@ -356,6 +356,60 @@ print_rune_bytes:
 
 rune_newline:
     .ascii ""\n""              // Newline character"
+    },
+
+    { "print_bool", @"
+//--------------------------------------------------------------
+// print_bool - Prints a boolean value as 'true' or 'false'
+//
+// Input:
+//   x0 - The boolean value to print (0 = false, non-zero = true)
+//--------------------------------------------------------------
+print_bool:
+    // Save registers
+    stp x29, x30, [sp, #-16]!  // Save frame pointer and link register
+    stp x19, x20, [sp, #-16]!  // Save callee-saved registers
+    
+    // Check if value is zero (false) or non-zero (true)
+    cbnz x0, print_true        // If non-zero, print true
+    
+    // Print ""false""
+    mov x0, #1                 // fd = 1 (stdout)
+    adr x1, false_string       // Address of ""false"" string
+    mov x2, #5                 // Length = 5 (f-a-l-s-e)
+    mov w8, #64                // Syscall write
+    svc #0
+    b print_bool_newline
+    
+print_true:
+    // Print ""true""
+    mov x0, #1                 // fd = 1 (stdout)
+    adr x1, true_string        // Address of ""true"" string
+    mov x2, #4                 // Length = 4 (t-r-u-e)
+    mov w8, #64                // Syscall write
+    svc #0
+    
+print_bool_newline:
+    // Add newline
+    mov x0, #1                 // fd = 1 (stdout)
+    adr x1, bool_newline       // Address of newline character
+    mov x2, #1                 // Length = 1
+    mov w8, #64                // Syscall write
+    svc #0
+    
+    // Restore registers and return
+    ldp x19, x20, [sp], #16    // Restore callee-saved registers
+    ldp x29, x30, [sp], #16    // Restore frame pointer and link register
+    ret                        // Return to caller
+
+true_string:
+    .ascii ""true""            // ""true"" string
+    
+false_string:
+    .ascii ""false""           // ""false"" string
+    
+bool_newline:
+    .ascii ""\n""              // Newline character"
     }
 };
 }

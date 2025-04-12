@@ -19,7 +19,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         var expr = context.expr();
         Visit(expr);
 
-        c.Comment("Popping integer value");
+        c.Comment("Popping value for printing");
         var value = c.PopObject(Register.X0);
 
         if (value.Type == StackObject.StackObjectType.Integer)
@@ -32,12 +32,14 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         }
         else if (value.Type == StackObject.StackObjectType.Boolean)
         {
-            c.PrintInteger(Register.X0); // Imprimimos booleanos como enteros (0/1)
+            // Usar la nueva función PrintBool en lugar de PrintInteger para valores booleanos
+            c.PrintBool(Register.X0);
         }
         else if (value.Type == StackObject.StackObjectType.Rune)
         {
-            c.PrintRune(Register.X0);    // Nueva función para imprimir runes
+            c.PrintRune(Register.X0);
         }
+
 
         return null;
     }
@@ -331,5 +333,148 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         return null;
     }
 
+    public override Object? VisitBoolean(GoLangParser.BooleanContext context)
+    {
+        var value = context.GetText();
+        c.Comment("Boolean constant: " + value);
 
+        var boolObject = c.BoolObject();
+
+        // Convertir el string "true"/"false" a valor entero (1/0)
+        int boolValue = value.ToLower() == "true" ? 1 : 0;
+
+        c.Mov(Register.X0, boolValue);
+        c.Push(Register.X0);
+
+        c.PushObject(boolObject);
+        return null;
+    }
+
+    // Implementación para operador lógico OR (||)
+    public override Object? VisitOr(GoLangParser.OrContext context)
+    {
+        c.Comment("Logical OR operation");
+
+        // Generar etiquetas para el manejo de cortocircuito
+        string trueLabel = $"or_true_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+        string endLabel = $"or_end_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+
+        // Evaluar el primer operando
+        c.Comment("Evaluating first operand");
+        Visit(context.expr(0));
+        var left = c.PopObject(Register.X0);
+
+        // Si el primer operando es verdadero, saltamos directamente a true (cortocircuito)
+        c.Comment("Short-circuit evaluation: if first operand is true, result is true");
+        c.Cbnz(Register.X0, trueLabel);
+
+        // Si llegamos aquí, el primer operando es falso, evaluamos el segundo
+        c.Comment("First operand is false, evaluating second operand");
+        Visit(context.expr(1));
+        var right = c.PopObject(Register.X0);
+
+        // No es necesaria más lógica aquí, ya que el resultado está en X0
+        c.B(endLabel);
+
+        // Si el primer operando era verdadero, establecer resultado como verdadero
+        c.Label(trueLabel);
+        c.Mov(Register.X0, 1);
+
+        // Fin de la evaluación OR
+        c.Label(endLabel);
+
+        // Guardar el resultado en la pila
+        c.Push(Register.X0);
+
+        // Crear un objeto para el resultado (siempre booleano)
+        var resultObject = new StackObject
+        {
+            Type = StackObject.StackObjectType.Boolean,
+            Length = 8,
+            Depth = left.Depth,
+            ID = null
+        };
+        c.PushObject(resultObject);
+
+        return null;
+    }
+
+    // Implementación para operador lógico AND (&&)
+    public override Object? VisitAnd(GoLangParser.AndContext context)
+    {
+        c.Comment("Logical AND operation");
+
+        // Generar etiquetas para el manejo de cortocircuito
+        string falseLabel = $"and_false_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+        string endLabel = $"and_end_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+
+        // Evaluar el primer operando
+        c.Comment("Evaluating first operand");
+        Visit(context.expr(0));
+        var left = c.PopObject(Register.X0);
+
+        // Si el primer operando es falso, saltamos directamente a false (cortocircuito)
+        c.Comment("Short-circuit evaluation: if first operand is false, result is false");
+        c.Cbz(Register.X0, falseLabel);
+
+        // Si llegamos aquí, el primer operando es verdadero, evaluamos el segundo
+        c.Comment("First operand is true, evaluating second operand");
+        Visit(context.expr(1));
+        var right = c.PopObject(Register.X0);
+
+        // No es necesaria más lógica aquí, ya que el resultado está en X0
+        c.B(endLabel);
+
+        // Si el primer operando era falso, establecer resultado como falso
+        c.Label(falseLabel);
+        c.Mov(Register.X0, 0);
+
+        // Fin de la evaluación AND
+        c.Label(endLabel);
+
+        // Guardar el resultado en la pila
+        c.Push(Register.X0);
+
+        // Crear un objeto para el resultado (siempre booleano)
+        var resultObject = new StackObject
+        {
+            Type = StackObject.StackObjectType.Boolean,
+            Length = 8,
+            Depth = left.Depth,
+            ID = null
+        };
+        c.PushObject(resultObject);
+
+        return null;
+    }
+
+    // Implementación para operador lógico NOT (!)
+    public override Object? VisitNot(GoLangParser.NotContext context)
+    {
+        c.Comment("Logical NOT operation");
+
+        // Evaluar la expresión
+        c.Comment("Evaluating expression");
+        Visit(context.expr());
+        var expr = c.PopObject(Register.X0);
+
+        // Invertir el valor (NOT lógico): si es 0 -> 1, si no es 0 -> 0
+        c.Comment("Inverting boolean value");
+        c.Eor(Register.X0, Register.X0, 1);  // XOR con 1 invierte el bit menos significativo
+
+        // Guardar el resultado en la pila
+        c.Push(Register.X0);
+
+        // Crear un objeto para el resultado (siempre booleano)
+        var resultObject = new StackObject
+        {
+            Type = StackObject.StackObjectType.Boolean,
+            Length = 8,
+            Depth = expr.Depth,
+            ID = null
+        };
+        c.PushObject(resultObject);
+
+        return null;
+    }
 }
