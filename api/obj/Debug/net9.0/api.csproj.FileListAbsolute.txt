@@ -1226,7 +1226,6 @@
 /home/jorgis/Documents/USAC/Compi2/OLC2_Proyecto2_202300376/api/obj/Debug/net9.0/api.csproj.CoreCompileInputs.cache
 /home/jorgis/Documents/USAC/Compi2/OLC2_Proyecto2_202300376/api/obj/Debug/net9.0/api.MvcApplicationPartsAssemblyInfo.cs
 /home/jorgis/Documents/USAC/Compi2/OLC2_Proyecto2_202300376/api/obj/Debug/net9.0/api.MvcApplicationPartsAssemblyInfo.cache
-/home/jorgis/Documents/USAC/Compi2/OLC2_Proyecto2_202300376/api/obj/Debug/net9.0/api.sourcelink.json
 /home/jorgis/Documents/USAC/Compi2/OLC2_Proyecto2_202300376/api/obj/Debug/net9.0/api.dll
 /home/jorgis/Documents/USAC/Compi2/OLC2_Proyecto2_202300376/api/obj/Debug/net9.0/refint/api.dll
 /home/jorgis/Documents/USAC/Compi2/OLC2_Proyecto2_202300376/api/obj/Debug/net9.0/api.pdb

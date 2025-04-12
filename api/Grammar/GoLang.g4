@@ -12,7 +12,8 @@ statement:
 	varDeclaration ';'? // Punto y coma opcional
 	| implicitDeclaration ';'? //  regla para declaración implícita
 	| funcDeclaration //  regla para declaración de funciones
-	| simpleStatement;
+	| simpleStatement
+	| block;
 
 simpleStatement:
 	exprStatement ';'?

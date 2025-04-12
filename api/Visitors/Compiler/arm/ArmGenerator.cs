@@ -1,9 +1,257 @@
 using System.Text;
 
+public class StackObject
+{
+    public enum StackObjectType
+    {
+        Integer,
+        Float,
+        String,
+        Boolean,
+        Rune,    // Nuevo tipo para caracteres rune
+    }
+
+    public StackObjectType Type { get; set; }
+
+    public int Length { get; set; }
+
+    public int Depth { get; set; }
+
+    public string? ID { get; set; }
+}
+
 public class ArmGenerator
 {
     private readonly List<string> _instructions = new List<string>();
     private readonly StandardLibrary _stdLib = new StandardLibrary();
+
+    public List<StackObject> stack = [];
+
+    private int _stackDepth = 0;
+
+    // Stack operations
+    public void PushObject(StackObject obj)
+    {
+        stack.Add(obj);
+    }
+
+    public void PushConstant(StackObject obj, object value)
+    {
+        switch (obj.Type)
+        {
+            case StackObject.StackObjectType.Integer:
+                Mov(Register.X0, (int)value);
+                Push(Register.X0);
+                break;
+
+            case StackObject.StackObjectType.Float:
+                // ! TODO
+                break;
+            case StackObject.StackObjectType.String:
+                // En lugar de convertir directamente, preservar secuencias de escape en el string
+                string stringValue = (string)value;
+
+                // Guardar la dirección inicial del string en el heap
+                Push(Register.HP);
+
+                // Iterar por cada carácter del string
+                for (int i = 0; i < stringValue.Length; i++)
+                {
+                    char c = stringValue[i];
+
+                    // Verificar si es el inicio de una secuencia de escape
+                    if (c == '\\' && i + 1 < stringValue.Length)
+                    {
+                        // Mantener el backslash literal en el string
+                        Comment($"Pushing escape sequence character: \\");
+                        Mov("w0", (int)'\\');
+                        Strb("w0", Register.HP);
+                        Mov(Register.X0, 1);
+                        Add(Register.HP, Register.HP, Register.X0);
+
+                        // Obtener el siguiente carácter después del backslash
+                        i++;
+                        c = stringValue[i];
+
+                        // Añadir el siguiente carácter tal cual (será interpretado por print_string)
+                        Comment($"Pushing escape sequence character: {c}");
+                        Mov("w0", (int)c);
+                        Strb("w0", Register.HP);
+                        Mov(Register.X0, 1);
+                        Add(Register.HP, Register.HP, Register.X0);
+                    }
+                    else
+                    {
+                        // Carácter normal
+                        Comment($"Pushing character {i}: {(int)c}");
+                        Mov("w0", (int)c);
+                        Strb("w0", Register.HP);
+                        Mov(Register.X0, 1);
+                        Add(Register.HP, Register.HP, Register.X0);
+                    }
+                }
+
+                // Añadir terminador NULL
+                Comment("Pushing NULL terminator");
+                Mov("w0", 0);
+                Strb("w0", Register.HP);
+                Mov(Register.X0, 1);
+                Add(Register.HP, Register.HP, Register.X0);
+
+                break;
+            case StackObject.StackObjectType.Boolean:
+                // ! TODO
+                break;
+            case StackObject.StackObjectType.Rune:
+                Mov(Register.X0, (int)value);
+                Push(Register.X0);
+                break;
+        }
+
+        PushObject(obj);
+    }
+
+    public StackObject PopObject(string rd)
+    {
+        var obj = stack.Last();
+        stack.RemoveAt(stack.Count - 1);
+
+        Pop(rd);
+        return obj;
+    }
+
+    public StackObject IntObject()
+    {
+        var obj = new StackObject
+        {
+            Type = StackObject.StackObjectType.Integer,
+            ID = null,
+            Length = 8,
+            Depth = _stackDepth
+        };
+        _stackDepth += 8;
+        return obj;
+    }
+
+    public StackObject FloatObject()
+    {
+        var obj = new StackObject
+        {
+            Type = StackObject.StackObjectType.Float,
+            ID = null,
+            Length = 8,
+            Depth = _stackDepth
+        };
+        _stackDepth += 8;
+        return obj;
+    }
+
+    public StackObject StringObject()
+    {
+        var obj = new StackObject
+        {
+            Type = StackObject.StackObjectType.String,
+            ID = null,
+            Length = 8,
+            Depth = _stackDepth
+        };
+        _stackDepth += 8;
+        return obj;
+    }
+
+    public StackObject BoolObject()
+    {
+        var obj = new StackObject
+        {
+            Type = StackObject.StackObjectType.Boolean,
+            ID = null,
+            Length = 8,
+            Depth = _stackDepth
+        };
+        _stackDepth += 8;
+        return obj;
+    }
+
+    public StackObject RuneObject()
+    {
+        var obj = new StackObject
+        {
+            Type = StackObject.StackObjectType.Rune,
+            ID = null,
+            Length = 8,
+            Depth = _stackDepth
+        };
+        _stackDepth += 8;
+        return obj;
+    }
+
+    // Environment operations
+
+    public void NewScope()
+    {
+        _stackDepth++;
+    }
+
+    public int EndScope()
+    {
+        int byteOffset = 0;
+        List<StackObject> objectsToRemove = new List<StackObject>();
+
+        // Identificar todos los objetos del scope actual
+        for (int i = stack.Count - 1; i >= 0; i--)
+        {
+            var obj = stack[i];
+            if (obj.Depth == _stackDepth)
+            {
+                byteOffset += obj.Length;
+                objectsToRemove.Add(obj);
+            }
+        }
+
+        // Remover los objetos identificados
+        foreach (var obj in objectsToRemove)
+        {
+            stack.Remove(obj);
+        }
+
+        _stackDepth--;
+
+        return byteOffset;
+    }
+
+    public void TagObject(string id)
+    {
+        stack.Last().ID = id;
+    }
+
+    public (int, StackObject) GetObject(string id)
+    {
+        int byteOffset = 0;
+
+        for (int i = stack.Count - 1; i >= 0; i--)
+        {
+            var obj = stack[i];
+            if (obj.ID == id)
+            {
+                return (byteOffset, obj);
+            }
+
+            byteOffset += obj.Length;
+        }
+
+        throw new Exception($"Object with ID {id} not found in stack.");
+    }
+
+    public StackObject CloneObject(StackObject obj)
+    {
+        return new StackObject
+        {
+            Type = obj.Type,
+            ID = obj.ID,
+            Length = obj.Length,
+            Depth = _stackDepth
+        };
+    }
 
     public void Add(string rd, string rs1, string rs2)
     {
@@ -45,17 +293,6 @@ public class ArmGenerator
         _instructions.Add($"FDIV {fd}, {fs1}, {fs2}");
     }
 
-    // Operaciones para convertir entre enteros y flotantes
-    public void Fcvt(string fd, string rs)
-    {
-        _instructions.Add($"SCVTF {fd}, {rs}");  // Signed integer to floating point
-    }
-
-    public void Fcvtz(string rd, string fs)
-    {
-        _instructions.Add($"FCVTZS {rd}, {fs}");  // Floating point to signed integer with truncation
-    }
-
     // Mover entre registros flotantes y enteros
     public void Fmov(string fd, string rs)
     {
@@ -78,13 +315,19 @@ public class ArmGenerator
 
     public void Addi(string rd, string rs1, int imm)
     {
-        _instructions.Add($"ADDI {rd}, {rs1}, #{imm}");
+        // Corregido: En ARM64 estándar, la instrucción es ADD con un inmediato
+        _instructions.Add($"ADD {rd}, {rs1}, #{imm}");
     }
 
     // Memory operations
     public void Str(string rs1, string rs2, int offset = 0)
     {
         _instructions.Add($"STR {rs1}, [{rs2}, #{offset}]");
+    }
+
+    public void Strb(string rs1, string rs2)
+    {
+        _instructions.Add($"STRB {rs1}, [{rs2}]");
     }
 
     public void Ldr(string rd, string rs1, int offset = 0)
@@ -133,48 +376,25 @@ public class ArmGenerator
         _instructions.Add($"BL print_integer");
     }
 
-    // Nuevo método para imprimir valores flotantes
-    public void PrintFloat(string rs)
+    public void PrintString(string rs)
     {
-        _stdLib.Use("print_float");
+        _stdLib.Use("print_string");
         Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
-        _instructions.Add($"FMOV D0, {rs}");  // Mover el valor a un registro de punto flotante
-        _instructions.Add($"BL print_float");
+        _instructions.Add($"MOV X0, {rs}");
+        _instructions.Add($"BL print_string");
     }
 
-    // Método para cargar constantes de 64 bits (para floats)
-    public void LoadConstantLong(string rd, long value)
+    public void PrintRune(string rs)
     {
-        // En ARM64, debemos cargar constantes grandes por partes
-        _instructions.Add($"// Load constant {value} (0x{value:X})");
-        _instructions.Add($"MOVZ {rd}, #{value & 0xFFFF}");
-        _instructions.Add($"MOVK {rd}, #{(value >> 16) & 0xFFFF}, LSL #16");
-        _instructions.Add($"MOVK {rd}, #{(value >> 32) & 0xFFFF}, LSL #32");
-        _instructions.Add($"MOVK {rd}, #{(value >> 48) & 0xFFFF}, LSL #48");
+        _stdLib.Use("print_rune");
+        Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
+        _instructions.Add($"MOV X0, {rs}");
+        _instructions.Add($"BL print_rune");
     }
 
     public void Comment(string comment)
     {
         _instructions.Add($"// {comment}");
-    }
-
-    public void PrintString(string addressReg, string lengthReg)
-    {
-        _stdLib.Use("print_string");
-        Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
-        _instructions.Add($"MOV X0, {addressReg}");
-        _instructions.Add($"MOV X1, {lengthReg}");
-        _instructions.Add($"BL print_string");
-    }
-
-    // Método sobrecargado para longitud inmediata (ej: "Hello World!")
-    public void PrintString(string addressReg, int length)
-    {
-        _stdLib.Use("print_string");
-        Align(); // Garantizar alineamiento
-        _instructions.Add($"MOV X0, {addressReg}");  // Dirección del string
-        _instructions.Add($"MOV X1, #{length}");     // Longitud como inmediato
-        _instructions.Add($"BL print_string");
     }
 
     private int _stringCounter = 0;
@@ -227,11 +447,15 @@ public class ArmGenerator
             sb.AppendLine();
         }
 
+        sb.AppendLine(".data");
+        sb.AppendLine("heap: .space 4096");
+
+
         sb.AppendLine(".text");
         sb.AppendLine(".balign 16       // Alineamiento para sección de código");
         sb.AppendLine(".global _start");
         sb.AppendLine("_start:");
-
+        sb.AppendLine("    adr x10, heap");
         // Procesar instrucciones con alineamiento adicional después de llamadas a funciones
         foreach (var instruction in _instructions)
         {
@@ -251,8 +475,51 @@ public class ArmGenerator
         sb.AppendLine("    SVC #0");      // Realizar syscall
 
         sb.AppendLine("\n\n// Standard Library Functions");
-        sb.AppendLine(_stdLib.GetFunctionDefinitions());
+
+        // Modificar la salida de las funciones de la biblioteca estándar para incluir alineación adecuada
+        string stdLibFunctions = _stdLib.GetFunctionDefinitions();
+
+        // Asegurar que las etiquetas en las funciones estén alineadas a 4 bytes (una palabra)
+        stdLibFunctions = EnsureFunctionLabelsAreAligned(stdLibFunctions);
+
+        sb.AppendLine(stdLibFunctions);
 
         return sb.ToString();
+    }
+
+    // Método para garantizar que todas las etiquetas en funciones estén correctamente alineadas
+    private string EnsureFunctionLabelsAreAligned(string functions)
+    {
+        var lines = functions.Split('\n');
+        var result = new StringBuilder();
+
+        for (int i = 0; i < lines.Length; i++)
+        {
+            string line = lines[i];
+
+            // Si la línea contiene una etiqueta (termina con :) pero no es una directiva o comentario
+            if (line.Trim().EndsWith(":") && !line.Trim().StartsWith(".") && !line.Trim().StartsWith("//"))
+            {
+                // Agregar directiva de alineación antes de la etiqueta
+                result.AppendLine(".balign 4       // Alinear a 4 bytes (una palabra)");
+                result.AppendLine(line);
+            }
+            // Si la línea contiene un objetivo de salto (instrucciones que pueden ser destino de saltos)
+            else if (line.Trim().Contains("loop:") ||
+                     line.Trim().Contains("done:") ||
+                     line.Trim().Contains("_number:") ||
+                     line.Trim().Contains("_result:"))
+            {
+                // Agregar directiva de alineación antes de objetivos de salto
+                result.AppendLine(".balign 4       // Alinear a 4 bytes");
+                result.AppendLine(line);
+            }
+            else
+            {
+                result.AppendLine(line);
+            }
+        }
+
+        return result.ToString();
     }
 }
