@@ -410,6 +410,8 @@ false_string:
     
 bool_newline:
     .ascii ""\n""              // Newline character"
-    }
+    },
+
+
 };
 }

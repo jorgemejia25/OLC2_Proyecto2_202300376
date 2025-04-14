@@ -25,9 +25,17 @@ public class ArmGenerator
     private readonly List<string> _instructions = new List<string>();
     private readonly StandardLibrary _stdLib = new StandardLibrary();
 
-    public List<StackObject> stack = [];
+    public List<StackObject> stack = new List<StackObject>();
 
     private int _stackDepth = 0;
+
+
+    // Método para substraer inmediato
+    public void sub(string rd, string rs, int imm)
+    {
+        _instructions.Add($"SUB {rd}, {rs}, #{imm}");
+    }
+
 
     // Stack operations
     public void PushObject(StackObject obj)
@@ -45,8 +53,9 @@ public class ArmGenerator
                 break;
 
             case StackObject.StackObjectType.Float:
-                // ! TODO
+       
                 break;
+
             case StackObject.StackObjectType.String:
                 // En lugar de convertir directamente, preservar secuencias de escape en el string
                 string stringValue = (string)value;
@@ -100,7 +109,8 @@ public class ArmGenerator
 
                 break;
             case StackObject.StackObjectType.Boolean:
-                // ! TODO
+                Mov(Register.X0, Convert.ToBoolean(value) ? 1 : 0);
+                Push(Register.X0);
                 break;
             case StackObject.StackObjectType.Rune:
                 Mov(Register.X0, (int)value);
@@ -293,16 +303,6 @@ public class ArmGenerator
         _instructions.Add($"FDIV {fd}, {fs1}, {fs2}");
     }
 
-    // Mover entre registros flotantes y enteros
-    public void Fmov(string fd, string rs)
-    {
-        _instructions.Add($"FMOV {fd}, {rs}");  // Mover de registro entero a flotante
-    }
-
-    public void Fmovi(string rd, string fs)
-    {
-        _instructions.Add($"FMOV {rd}, {fs}");  // Mover de registro flotante a entero
-    }
 
     // Nuevo método para la operación de módulo
     public void Mod(string rd, string rs1, string rs2)
@@ -409,7 +409,6 @@ public class ArmGenerator
         Svc(); // Make syscall
     }
 
-    // Método para alineamiento con valor por defecto
     public void Align(int bytes = 16)
     {
         _instructions.Add($".balign {bytes}     // Garantizar alineamiento a {bytes} bytes");
@@ -447,12 +446,6 @@ public class ArmGenerator
         _instructions.Add($"BL print_bool");
     }
 
-    public void PrintFloat(string rs)
-    {
-        _stdLib.Use("print_float");
-        Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
-        _instructions.Add($"BL print_float");
-    }
 
     public void Comment(string comment)
     {
@@ -518,10 +511,13 @@ public class ArmGenerator
         sb.AppendLine(".global _start");
         sb.AppendLine("_start:");
         sb.AppendLine("    adr x10, heap");
+
         // Procesar instrucciones con alineamiento adicional después de llamadas a funciones
-        foreach (var instruction in _instructions)
+        for (int i = 0; i < _instructions.Count; i++)
         {
-            sb.AppendLine(instruction);
+            var instruction = _instructions[i];
+
+            sb.AppendLine(_instructions[i]);
 
             // Si fue una llamada a función, marcar que necesitamos alineamiento
             if (instruction.StartsWith("BL "))

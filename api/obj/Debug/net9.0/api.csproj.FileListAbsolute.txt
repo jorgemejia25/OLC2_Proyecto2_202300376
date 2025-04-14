@@ -1467,3 +1467,4 @@
 /home/jorgis/Documents/USAC/Compi2/OLC2_Proyecto2_202300376/api/obj/Debug/net9.0/api.csproj.Up2Date
 /home/jorgis/Documents/USAC/Compi2/OLC2_Proyecto2_202300376/api/obj/Debug/net9.0/api.genruntimeconfig.cache
 /home/jorgis/Documents/USAC/Compi2/OLC2_Proyecto2_202300376/api/obj/Debug/net9.0/ref/api.dll
+/home/jorgis/Documents/USAC/Compi2/OLC2_Proyecto2_202300376/api/obj/Debug/net9.0/api.sourcelink.json

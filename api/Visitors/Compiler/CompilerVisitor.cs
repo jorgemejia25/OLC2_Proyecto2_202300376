@@ -13,6 +13,12 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
 
     }
 
+    // Asegurar que las etiquetas generadas sean únicas y válidas
+    private string GenerateUniqueLabel(string prefix)
+    {
+        return $"{prefix}_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+    }
+
     public override Object? VisitPrintStatement(GoLangParser.PrintStatementContext context)
     {
         c.Comment("Print statement");
@@ -41,7 +47,11 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         {
             c.PrintRune(Register.X0);
         }
+        else if (value.Type == StackObject.StackObjectType.Float)
+        {
+            c.Comment("Loading float for printing");
 
+        }
 
         return null;
     }
@@ -62,27 +72,30 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         var right = c.PopObject(Register.X1);
         var left = c.PopObject(Register.X0);
 
-        if (operation == "+")
-        {
-            c.Add(Register.X0, Register.X0, Register.X1);
-        }
-        else if (operation == "-")
-        {
-            c.Sub(Register.X0, Register.X0, Register.X1);
-        }
 
-        c.Comment("Pushing result");
-        c.Push(Register.X0);
+            // Operación con enteros normales
+            if (operation == "+")
+            {
+                c.Add(Register.X0, Register.X0, Register.X1);
+            }
+            else if (operation == "-")
+            {
+                c.Sub(Register.X0, Register.X0, Register.X1);
+            }
 
-        // Crear un nuevo objeto para el resultado para evitar compartir referencias
-        var resultObject = new StackObject
-        {
-            Type = left.Type,
-            Length = left.Length,
-            Depth = left.Depth,
-            ID = null
-        };
-        c.PushObject(resultObject);
+            c.Comment("Pushing integer result");
+            c.Push(Register.X0);
+
+            // Crear un nuevo objeto para el resultado para evitar compartir referencias
+            var resultObject = new StackObject
+            {
+                Type = left.Type,
+                Length = left.Length,
+                Depth = left.Depth,
+                ID = null
+            };
+            c.PushObject(resultObject);
+
 
         return null;
     }
@@ -91,7 +104,6 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
     {
         c.Comment("MulDiv operation");
         var operation = context.GetChild(1).GetText();
-
 
         // Visitar operandos
         c.Comment("Visiting left operand");
@@ -104,22 +116,25 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         var right = c.PopObject(Register.X1);
         var left = c.PopObject(Register.X0);
 
-        if (operation == "*")
-        {
-            c.Mul(Register.X0, Register.X0, Register.X1);
-        }
-        else if (operation == "/")
-        {
-            c.Div(Register.X0, Register.X0, Register.X1);
-        }
-        else if (operation == "%")
-        {
-            c.Mod(Register.X0, Register.X0, Register.X1);
-        }
 
-        c.Comment("Pushing result");
-        c.Push(Register.X0);
-        c.PushObject(c.CloneObject(left));
+            // Operación con enteros normales
+            if (operation == "*")
+            {
+                c.Mul(Register.X0, Register.X0, Register.X1);
+            }
+            else if (operation == "/")
+            {
+                c.Div(Register.X0, Register.X0, Register.X1);
+            }
+            else if (operation == "%")
+            {
+                c.Mod(Register.X0, Register.X0, Register.X1);
+            }
+
+            c.Comment("Pushing integer result");
+            c.Push(Register.X0);
+            c.PushObject(c.CloneObject(left));
+        
 
         return null;
     }
@@ -129,9 +144,68 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         var varName = context.ID().GetText();
         c.Comment("Variable declaration: " + varName);
 
-        Visit(context.expr());
-        c.TagObject(varName);
+        // Verificar si hay una expresión explícita para asignar
+        if (context.expr() != null)
+        {
+            // Si hay una expresión, visitarla normalmente
+            Visit(context.expr());
+        }
+        else if (context.sliceInit() != null)
+        {
+            // Si es una inicialización de slice/array
+            Visit(context.sliceInit());
+        }
+        else
+        {
+            // No hay expresión explícita, aplicar valores por defecto según el tipo
+            if (context.type() != null)
+            {
+                string typeName = context.type().GetText();
+                c.Comment($"Using default value for type: {typeName}");
 
+                if (typeName == "string")
+                {
+                    // Valor por defecto para string: ""
+                    var stringObject = c.StringObject();
+                    c.PushConstant(stringObject, "");
+                }
+                else if (typeName == "int" || typeName.StartsWith("[]"))
+                {
+                    // Valor por defecto para int o arrays: 0
+                    var intObject = c.IntObject();
+                    c.PushConstant(intObject, 0);
+                }
+                else if (typeName == "bool")
+                {
+                    // Valor por defecto para bool: false
+                    var boolObject = c.BoolObject();
+                    c.Mov(Register.X0, 0); // false = 0
+                    c.Push(Register.X0);
+                    c.PushObject(boolObject);
+                }
+                else if (typeName == "rune")
+                {
+                    // Valor por defecto para rune: 0
+                    var runeObject = c.RuneObject();
+                    c.PushConstant(runeObject, 0);
+                }
+                else
+                {
+                    // Para otros tipos, usar 0 como valor por defecto genérico
+                    var intObject = c.IntObject();
+                    c.PushConstant(intObject, 0);
+                }
+            }
+            else
+            {
+                // Si no se especifica tipo, asumir int como tipo por defecto
+                c.Comment("Using default value: 0 (int)");
+                var intObject = c.IntObject();
+                c.PushConstant(intObject, 0);
+            }
+        }
+
+        c.TagObject(varName);
 
         return null;
     }
@@ -358,8 +432,8 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         c.Comment("Logical OR operation");
 
         // Generar etiquetas para el manejo de cortocircuito
-        string trueLabel = $"or_true_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
-        string endLabel = $"or_end_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+        string trueLabel = GenerateUniqueLabel("or_true");
+        string endLabel = GenerateUniqueLabel("or_end");
 
         // Evaluar el primer operando
         c.Comment("Evaluating first operand");
@@ -407,8 +481,8 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         c.Comment("Logical AND operation");
 
         // Generar etiquetas para el manejo de cortocircuito
-        string falseLabel = $"and_false_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
-        string endLabel = $"and_end_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+        string falseLabel = GenerateUniqueLabel("and_false");
+        string endLabel = GenerateUniqueLabel("and_end");
 
         // Evaluar el primer operando
         c.Comment("Evaluating first operand");
@@ -485,8 +559,8 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         c.Comment("If statement");
 
         // Generar etiquetas únicas para los saltos
-        string elseLabel = $"else_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
-        string endIfLabel = $"endif_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+        string elseLabel = GenerateUniqueLabel("else");
+        string endIfLabel = GenerateUniqueLabel("endif");
 
         // Evaluar la condición
         c.Comment("Evaluating condition");
@@ -504,10 +578,6 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         if (context.block() != null)
         {
             Visit(context.block());
-        }
-        else if (context.simpleStatement() != null)
-        {
-            Visit(context.simpleStatement());
         }
 
         // Saltar al final del if después de ejecutar el bloque then
@@ -542,11 +612,6 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
             c.Comment("Else branch with block");
             Visit(context.block());
         }
-        else if (context.simpleStatement() != null)
-        {
-            c.Comment("Else branch with simple statement");
-            Visit(context.simpleStatement());
-        }
 
         return null;
     }
@@ -556,8 +621,8 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         c.Comment("While statement");
 
         // Generar etiquetas únicas para los saltos
-        string loopStartLabel = $"while_start_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
-        string loopEndLabel = $"while_end_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+        string loopStartLabel = GenerateUniqueLabel("while_start");
+        string loopEndLabel = GenerateUniqueLabel("while_end");
 
         // Guardar las etiquetas actuales para break y continue
         string oldBreakLabel = _currentBreakLabel;
@@ -586,10 +651,6 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         if (context.block() != null)
         {
             Visit(context.block());
-        }
-        else if (context.simpleStatement() != null)
-        {
-            Visit(context.simpleStatement());
         }
 
         // Volver al inicio del bucle para evaluar de nuevo la condición
@@ -648,8 +709,8 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         var left = c.PopObject(Register.X0);
 
         // Generar etiquetas únicas para los saltos
-        string trueLabel = $"cmp_true_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
-        string endLabel = $"cmp_end_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+        string trueLabel = GenerateUniqueLabel("cmp_true");
+        string endLabel = GenerateUniqueLabel("cmp_end");
 
         // Realizar la comparación adecuada según el operador
         c.Comment($"Comparison with operator: {operation}");
@@ -714,8 +775,8 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         var left = c.PopObject(Register.X0);
 
         // Generar etiquetas únicas para los saltos
-        string trueLabel = $"eq_true_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
-        string endLabel = $"eq_end_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+        string trueLabel = GenerateUniqueLabel("eq_true");
+        string endLabel = GenerateUniqueLabel("eq_end");
 
         // Realizar la comparación adecuada según el operador
         c.Comment($"Equality check with operator: {operation}");
@@ -762,11 +823,11 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         c.Comment("For statement");
 
         // Generar etiquetas únicas para los saltos
-        string loopStartLabel = $"for_start_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
-        string loopCondLabel = $"for_cond_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
-        string loopBodyLabel = $"for_body_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
-        string loopEndLabel = $"for_end_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
-        string loopPostLabel = $"for_post_{Guid.NewGuid().ToString("N").Substring(0, 8)}";
+        string loopStartLabel = GenerateUniqueLabel("for_start");
+        string loopCondLabel = GenerateUniqueLabel("for_cond");
+        string loopBodyLabel = GenerateUniqueLabel("for_body");
+        string loopEndLabel = GenerateUniqueLabel("for_end");
+        string loopPostLabel = GenerateUniqueLabel("for_post");
 
         // Guardar las etiquetas actuales para break y continue
         string oldBreakLabel = _currentBreakLabel;
@@ -796,6 +857,8 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
 
             // Cuerpo del bucle - ejecutar si la condición es verdadera
             c.Comment("For body");
+
+            // Visitar el cuerpo del bucle (puede ser un bloque o una instrucción simple)
             Visit(context.block());
 
             // Volver al inicio del bucle para evaluar de nuevo la condición
@@ -887,5 +950,56 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         // Este método simplemente visita y evalúa la expresión de condición
         // La lógica principal está en VisitForStatement
         return Visit(context.expr());
+    }
+
+    public override Object? VisitFloat(GoLangParser.FloatContext context)
+    {
+        return null;
+    }
+
+    // Implementación de la negación unitaria
+    public override Object? VisitNeg(GoLangParser.NegContext context)
+    {
+        c.Comment("Unary negation operation");
+        
+        // Visitar la expresión a negar
+        c.Comment("Visiting expression to negate");
+        Visit(context.expr());
+        
+        // Obtener el valor a negar
+        c.Comment("Popping value to negate");
+        var value = c.PopObject(Register.X0);
+        
+        // Verificar que sea un tipo numérico (entero o float)
+        if (value.Type == StackObject.StackObjectType.Integer)
+        {
+            // Negación de entero: multiplicar por -1
+            c.Comment("Negating integer value");
+            c.Mov(Register.X1, -1);
+            c.Mul(Register.X0, Register.X0, Register.X1);
+            
+            // Guardar el resultado en la pila
+            c.Comment("Pushing negated result");
+            c.Push(Register.X0);
+            
+            // Mantener el mismo tipo de objeto en la pila
+            c.PushObject(c.CloneObject(value));
+        }
+        else if (value.Type == StackObject.StackObjectType.Float)
+        {
+            // Para floats (pendiente de implementar)
+            c.Comment("Float negation not implemented yet");
+            c.Push(Register.X0);
+            c.PushObject(c.CloneObject(value));
+        }
+        else
+        {
+            // Si no es un tipo numérico, simplemente devolver el valor original
+            c.Comment("Cannot negate non-numeric value, returning original");
+            c.Push(Register.X0);
+            c.PushObject(c.CloneObject(value));
+        }
+        
+        return null;
     }
 }
