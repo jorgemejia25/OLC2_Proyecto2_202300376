@@ -7,35 +7,405 @@ _start:
     adr x10, heap
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
-// Unary negation operation
-// Visiting expression to negate
-// MulDiv operation
+// AddSub operation
 // Visiting left operand
-// Constant 5
-MOV x0, #5
-STR x0, [SP, #-8]!
+// String constant: Hola
+STR x10, [SP, #-8]!
+// Pushing character 0: 72
+MOV w0, #72
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 108
+MOV w0, #108
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
 // Visiting right operand
-// Constant 5
-MOV x0, #5
-STR x0, [SP, #-8]!
+// String constant:  mundo
+STR x10, [SP, #-8]!
+// Pushing character 0: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 109
+MOV w0, #109
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 117
+MOV w0, #117
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 100
+MOV w0, #100
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
 // Popping operands
 LDR x1, [SP], #8
 LDR x0, [SP], #8
-MUL x0, x0, x1
-// Pushing integer result
-STR x0, [SP, #-8]!
-// Popping value to negate
-LDR x0, [SP], #8
-// Negating integer value
-MOV x1, #-1
-MUL x0, x0, x1
-// Pushing negated result
+// String concatenation
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+MOV X1, x1
+BL concat_strings
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Pushing string result
 STR x0, [SP, #-8]!
 // Popping value for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
-BL print_integer
+BL print_string
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// AddSub operation
+// Visiting left operand
+// String constant: Hola
+STR x10, [SP, #-8]!
+// Pushing character 0: 72
+MOV w0, #72
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 108
+MOV w0, #108
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Visiting right operand
+// String constant:  mundo2
+STR x10, [SP, #-8]!
+// Pushing character 0: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 109
+MOV w0, #109
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 117
+MOV w0, #117
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 100
+MOV w0, #100
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 6: 50
+MOV w0, #50
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Popping operands
+LDR x1, [SP], #8
+LDR x0, [SP], #8
+// String concatenation
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+MOV X1, x1
+BL concat_strings
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Pushing string result
+STR x0, [SP, #-8]!
+// Popping value for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_string
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// AddSub operation
+// Visiting left operand
+// String constant: String
+STR x10, [SP, #-8]!
+// Pushing character 0: 83
+MOV w0, #83
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 103
+MOV w0, #103
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Visiting right operand
+// String constant:  concatenado
+STR x10, [SP, #-8]!
+// Pushing character 0: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 6: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 7: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 8: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 9: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 10: 100
+MOV w0, #100
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 11: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Popping operands
+LDR x1, [SP], #8
+LDR x0, [SP], #8
+// String concatenation
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+MOV X1, x1
+BL concat_strings
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Pushing string result
+STR x0, [SP, #-8]!
+// Popping value for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_string
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Implicit declaration: i
+// AddSub operation
+// Visiting left operand
+// String constant: Hola soy
+STR x10, [SP, #-8]!
+// Pushing character 0: 72
+MOV w0, #72
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 108
+MOV w0, #108
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 115
+MOV w0, #115
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 6: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 7: 121
+MOV w0, #121
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Visiting right operand
+// String constant: : i
+STR x10, [SP, #-8]!
+// Pushing character 0: 58
+MOV w0, #58
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Popping operands
+LDR x1, [SP], #8
+LDR x0, [SP], #8
+// String concatenation
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+MOV X1, x1
+BL concat_strings
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Pushing string result
+STR x0, [SP, #-8]!
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Loading variable 'i'
+// Calculating offset for variable 'i'
+MOV x0, #0
+ADD x0, sp, x0
+LDR x0, [x0, #0]
+// Pushing copy of variable value for 'i'
+STR x0, [SP, #-8]!
+// Popping value for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_string
 .balign 16     // Garantizar alineamiento después de llamada a función
 .balign 16       // Alineamiento para código de salida
 // Program Exit
@@ -47,114 +417,209 @@ BL print_integer
 // Standard Library Functions
 
 //--------------------------------------------------------------
-// print_integer - Prints a signed integer to stdout
+// concat_strings - Concatenates two strings
 //
 // Input:
-//   x0 - The integer value to print
+//   x0 - Address of the first string
+//   x1 - Address of the second string
+//
+// Output:
+//   x0 - Address of the concatenated string (in heap)
 //--------------------------------------------------------------
 .balign 4       // Alinear a 4 bytes (una palabra)
-print_integer:
+concat_strings:
     // Save registers
     stp x29, x30, [sp, #-16]!  // Save frame pointer and link register
     stp x19, x20, [sp, #-16]!  // Save callee-saved registers
     stp x21, x22, [sp, #-16]!
     stp x23, x24, [sp, #-16]!
-    stp x25, x26, [sp, #-16]!
-    stp x27, x28, [sp, #-16]!
     
-    // Check if number is negative
-    mov x19, x0                // Save original number
-    cmp x19, #0                // Compare with zero
-    bge positive_number        // Branch if greater or equal to zero
+    // x19 will hold the first string address
+    mov x19, x0
+    // x20 will hold the second string address
+    mov x20, x1
     
-    // Handle negative number
-    mov x0, #1                 // fd = 1 (stdout)
-    adr x1, minus_sign         // Address of minus sign
-    mov x2, #1                 // Length = 1
-    mov w8, #64                // Syscall write
-    svc #0
-    
-    neg x19, x19               // Make number positive
-    
+    // Calculate length of first string
+    mov x21, #0                // Initialize counter for first string length
 .balign 4       // Alinear a 4 bytes (una palabra)
-positive_number:
-    // Prepare buffer for converting result to ASCII
-    sub sp, sp, #32            // Reserve space on stack
-    mov x22, sp                // x22 points to buffer
-    
-    // Initialize digit counter
-    mov x23, #0                // Digit counter
-    
-    // Handle special case for zero
-    cmp x19, #0
-    bne convert_loop
-    
-    // If number is zero, just write '0'
-    mov w24, #48               // ASCII '0'
-    strb w24, [x22, x23]       // Store in buffer
-    add x23, x23, #1           // Increment counter
-    b print_result             // Skip conversion loop
-    
+len_first_loop:
+    ldrb w0, [x19, x21]        // Load byte from string
+    cbz w0, len_first_done     // If zero (end of string), exit loop
+    add x21, x21, #1           // Increment counter
+    b len_first_loop           // Continue loop
 .balign 4       // Alinear a 4 bytes (una palabra)
-convert_loop:
-    // Divide the number by 10
-    mov x24, #10
-    udiv x25, x19, x24         // x25 = x19 / 10 (quotient)
-    msub x26, x25, x24, x19    // x26 = x19 - (x25 * 10) (remainder)
+len_first_done:
     
-    // Convert remainder to ASCII and store in buffer
-    add x26, x26, #48          // Convert to ASCII ('0' = 48)
-    strb w26, [x22, x23]       // Store digit in buffer
-    add x23, x23, #1           // Increment digit counter
-    
-    // Prepare for next iteration
-    mov x19, x25               // Quotient becomes the new number
-    cbnz x19, convert_loop     // If number is not zero, continue
-    
-    // Reverse the buffer since digits are in reverse order
-    mov x27, #0                // Start index
+    // Calculate length of second string
+    mov x22, #0                // Initialize counter for second string length
 .balign 4       // Alinear a 4 bytes (una palabra)
-reverse_loop:
-    sub x28, x23, x27          // x28 = length - current index
-    sub x28, x28, #1           // x28 = length - current index - 1
-    
-    cmp x27, x28               // Compare indices
-    bge print_result           // If crossed, finish reversing
-    
-    // Swap characters
-    ldrb w24, [x22, x27]       // Load character from start
-    ldrb w25, [x22, x28]       // Load character from end
-    strb w25, [x22, x27]       // Store end character at start
-    strb w24, [x22, x28]       // Store start character at end
-    
-    add x27, x27, #1           // Increment start index
-    b reverse_loop             // Continue reversing
-    
+len_second_loop:
+    ldrb w0, [x20, x22]        // Load byte from string
+    cbz w0, len_second_done    // If zero (end of string), exit loop
+    add x22, x22, #1           // Increment counter
+    b len_second_loop          // Continue loop
 .balign 4       // Alinear a 4 bytes (una palabra)
-print_result:
-    // Add newline
-    mov w24, #10               // Newline character
-    strb w24, [x22, x23]       // Add to end of buffer
-    add x23, x23, #1           // Increment counter
+len_second_done:
     
-    // Print the result
-    mov x0, #1                 // fd = 1 (stdout)
-    mov x1, x22                // Buffer address
-    mov x2, x23                // Buffer length
-    mov w8, #64                // Syscall write
-    svc #0
+    // Calculate total size needed
+    add x23, x21, x22
+    add x23, x23, #1           // Add 1 for the NULL terminator
+    
+    // Get heap pointer (assumed to be in x10)
+    mov x24, x10               // Save current heap pointer for our result
+    add x10, x10, x23          // Advance heap pointer for next allocation
+    
+    // Copy first string to the result
+    mov x0, #0                 // Initialize index
+.balign 4       // Alinear a 4 bytes (una palabra)
+copy_first_loop:
+    cmp x0, x21                // Compare with length of first string
+    beq copy_first_done        // If equal, we're done
+    ldrb w1, [x19, x0]         // Load byte from first string
+    strb w1, [x24, x0]         // Store byte to result
+    add x0, x0, #1             // Increment index
+    b copy_first_loop          // Continue loop
+.balign 4       // Alinear a 4 bytes (una palabra)
+copy_first_done:
+
+    // Copy second string to the result (append)
+    mov x0, #0                 // Initialize index for second string
+.balign 4       // Alinear a 4 bytes (una palabra)
+copy_second_loop:
+    cmp x0, x22                // Compare with length of second string
+    beq copy_second_done       // If equal, we're done
+    ldrb w1, [x20, x0]         // Load byte from second string
+    add x2, x0, x21            // Calculate position in result (offset by length of first string)
+    strb w1, [x24, x2]         // Store byte to result
+    add x0, x0, #1             // Increment index
+    b copy_second_loop         // Continue loop
+.balign 4       // Alinear a 4 bytes (una palabra)
+copy_second_done:
+
+    // Add null terminator
+    add x0, x21, x22           // Calculate position for null terminator
+    mov w1, #0                 // Null byte
+    strb w1, [x24, x0]         // Store null terminator
+    
+    // Return pointer to concatenated string
+    mov x0, x24
     
     // Clean up and restore registers
-    add sp, sp, #32            // Free buffer space
-    ldp x27, x28, [sp], #16    // Restore callee-saved registers
-    ldp x25, x26, [sp], #16
     ldp x23, x24, [sp], #16
     ldp x21, x22, [sp], #16
     ldp x19, x20, [sp], #16
-    ldp x29, x30, [sp], #16    // Restore frame pointer and link register
-    ret                        // Return to caller
+    ldp x29, x30, [sp], #16
+    ret
+
+
+
+//--------------------------------------------------------------
+// print_string - Prints a null-terminated string to stdout
+//
+// Input:
+//   x0 - The address of the null-terminated string to print
+//--------------------------------------------------------------
+.balign 4       // Alinear a 4 bytes (una palabra)
+print_string:
+    // Save link register and other registers we'll use
+    stp     x29, x30, [sp, #-16]!
+    stp     x19, x20, [sp, #-16]!
+    stp     x21, x22, [sp, #-16]!  // Registros adicionales para manejar escapes
+    
+    // x19 will hold the string address
+    mov     x19, x0
+    // x21 para control de modo de escape
+    mov     x21, #0             // 0 = modo normal, 1 = modo escape
 
 .balign 4       // Alinear a 4 bytes (una palabra)
-minus_sign:
-    .ascii "-"               // Minus sign
+print_loop:
+    // Load a byte from the string
+    ldrb    w20, [x19]     // Load byte
+
+    // Check for null terminator
+    cbz w20, print_done
+
+    // Check if we're in escape mode
+    cmp x21, #1
+    beq handle_escape
+
+    // Check if this is an escape character
+    cmp w20, #92           // ASCII code for '\'
+    bne print_char
+    
+    // Enter escape mode
+    mov x21, #1
+    add x19, x19, #1       // Move to next character
+    b print_loop
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+handle_escape:
+    // Reset escape mode
+    mov x21, #0
+    
+    // Handle different escape sequences
+    cmp w20, #110          // 'n'
+    bne check_t
+    mov w20, #10           // Newline ASCII
+    b print_char
+    
+.balign 4       // Alinear a 4 bytes (una palabra)
+check_t:
+    cmp w20, #116          // 't'
+    bne check_r
+    mov w20, #9            // Tab ASCII
+    b print_char
+    
+.balign 4       // Alinear a 4 bytes (una palabra)
+check_r:
+    cmp w20, #114          // 'r'
+    bne check_backslash
+    mov w20, #13           // Carriage return ASCII
+    b print_char
+    
+.balign 4       // Alinear a 4 bytes (una palabra)
+check_backslash:
+    cmp w20, #92           // '\'
+    bne print_char         // If not recognized, print as-is
+    // w20 already holds '\' ASCII, so just continue
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+print_char:
+    // Prepare for write syscall
+    mov     x0, #1         // File descriptor (stdout)
+    sub     sp, sp, #16    // Reservar espacio temporal para el carácter
+    mov     x22, sp        // Apuntar x22 al espacio temporal
+    strb    w20, [x22]     // Almacenar el carácter
+
+    mov     x1, x22        // Address of the character
+    mov     x2, #1         // Number of bytes to write
+    mov     w8, #64        // Syscall number for write
+    svc     #0             // Make syscall
+    
+    add     sp, sp, #16    // Liberar espacio temporal
+
+    // Move to the next character
+    add     x19, x19, #1
+
+    // Continue loop
+    b       print_loop    
+.balign 4       // Alinear a 4 bytes (una palabra)
+print_done:
+    // Add newline
+    mov     x0, #1         // File descriptor (stdout)
+    adr     x1, newline_char // Address of the newline character
+    mov     x2, #1         // Number of bytes to write
+    mov     w8, #64        // Syscall number for write
+    svc     #0             // Make syscall
+
+    // Clean up and restore registers
+    ldp     x21, x22, [sp], #16
+    ldp     x19, x20, [sp], #16
+    ldp     x29, x30, [sp], #16
+    ret
+    // Return to caller
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+newline_char:
+    .ascii "\n"          // Newline character
 

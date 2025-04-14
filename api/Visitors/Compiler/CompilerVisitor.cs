@@ -72,29 +72,51 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         var right = c.PopObject(Register.X1);
         var left = c.PopObject(Register.X0);
 
-
-            // Operación con enteros normales
-            if (operation == "+")
-            {
-                c.Add(Register.X0, Register.X0, Register.X1);
-            }
-            else if (operation == "-")
-            {
-                c.Sub(Register.X0, Register.X0, Register.X1);
-            }
-
-            c.Comment("Pushing integer result");
+        // Verificar si ambos son strings para concatenación
+        if (operation == "+" && left.Type == StackObject.StackObjectType.String && right.Type == StackObject.StackObjectType.String)
+        {
+            c.Comment("String concatenation");
+            // Usar el método ConcatStrings para llamar a la función concat_strings
+            c.ConcatStrings(Register.X0, Register.X1);
+            
+            c.Comment("Pushing string result");
             c.Push(Register.X0);
-
-            // Crear un nuevo objeto para el resultado para evitar compartir referencias
-            var resultObject = new StackObject
+            
+            // Crear un nuevo objeto para el resultado
+            var stringResultObject = new StackObject
             {
-                Type = left.Type,
-                Length = left.Length,
+                Type = StackObject.StackObjectType.String,
+                Length = 0, // La longitud real es determinada en tiempo de ejecución
                 Depth = left.Depth,
                 ID = null
             };
-            c.PushObject(resultObject);
+            c.PushObject(stringResultObject);
+            
+            return null;
+        }
+
+        // Operación con enteros normales
+        if (operation == "+")
+        {
+            c.Add(Register.X0, Register.X0, Register.X1);
+        }
+        else if (operation == "-")
+        {
+            c.Sub(Register.X0, Register.X0, Register.X1);
+        }
+
+        c.Comment("Pushing integer result");
+        c.Push(Register.X0);
+
+        // Crear un nuevo objeto para el resultado para evitar compartir referencias
+        var resultObject = new StackObject
+        {
+            Type = left.Type,
+            Length = left.Length,
+            Depth = left.Depth,
+            ID = null
+        };
+        c.PushObject(resultObject);
 
 
         return null;
@@ -117,24 +139,24 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         var left = c.PopObject(Register.X0);
 
 
-            // Operación con enteros normales
-            if (operation == "*")
-            {
-                c.Mul(Register.X0, Register.X0, Register.X1);
-            }
-            else if (operation == "/")
-            {
-                c.Div(Register.X0, Register.X0, Register.X1);
-            }
-            else if (operation == "%")
-            {
-                c.Mod(Register.X0, Register.X0, Register.X1);
-            }
+        // Operación con enteros normales
+        if (operation == "*")
+        {
+            c.Mul(Register.X0, Register.X0, Register.X1);
+        }
+        else if (operation == "/")
+        {
+            c.Div(Register.X0, Register.X0, Register.X1);
+        }
+        else if (operation == "%")
+        {
+            c.Mod(Register.X0, Register.X0, Register.X1);
+        }
 
-            c.Comment("Pushing integer result");
-            c.Push(Register.X0);
-            c.PushObject(c.CloneObject(left));
-        
+        c.Comment("Pushing integer result");
+        c.Push(Register.X0);
+        c.PushObject(c.CloneObject(left));
+
 
         return null;
     }
@@ -961,15 +983,15 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
     public override Object? VisitNeg(GoLangParser.NegContext context)
     {
         c.Comment("Unary negation operation");
-        
+
         // Visitar la expresión a negar
         c.Comment("Visiting expression to negate");
         Visit(context.expr());
-        
+
         // Obtener el valor a negar
         c.Comment("Popping value to negate");
         var value = c.PopObject(Register.X0);
-        
+
         // Verificar que sea un tipo numérico (entero o float)
         if (value.Type == StackObject.StackObjectType.Integer)
         {
@@ -977,11 +999,11 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
             c.Comment("Negating integer value");
             c.Mov(Register.X1, -1);
             c.Mul(Register.X0, Register.X0, Register.X1);
-            
+
             // Guardar el resultado en la pila
             c.Comment("Pushing negated result");
             c.Push(Register.X0);
-            
+
             // Mantener el mismo tipo de objeto en la pila
             c.PushObject(c.CloneObject(value));
         }
@@ -999,7 +1021,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
             c.Push(Register.X0);
             c.PushObject(c.CloneObject(value));
         }
-        
+
         return null;
     }
 }

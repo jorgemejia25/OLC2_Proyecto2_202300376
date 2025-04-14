@@ -446,6 +446,14 @@ public class ArmGenerator
         _instructions.Add($"BL print_bool");
     }
 
+    public void ConcatStrings(string rs1, string rs2)
+    {
+        _stdLib.Use("concat_strings");
+        Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
+        _instructions.Add($"MOV X0, {rs1}");
+        _instructions.Add($"MOV X1, {rs2}");
+        _instructions.Add($"BL concat_strings");
+    }
 
     public void Comment(string comment)
     {

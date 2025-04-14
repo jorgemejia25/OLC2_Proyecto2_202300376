@@ -412,6 +412,92 @@ bool_newline:
     .ascii ""\n""              // Newline character"
     },
 
+    { "concat_strings", @"
+//--------------------------------------------------------------
+// concat_strings - Concatenates two strings
+//
+// Input:
+//   x0 - Address of the first string
+//   x1 - Address of the second string
+//
+// Output:
+//   x0 - Address of the concatenated string (in heap)
+//--------------------------------------------------------------
+concat_strings:
+    // Save registers
+    stp x29, x30, [sp, #-16]!  // Save frame pointer and link register
+    stp x19, x20, [sp, #-16]!  // Save callee-saved registers
+    stp x21, x22, [sp, #-16]!
+    stp x23, x24, [sp, #-16]!
+    
+    // x19 will hold the first string address
+    mov x19, x0
+    // x20 will hold the second string address
+    mov x20, x1
+    
+    // Calculate length of first string
+    mov x21, #0                // Initialize counter for first string length
+len_first_loop:
+    ldrb w0, [x19, x21]        // Load byte from string
+    cbz w0, len_first_done     // If zero (end of string), exit loop
+    add x21, x21, #1           // Increment counter
+    b len_first_loop           // Continue loop
+len_first_done:
+    
+    // Calculate length of second string
+    mov x22, #0                // Initialize counter for second string length
+len_second_loop:
+    ldrb w0, [x20, x22]        // Load byte from string
+    cbz w0, len_second_done    // If zero (end of string), exit loop
+    add x22, x22, #1           // Increment counter
+    b len_second_loop          // Continue loop
+len_second_done:
+    
+    // Calculate total size needed
+    add x23, x21, x22
+    add x23, x23, #1           // Add 1 for the NULL terminator
+    
+    // Get heap pointer (assumed to be in x10)
+    mov x24, x10               // Save current heap pointer for our result
+    add x10, x10, x23          // Advance heap pointer for next allocation
+    
+    // Copy first string to the result
+    mov x0, #0                 // Initialize index
+copy_first_loop:
+    cmp x0, x21                // Compare with length of first string
+    beq copy_first_done        // If equal, we're done
+    ldrb w1, [x19, x0]         // Load byte from first string
+    strb w1, [x24, x0]         // Store byte to result
+    add x0, x0, #1             // Increment index
+    b copy_first_loop          // Continue loop
+copy_first_done:
 
+    // Copy second string to the result (append)
+    mov x0, #0                 // Initialize index for second string
+copy_second_loop:
+    cmp x0, x22                // Compare with length of second string
+    beq copy_second_done       // If equal, we're done
+    ldrb w1, [x20, x0]         // Load byte from second string
+    add x2, x0, x21            // Calculate position in result (offset by length of first string)
+    strb w1, [x24, x2]         // Store byte to result
+    add x0, x0, #1             // Increment index
+    b copy_second_loop         // Continue loop
+copy_second_done:
+
+    // Add null terminator
+    add x0, x21, x22           // Calculate position for null terminator
+    mov w1, #0                 // Null byte
+    strb w1, [x24, x0]         // Store null terminator
+    
+    // Return pointer to concatenated string
+    mov x0, x24
+    
+    // Clean up and restore registers
+    ldp x23, x24, [sp], #16
+    ldp x21, x22, [sp], #16
+    ldp x19, x20, [sp], #16
+    ldp x29, x30, [sp], #16
+    ret
+" },
 };
 }
