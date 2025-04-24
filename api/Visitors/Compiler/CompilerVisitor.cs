@@ -78,10 +78,10 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
             c.Comment("String concatenation");
             // Usar el método ConcatStrings para llamar a la función concat_strings
             c.ConcatStrings(Register.X0, Register.X1);
-            
+
             c.Comment("Pushing string result");
             c.Push(Register.X0);
-            
+
             // Crear un nuevo objeto para el resultado
             var stringResultObject = new StackObject
             {
@@ -91,7 +91,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
                 ID = null
             };
             c.PushObject(stringResultObject);
-            
+
             return null;
         }
 
@@ -1021,6 +1021,75 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
             c.Push(Register.X0);
             c.PushObject(c.CloneObject(value));
         }
+
+        return null;
+    }
+
+    public override Object? VisitSwitchStatement(GoLangParser.SwitchStatementContext context)
+    {
+        c.Comment("Switch statement");
+
+        // Generar etiquetas únicas para el final del switch y los casos
+        string endSwitchLabel = GenerateUniqueLabel("switch_end");
+
+        // Guardar la etiqueta actual para break
+        string oldBreakLabel = _currentBreakLabel;
+        _currentBreakLabel = endSwitchLabel;
+
+        // Evaluar la expresión de la condición del switch y guardar en registro x19
+        c.Comment("Evaluating switch expression");
+        Visit(context.expr());
+        var switchExpr = c.PopObject(Register.X19);
+
+        // Procesar todos los casos
+        var caseStatements = context.caseStatement();
+        for (int i = 0; i < caseStatements.Length; i++)
+        {
+            string nextCaseLabel = GenerateUniqueLabel($"case_next_{i}");
+
+            // Evaluar la expresión del case
+            c.Comment($"Evaluating case {i} expression");
+            Visit(caseStatements[i].expr());
+            var caseExpr = c.PopObject(Register.X0);
+
+            // Comparar la expresión del switch con la expresión del case
+            c.Comment("Comparing switch expression with case expression");
+            c.Cmp(Register.X19, Register.X0);
+
+            // Si no son iguales, saltar al siguiente case
+            c.Comment("If not equal, jump to next case");
+            c.B("ne", nextCaseLabel);
+
+            // Ejecutar las instrucciones del case
+            c.Comment($"Executing case {i} body");
+            foreach (var statement in caseStatements[i].statement())
+            {
+                Visit(statement);
+            }
+
+            // Saltar al final del switch (implicit break)
+            c.Comment("Implicit break at end of case");
+            c.B(endSwitchLabel);
+
+            // Etiqueta para el siguiente case
+            c.Label(nextCaseLabel);
+        }
+
+        // Procesar el caso default si existe
+        if (context.defaultCase() != null)
+        {
+            c.Comment("Default case");
+            foreach (var statement in context.defaultCase().statement())
+            {
+                Visit(statement);
+            }
+        }
+
+        // Etiqueta para el final del switch
+        c.Label(endSwitchLabel);
+
+        // Restaurar la etiqueta de break
+        _currentBreakLabel = oldBreakLabel;
 
         return null;
     }
