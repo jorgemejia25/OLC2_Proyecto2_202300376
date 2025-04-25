@@ -156,7 +156,8 @@ expr:
 sliceInit: '{' (exprList | nestedSliceInit)? '}';
 nestedSliceInit: sliceInit (',' sliceInit)* ','?;
 
-printStatement: 'fmt.Println' '(' expr ')';
+// Modificado para soportar múltiples expresiones
+printStatement: 'fmt.Println' '(' (exprList)? ')';
 
 returnStatement: 'return' expr? ';'?;
 

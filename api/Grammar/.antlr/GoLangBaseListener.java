@@ -1,4 +1,4 @@
-// Generated from /home/jorgis/Documents/USAC/Compi2/Proyecto1/2/OLC2_Proyecto1_202300376/api/Grammar/GoLang.g4 by ANTLR 4.13.1
+// Generated from /home/jorgis/Documents/USAC/Compi2/OLC2_Proyecto2_202300376/api/Grammar/GoLang.g4 by ANTLR 4.13.1
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -64,18 +64,6 @@ public class GoLangBaseListener implements GoLangListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterStructInstance(GoLangParser.StructInstanceContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStructInstance(GoLangParser.StructInstanceContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterFuncDeclaration(GoLangParser.FuncDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -83,18 +71,6 @@ public class GoLangBaseListener implements GoLangListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFuncDeclaration(GoLangParser.FuncDeclarationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterStructReference(GoLangParser.StructReferenceContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStructReference(GoLangParser.StructReferenceContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -215,18 +191,6 @@ public class GoLangBaseListener implements GoLangListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExprStatement(GoLangParser.ExprStatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterStructAssignment(GoLangParser.StructAssignmentContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStructAssignment(GoLangParser.StructAssignmentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -508,6 +472,18 @@ public class GoLangBaseListener implements GoLangListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterTypedSliceInit(GoLangParser.TypedSliceInitContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTypedSliceInit(GoLangParser.TypedSliceInitContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterStrconvAtoi(GoLangParser.StrconvAtoiContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -568,18 +544,6 @@ public class GoLangBaseListener implements GoLangListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterStructLiteralInExpr(GoLangParser.StructLiteralInExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStructLiteralInExpr(GoLangParser.StructLiteralInExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterStrconvParseFloat(GoLangParser.StrconvParseFloatContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -587,6 +551,18 @@ public class GoLangBaseListener implements GoLangListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitStrconvParseFloat(GoLangParser.StrconvParseFloatContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterInvokeMethodLiteral(GoLangParser.InvokeMethodLiteralContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInvokeMethodLiteral(GoLangParser.InvokeMethodLiteralContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -623,6 +599,18 @@ public class GoLangBaseListener implements GoLangListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitReflectTypeOf(GoLangParser.ReflectTypeOfContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNil(GoLangParser.NilContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNil(GoLangParser.NilContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -743,78 +731,6 @@ public class GoLangBaseListener implements GoLangListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitNestedSliceInit(GoLangParser.NestedSliceInitContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterStructInit(GoLangParser.StructInitContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStructInit(GoLangParser.StructInitContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterStructFieldInit(GoLangParser.StructFieldInitContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStructFieldInit(GoLangParser.StructFieldInitContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterStructLiteral(GoLangParser.StructLiteralContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStructLiteral(GoLangParser.StructLiteralContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterStructFieldAssignment(GoLangParser.StructFieldAssignmentContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStructFieldAssignment(GoLangParser.StructFieldAssignmentContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterStructDefinition(GoLangParser.StructDefinitionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStructDefinition(GoLangParser.StructDefinitionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterStructField(GoLangParser.StructFieldContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStructField(GoLangParser.StructFieldContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

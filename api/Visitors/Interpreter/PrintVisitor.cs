@@ -34,13 +34,13 @@ class PrintVisitor : GoLangBaseVisitor<ValueWrapper>
     /// </summary>
     /// <param name="context">El contexto de la declaración de impresión.</param>
     /// <returns>El resultado de la impresión.</returns>
-    public override ValueWrapper VisitPrintStatement(GoLangParser.PrintStatementContext context)
-    {
-        var valueWrapper = _expressionVisitor.Visit(context.expr());
-        string displayValue = GetDisplayString(valueWrapper);
-        AddToConsoleOutput(displayValue + "\n");
-        return ValueWrapper.Nil;
-    }
+    // public override ValueWrapper VisitPrintStatement(GoLangParser.PrintStatementContext context)
+    // {
+    //     // var valueWrapper = _expressionVisitor.Visit(context.expr());
+    //     // string displayValue = GetDisplayString(valueWrapper);
+    //     // AddToConsoleOutput(displayValue + "\n");
+    //     // return ValueWrapper.Nil;
+    // }
 
     private void AddToConsoleOutput(string text)
     {

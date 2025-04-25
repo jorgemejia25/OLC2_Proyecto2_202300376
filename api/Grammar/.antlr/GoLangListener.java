@@ -1,4 +1,4 @@
-// Generated from /home/jorgis/Documents/USAC/Compi2/Proyecto1/2/OLC2_Proyecto1_202300376/api/Grammar/GoLang.g4 by ANTLR 4.13.1
+// Generated from /home/jorgis/Documents/USAC/Compi2/OLC2_Proyecto2_202300376/api/Grammar/GoLang.g4 by ANTLR 4.13.1
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -47,16 +47,6 @@ public interface GoLangListener extends ParseTreeListener {
 	 */
 	void exitVarDeclaration(GoLangParser.VarDeclarationContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link GoLangParser#structInstance}.
-	 * @param ctx the parse tree
-	 */
-	void enterStructInstance(GoLangParser.StructInstanceContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link GoLangParser#structInstance}.
-	 * @param ctx the parse tree
-	 */
-	void exitStructInstance(GoLangParser.StructInstanceContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link GoLangParser#funcDeclaration}.
 	 * @param ctx the parse tree
 	 */
@@ -66,16 +56,6 @@ public interface GoLangListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFuncDeclaration(GoLangParser.FuncDeclarationContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link GoLangParser#structReference}.
-	 * @param ctx the parse tree
-	 */
-	void enterStructReference(GoLangParser.StructReferenceContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link GoLangParser#structReference}.
-	 * @param ctx the parse tree
-	 */
-	void exitStructReference(GoLangParser.StructReferenceContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link GoLangParser#funcParams}.
 	 * @param ctx the parse tree
@@ -176,16 +156,6 @@ public interface GoLangListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExprStatement(GoLangParser.ExprStatementContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link GoLangParser#structAssignment}.
-	 * @param ctx the parse tree
-	 */
-	void enterStructAssignment(GoLangParser.StructAssignmentContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link GoLangParser#structAssignment}.
-	 * @param ctx the parse tree
-	 */
-	void exitStructAssignment(GoLangParser.StructAssignmentContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link GoLangParser#ifStatement}.
 	 * @param ctx the parse tree
@@ -433,6 +403,18 @@ public interface GoLangListener extends ParseTreeListener {
 	 */
 	void exitString(GoLangParser.StringContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code TypedSliceInit}
+	 * labeled alternative in {@link GoLangParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterTypedSliceInit(GoLangParser.TypedSliceInitContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code TypedSliceInit}
+	 * labeled alternative in {@link GoLangParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitTypedSliceInit(GoLangParser.TypedSliceInitContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code StrconvAtoi}
 	 * labeled alternative in {@link GoLangParser#expr}.
 	 * @param ctx the parse tree
@@ -493,18 +475,6 @@ public interface GoLangListener extends ParseTreeListener {
 	 */
 	void exitBoolean(GoLangParser.BooleanContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code StructLiteralInExpr}
-	 * labeled alternative in {@link GoLangParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterStructLiteralInExpr(GoLangParser.StructLiteralInExprContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code StructLiteralInExpr}
-	 * labeled alternative in {@link GoLangParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitStructLiteralInExpr(GoLangParser.StructLiteralInExprContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code StrconvParseFloat}
 	 * labeled alternative in {@link GoLangParser#expr}.
 	 * @param ctx the parse tree
@@ -516,6 +486,18 @@ public interface GoLangListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitStrconvParseFloat(GoLangParser.StrconvParseFloatContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code InvokeMethodLiteral}
+	 * labeled alternative in {@link GoLangParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterInvokeMethodLiteral(GoLangParser.InvokeMethodLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code InvokeMethodLiteral}
+	 * labeled alternative in {@link GoLangParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitInvokeMethodLiteral(GoLangParser.InvokeMethodLiteralContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code AddSub}
 	 * labeled alternative in {@link GoLangParser#expr}.
@@ -552,6 +534,18 @@ public interface GoLangListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitReflectTypeOf(GoLangParser.ReflectTypeOfContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code Nil}
+	 * labeled alternative in {@link GoLangParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterNil(GoLangParser.NilContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code Nil}
+	 * labeled alternative in {@link GoLangParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitNil(GoLangParser.NilContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code Neg}
 	 * labeled alternative in {@link GoLangParser#expr}.
@@ -668,66 +662,6 @@ public interface GoLangListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitNestedSliceInit(GoLangParser.NestedSliceInitContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link GoLangParser#structInit}.
-	 * @param ctx the parse tree
-	 */
-	void enterStructInit(GoLangParser.StructInitContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link GoLangParser#structInit}.
-	 * @param ctx the parse tree
-	 */
-	void exitStructInit(GoLangParser.StructInitContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link GoLangParser#structFieldInit}.
-	 * @param ctx the parse tree
-	 */
-	void enterStructFieldInit(GoLangParser.StructFieldInitContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link GoLangParser#structFieldInit}.
-	 * @param ctx the parse tree
-	 */
-	void exitStructFieldInit(GoLangParser.StructFieldInitContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link GoLangParser#structLiteral}.
-	 * @param ctx the parse tree
-	 */
-	void enterStructLiteral(GoLangParser.StructLiteralContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link GoLangParser#structLiteral}.
-	 * @param ctx the parse tree
-	 */
-	void exitStructLiteral(GoLangParser.StructLiteralContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link GoLangParser#structFieldAssignment}.
-	 * @param ctx the parse tree
-	 */
-	void enterStructFieldAssignment(GoLangParser.StructFieldAssignmentContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link GoLangParser#structFieldAssignment}.
-	 * @param ctx the parse tree
-	 */
-	void exitStructFieldAssignment(GoLangParser.StructFieldAssignmentContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link GoLangParser#structDefinition}.
-	 * @param ctx the parse tree
-	 */
-	void enterStructDefinition(GoLangParser.StructDefinitionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link GoLangParser#structDefinition}.
-	 * @param ctx the parse tree
-	 */
-	void exitStructDefinition(GoLangParser.StructDefinitionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link GoLangParser#structField}.
-	 * @param ctx the parse tree
-	 */
-	void enterStructField(GoLangParser.StructFieldContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link GoLangParser#structField}.
-	 * @param ctx the parse tree
-	 */
-	void exitStructField(GoLangParser.StructFieldContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link GoLangParser#printStatement}.
 	 * @param ctx the parse tree

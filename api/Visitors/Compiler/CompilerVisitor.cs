@@ -24,32 +24,64 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         c.Comment("Print statement");
         c.Align(16); // Usar explícitamente un valor de alineamiento
 
-        var expr = context.expr();
-        Visit(expr);
+        // Verificar si hay una lista de expresiones
+        if (context.exprList() != null)
+        {
+            var expressions = context.exprList().expr();
+            c.Comment($"Processing {expressions.Length} expressions to print");
 
-        c.Comment("Popping value for printing");
-        var isDouble = c.TopObject().Type == StackObject.StackObjectType.Float;
-        var value = c.PopObject(isDouble ? Register.D0 : Register.X0);
+            // Procesar cada expresión en la lista
+            for (int i = 0; i < expressions.Length; i++)
+            {
+                c.Comment($"Processing expression {i + 1} of {expressions.Length}");
 
-        if (value.Type == StackObject.StackObjectType.Integer)
-        {
-            c.PrintInteger(Register.X0);
+                // Visitar la expresión para ponerla en la pila
+                Visit(expressions[i]);
+
+                // Imprimir el valor
+                c.Comment($"Popping value {i + 1} for printing");
+                var isDouble = c.TopObject().Type == StackObject.StackObjectType.Float;
+                var value = c.PopObject(isDouble ? Register.D0 : Register.X0);
+
+                // Determinar el tipo y usar la función de impresión adecuada
+                if (value.Type == StackObject.StackObjectType.Integer)
+                {
+                    c.PrintInteger(Register.X0);
+                }
+                else if (value.Type == StackObject.StackObjectType.String)
+                {
+                    c.PrintString(Register.X0);
+                }
+                else if (value.Type == StackObject.StackObjectType.Boolean)
+                {
+                    c.PrintBool(Register.X0);
+                }
+                else if (value.Type == StackObject.StackObjectType.Rune)
+                {
+                    c.PrintRune(Register.X0);
+                }
+                else if (value.Type == StackObject.StackObjectType.Float)
+                {
+                    c.PrintFloat();
+                }
+
+                // Si no es la última expresión, imprimir un espacio
+                if (i < expressions.Length - 1)
+                {
+                    c.Comment("Printing space between values");
+                    // c.PrintSpace();
+                }
+            }
+
+            // Imprimir un salto de línea al final
+            c.Comment("Printing newline at end");
+            // c.PrintNewLine();
         }
-        else if (value.Type == StackObject.StackObjectType.String)
+        else
         {
-            c.PrintString(Register.X0);
-        }
-        else if (value.Type == StackObject.StackObjectType.Boolean)
-        {
-            c.PrintBool(Register.X0);
-        }
-        else if (value.Type == StackObject.StackObjectType.Rune)
-        {
-            c.PrintRune(Register.X0);
-        }
-        else if (value.Type == StackObject.StackObjectType.Float)
-        {
-            c.PrintFloat();
+            // Si no hay expresiones, solo imprimir un salto de línea
+            c.Comment("Empty print statement, printing only newline");
+            // c.PrintNewLine();
         }
 
         return null;
@@ -184,7 +216,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         // Primero, determinar si alguno de los operandos es flotante
         var isRightFloat = c.TopObject().Type == StackObject.StackObjectType.Float;
         var right = c.PopObject(isRightFloat ? Register.D1 : Register.X1);
-        
+
         var isLeftFloat = c.TopObject().Type == StackObject.StackObjectType.Float;
         var left = c.PopObject(isLeftFloat ? Register.D0 : Register.X0);
 
@@ -194,14 +226,14 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         if (shouldConvertToFloat)
         {
             c.Comment("Converting operands to float if needed");
-            
+
             // Convertir explícitamente los operandos a float si es necesario
             if (!isLeftFloat)
             {
                 c.Comment("Converting left operand from int to float");
                 c.Scvtf(Register.D0, Register.X0);
             }
-            
+
             if (!isRightFloat)
             {
                 c.Comment("Converting right operand from int to float");
@@ -229,7 +261,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
 
             c.Comment("Pushing float result");
             c.Push(Register.D0);
-            
+
             // El resultado es siempre float cuando alguno de los operandos es float o es división
             var resultObject = new StackObject
             {
@@ -360,7 +392,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         c.Comment("Assignment statement");
 
         // Si tenemos acceso a índice en el lado izquierdo (ej: array[i] = valor)
-        if (context.expr().Length > 2)
+        if (context.expr().Length > 1 && context.expr()[0] != null && context.expr()[1] != null)
         {
             // Manejo de asignación a índice de array
             c.Comment("Array index assignment");
@@ -376,17 +408,19 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         Visit(context.expr(0));
 
         var valueObject = c.PopObject(Register.X0); // Desapilar el valor de la expresión
-        var (offset, varObject) = c.GetObject(varName); // Obtener el objeto de la variable 
+        var (offset, varObject) = c.GetObject(varName); // Obtener el objeto de la variable
 
-        c.Mov(Register.X1, offset); // Mover el offset a X1
-        c.Add(Register.X1, Register.SP, Register.X1); // Sumar el offset al stack pointer
-        c.Str(Register.X0, Register.X1); // Almacenar el valor en la dirección de la variable
+        // Guardar una copia del valor en X0 para almacenarlo en la variable
+        c.Comment($"Storing value to variable '{varName}' at offset {offset}");
+        c.Mov(Register.X1, offset);
+        c.Add(Register.X1, Register.SP, Register.X1); // Calcular dirección en la pila
+        c.Str(Register.X0, Register.X1); // Almacenar el valor en la dirección
+
+        // Actualizar el tipo de la variable si es necesario
+        varObject.Type = valueObject.Type;
+        
+        // No necesitamos volver a apilar el valor aquí, ya que está en X0
         c.Comment("Assignment complete");
-
-        varObject.Type = valueObject.Type; // Actualizar el tipo del objeto de la variable  
-
-        c.Push(Register.X0); // Volver a apilar el valor de la expresión
-        c.PushObject(c.CloneObject(varObject)); // Clonar el objeto de la variable y apilarlo
 
         return null;
     }

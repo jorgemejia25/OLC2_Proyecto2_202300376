@@ -98,11 +98,32 @@ namespace api.Controllers
 
                 compilerVisitor.Visit(tree);
 
+                // Guardar informacion en /home/jorgis/Documents/USAC/Compi2/OLC2_Proyecto2_202300376/run/program.s
+                var outputPath = Path.Combine(Directory.GetCurrentDirectory(), "run", "program.s");
+
+                // Limpiar el archivo de salida
+                if (System.IO.File.Exists(outputPath))
+                {
+                    System.IO.File.Delete(outputPath);
+                }
+
+                // Crear el directorio si no existe
+                var directoryPath = Path.GetDirectoryName(outputPath);
+
+                if (!string.IsNullOrEmpty(directoryPath) && !System.IO.Directory.Exists(directoryPath))
+                {
+                    System.IO.Directory.CreateDirectory(directoryPath);
+                }
+
+                // Escribir el código generado en el archivo
+                System.IO.File.WriteAllText(outputPath, compilerVisitor.c.ToString());
+
+
 
                 // Crear una estructura de respuesta
                 var output = new
                 {
-                    output = compilerVisitor.c.ToString(), // Código generado
+                    output = "Código guardado en program.s", // Código generado
                     errors = new List<Error>()
                 };
 
