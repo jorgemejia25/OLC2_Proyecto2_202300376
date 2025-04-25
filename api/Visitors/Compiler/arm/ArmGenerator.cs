@@ -53,7 +53,30 @@ public class ArmGenerator
                 break;
 
             case StackObject.StackObjectType.Float:
+                // Usar un enfoque diferente para cargar constantes de punto flotante
+                double doubleValue = (double)value;
+                long floatBits = BitConverter.DoubleToInt64Bits(doubleValue);
 
+                // Usar valores hexadecimales explícitos para evitar valores fuera de rango
+                Comment($"Loading float value: {doubleValue} (hex: 0x{floatBits:X})");
+
+                // Cargar los primeros 16 bits
+                _instructions.Add($"MOVZ x0, #0x{(floatBits & 0xFFFF):X}, LSL #0");
+
+                // Cargar los siguientes 16 bits
+                _instructions.Add($"MOVK x0, #0x{((floatBits >> 16) & 0xFFFF):X}, LSL #16");
+
+                // Cargar los siguientes 16 bits
+                _instructions.Add($"MOVK x0, #0x{((floatBits >> 32) & 0xFFFF):X}, LSL #32");
+
+                // Cargar los últimos 16 bits
+                _instructions.Add($"MOVK x0, #0x{((floatBits >> 48) & 0xFFFF):X}, LSL #48");
+
+                // Mover el valor a un registro de punto flotante
+                _instructions.Add("FMOV d0, x0");
+
+                // Guardar en la pila
+                _instructions.Add("STR d0, [SP, #-8]!");
                 break;
 
             case StackObject.StackObjectType.String:
@@ -119,6 +142,11 @@ public class ArmGenerator
         }
 
         PushObject(obj);
+    }
+
+    public StackObject TopObject()
+    {
+        return stack.Last();
     }
 
     public StackObject PopObject(string rd)
@@ -395,6 +423,26 @@ public class ArmGenerator
     public void Pop(string rd)
     {
         _instructions.Add($"LDR {rd}, [SP], #8");
+    }
+
+
+    // Float operations
+    public void Scvtf(string rd, string rs)
+    {
+        _instructions.Add($"SCVTF {rd}, {rs}");
+    }
+
+    public void Fmov(string rd, string rs)
+    {
+        _instructions.Add($"FMOV {rd}, {rs}");
+    }
+
+    public void PrintFloat()
+    {
+        _stdLib.Use("print_integer");
+        _stdLib.Use("print_double");
+        Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
+        _instructions.Add("BL print_double");  // Corregido: eliminado el símbolo $ antes de BL
     }
 
     public void Svc()

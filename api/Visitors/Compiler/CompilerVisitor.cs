@@ -28,7 +28,8 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         Visit(expr);
 
         c.Comment("Popping value for printing");
-        var value = c.PopObject(Register.X0);
+        var isDouble = c.TopObject().Type == StackObject.StackObjectType.Float;
+        var value = c.PopObject(isDouble ? Register.D0 : Register.X0);
 
         if (value.Type == StackObject.StackObjectType.Integer)
         {
@@ -40,7 +41,6 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         }
         else if (value.Type == StackObject.StackObjectType.Boolean)
         {
-            // Usar la nueva función PrintBool en lugar de PrintInteger para valores booleanos
             c.PrintBool(Register.X0);
         }
         else if (value.Type == StackObject.StackObjectType.Rune)
@@ -49,8 +49,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         }
         else if (value.Type == StackObject.StackObjectType.Float)
         {
-            c.Comment("Loading float for printing");
-
+            c.PrintFloat();
         }
 
         return null;
@@ -69,8 +68,56 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
 
         c.Comment("Popping operands");
 
-        var right = c.PopObject(Register.X1);
-        var left = c.PopObject(Register.X0);
+        // Primero, determinar si alguno de los operandos es flotante
+        var isRightFloat = c.TopObject().Type == StackObject.StackObjectType.Float;
+        var right = c.PopObject(isRightFloat ? Register.D1 : Register.X1);
+
+        var isLeftFloat = c.TopObject().Type == StackObject.StackObjectType.Float;
+        var left = c.PopObject(isLeftFloat ? Register.D0 : Register.X0);
+
+        // Verificar si alguno es float para operaciones de punto flotante
+        if (isRightFloat || isLeftFloat)
+        {
+            c.Comment("Converting operands to float if needed");
+
+            // Convertir explícitamente los operandos a float si es necesario
+            if (!isLeftFloat)
+            {
+                c.Comment("Converting left operand from int to float");
+                c.Scvtf(Register.D0, Register.X0);
+            }
+
+            if (!isRightFloat)
+            {
+                c.Comment("Converting right operand from int to float");
+                c.Scvtf(Register.D1, Register.X1);
+            }
+
+            c.Comment($"Performing float {operation} operation");
+            if (operation == "+")
+            {
+                c.Fadd(Register.D0, Register.D0, Register.D1);
+            }
+            else if (operation == "-")
+            {
+                c.Fsub(Register.D0, Register.D0, Register.D1);
+            }
+
+            c.Comment("Pushing float result");
+            c.Push(Register.D0);
+
+            // El resultado es siempre float cuando alguno de los operandos es float
+            var resultObject = new StackObject
+            {
+                Type = StackObject.StackObjectType.Float,
+                Length = 8,
+                Depth = left.Depth,
+                ID = null
+            };
+            c.PushObject(resultObject);
+
+            return null;
+        }
 
         // Verificar si ambos son strings para concatenación
         if (operation == "+" && left.Type == StackObject.StackObjectType.String && right.Type == StackObject.StackObjectType.String)
@@ -86,7 +133,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
             var stringResultObject = new StackObject
             {
                 Type = StackObject.StackObjectType.String,
-                Length = 0, // La longitud real es determinada en tiempo de ejecución
+                Length = 8,
                 Depth = left.Depth,
                 ID = null
             };
@@ -108,16 +155,15 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         c.Comment("Pushing integer result");
         c.Push(Register.X0);
 
-        // Crear un nuevo objeto para el resultado para evitar compartir referencias
-        var resultObject = new StackObject
+        // Crear un nuevo objeto para el resultado
+        var intResultObject = new StackObject
         {
             Type = left.Type,
             Length = left.Length,
             Depth = left.Depth,
             ID = null
         };
-        c.PushObject(resultObject);
-
+        c.PushObject(intResultObject);
 
         return null;
     }
@@ -135,28 +181,95 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
 
         c.Comment("Popping operands");
 
-        var right = c.PopObject(Register.X1);
-        var left = c.PopObject(Register.X0);
+        // Primero, determinar si alguno de los operandos es flotante
+        var isRightFloat = c.TopObject().Type == StackObject.StackObjectType.Float;
+        var right = c.PopObject(isRightFloat ? Register.D1 : Register.X1);
+        
+        var isLeftFloat = c.TopObject().Type == StackObject.StackObjectType.Float;
+        var left = c.PopObject(isLeftFloat ? Register.D0 : Register.X0);
 
+        // Verificar si alguno es float o si es una operación de división
+        bool shouldConvertToFloat = isRightFloat || isLeftFloat || operation == "/";
 
-        // Operación con enteros normales
-        if (operation == "*")
+        if (shouldConvertToFloat)
         {
-            c.Mul(Register.X0, Register.X0, Register.X1);
-        }
-        else if (operation == "/")
-        {
-            c.Div(Register.X0, Register.X0, Register.X1);
-        }
-        else if (operation == "%")
-        {
-            c.Mod(Register.X0, Register.X0, Register.X1);
-        }
+            c.Comment("Converting operands to float if needed");
+            
+            // Convertir explícitamente los operandos a float si es necesario
+            if (!isLeftFloat)
+            {
+                c.Comment("Converting left operand from int to float");
+                c.Scvtf(Register.D0, Register.X0);
+            }
+            
+            if (!isRightFloat)
+            {
+                c.Comment("Converting right operand from int to float");
+                c.Scvtf(Register.D1, Register.X1);
+            }
 
-        c.Comment("Pushing integer result");
-        c.Push(Register.X0);
-        c.PushObject(c.CloneObject(left));
+            c.Comment($"Performing float {operation} operation");
+            if (operation == "*")
+            {
+                c.Fmul(Register.D0, Register.D0, Register.D1);
+            }
+            else if (operation == "/")
+            {
+                c.Fdiv(Register.D0, Register.D0, Register.D1);
+            }
+            else if (operation == "%")
+            {
+                // Módulo para flotantes usando fmod
+                c.UseStdLib("float_mod");
+                c.Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
+                c.Comment("D0 contains first float value");
+                c.Comment("D1 contains second float value");
+                c.Bl("float_mod"); // Resultado en D0
+            }
 
+            c.Comment("Pushing float result");
+            c.Push(Register.D0);
+            
+            // El resultado es siempre float cuando alguno de los operandos es float o es división
+            var resultObject = new StackObject
+            {
+                Type = StackObject.StackObjectType.Float,
+                Length = 8,
+                Depth = left.Depth,
+                ID = null
+            };
+            c.PushObject(resultObject);
+        }
+        else
+        {
+            // Operación con enteros normales
+            if (operation == "*")
+            {
+                c.Mul(Register.X0, Register.X0, Register.X1);
+            }
+            else if (operation == "/")
+            {
+                // Este caso no debería ocurrir porque ahora todas las divisiones se convierten a float
+                c.Div(Register.X0, Register.X0, Register.X1);
+            }
+            else if (operation == "%")
+            {
+                c.Mod(Register.X0, Register.X0, Register.X1);
+            }
+
+            c.Comment("Pushing integer result");
+            c.Push(Register.X0);
+
+            // Crear un nuevo objeto para el resultado
+            var intResultObject = new StackObject
+            {
+                Type = left.Type,
+                Length = left.Length,
+                Depth = left.Depth,
+                ID = null
+            };
+            c.PushObject(intResultObject);
+        }
 
         return null;
     }
@@ -1013,6 +1126,13 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
 
     public override Object? VisitFloat(GoLangParser.FloatContext context)
     {
+        var value = context.GetText();
+        c.Comment("Float constant: " + value);
+
+        // Convertir el string a float y apilarlo
+        var floatObject = c.FloatObject();
+        c.PushConstant(floatObject, double.Parse(value));
+
         return null;
     }
 
