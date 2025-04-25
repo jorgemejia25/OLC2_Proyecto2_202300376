@@ -485,14 +485,14 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         c.Push(Register.X0);
 
         // Crear un objeto para el resultado (siempre booleano)
-        var resultObject = new StackObject
+        var switchResultObject = new StackObject
         {
             Type = StackObject.StackObjectType.Boolean,
             Length = 8,
             Depth = left.Depth,
             ID = null
         };
-        c.PushObject(resultObject);
+        c.PushObject(switchResultObject);
 
         return null;
     }
@@ -534,14 +534,14 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         c.Push(Register.X0);
 
         // Crear un objeto para el resultado (siempre booleano)
-        var resultObject = new StackObject
+        var equalityResultObject = new StackObject
         {
             Type = StackObject.StackObjectType.Boolean,
             Length = 8,
             Depth = left.Depth,
             ID = null
         };
-        c.PushObject(resultObject);
+        c.PushObject(equalityResultObject);
 
         return null;
     }
@@ -769,14 +769,14 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         c.Push(Register.X0);
 
         // Crear un objeto para el resultado (siempre booleano)
-        var resultObject = new StackObject
+        var negResultObject = new StackObject
         {
             Type = StackObject.StackObjectType.Boolean,
             Length = 8,
             Depth = left.Depth,
             ID = null
         };
-        c.PushObject(resultObject);
+        c.PushObject(negResultObject);
 
         return null;
     }
@@ -800,7 +800,44 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         string trueLabel = GenerateUniqueLabel("eq_true");
         string endLabel = GenerateUniqueLabel("eq_end");
 
-        // Realizar la comparación adecuada según el operador
+        // Verificar si ambos son strings para manejo especial
+        if (left.Type == StackObject.StackObjectType.String && right.Type == StackObject.StackObjectType.String)
+        {
+            c.Comment("String equality comparison");
+
+            // Llamar a la función de biblioteca para comparar strings
+            c.UseStdLib("string_equals");
+            c.Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
+            // Los argumentos ya están en X0 y X1
+            c.Comment("X0 contains first string address");
+            c.Comment("X1 contains second string address");
+            c.Bl("string_equals");
+
+            // X0 ahora contiene 1 si son iguales, 0 si no son iguales
+            // Si la operación es !=, invertimos el resultado
+            if (operation == "!=")
+            {
+                c.Comment("Inverting result for != operator");
+                c.Eor(Register.X0, Register.X0, 1);
+            }
+
+            // Guardar el resultado en la pila
+            c.Push(Register.X0);
+
+            // Crear un objeto para el resultado (siempre booleano)
+            var equalityResultObject = new StackObject
+            {
+                Type = StackObject.StackObjectType.Boolean,
+                Length = 8,
+                Depth = left.Depth,
+                ID = null
+            };
+            c.PushObject(equalityResultObject);
+
+            return null;
+        }
+
+        // Para tipos que no son string, usar la comparación normal
         c.Comment($"Equality check with operator: {operation}");
         c.Cmp(Register.X0, Register.X1);
 

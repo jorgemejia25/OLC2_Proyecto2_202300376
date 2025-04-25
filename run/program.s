@@ -5,356 +5,56 @@ heap: .space 4096
 .global _start
 _start:
     adr x10, heap
-// Implicit declaration: dia
-// Constant 1
-MOV x0, #1
-STR x0, [SP, #-8]!
-// Switch statement
-// Evaluating switch expression
-// Loading variable 'dia'
-// Calculating offset for variable 'dia'
-MOV x0, #0
-ADD x0, sp, x0
-LDR x0, [x0, #0]
-// Pushing copy of variable value for 'dia'
-STR x0, [SP, #-8]!
-LDR x19, [SP], #8
-// Evaluating case 0 expression
-// Constant 1
-MOV x0, #1
-STR x0, [SP, #-8]!
-LDR x0, [SP], #8
-// Comparing switch expression with case expression
-CMP x19, x0
-// If not equal, jump to next case
-B.ne case_next_0_abed89a9
-// Executing case 0 body
-// Print statement
-.balign 16     // Garantizar alineamiento a 16 bytes
-// String constant: Lunes
+// Implicit declaration: i
+// AddSub operation
+// Visiting left operand
+// String constant: Hola
 STR x10, [SP, #-8]!
-// Pushing character 0: 76
-MOV w0, #76
+// Pushing character 0: 72
+MOV w0, #72
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Pushing character 1: 117
-MOV w0, #117
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 2: 110
-MOV w0, #110
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 3: 101
-MOV w0, #101
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 4: 115
-MOV w0, #115
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing NULL terminator
-MOV w0, #0
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Popping value for printing
-LDR x0, [SP], #8
-.balign 16     // Garantizar alineamiento a 16 bytes
-MOV X0, x0
-BL print_string
-.balign 16     // Garantizar alineamiento después de llamada a función
-// Implicit break at end of case
-B switch_end_44abb26d
-case_next_0_abed89a9:
-// Evaluating case 1 expression
-// Constant 2
-MOV x0, #2
-STR x0, [SP, #-8]!
-LDR x0, [SP], #8
-// Comparing switch expression with case expression
-CMP x19, x0
-// If not equal, jump to next case
-B.ne case_next_1_36b3dade
-// Executing case 1 body
-// Print statement
-.balign 16     // Garantizar alineamiento a 16 bytes
-// String constant: Martes
-STR x10, [SP, #-8]!
-// Pushing character 0: 77
-MOV w0, #77
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 1: 97
-MOV w0, #97
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 2: 114
-MOV w0, #114
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 3: 116
-MOV w0, #116
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 4: 101
-MOV w0, #101
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 5: 115
-MOV w0, #115
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing NULL terminator
-MOV w0, #0
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Popping value for printing
-LDR x0, [SP], #8
-.balign 16     // Garantizar alineamiento a 16 bytes
-MOV X0, x0
-BL print_string
-.balign 16     // Garantizar alineamiento después de llamada a función
-// Implicit break at end of case
-B switch_end_44abb26d
-case_next_1_36b3dade:
-// Evaluating case 2 expression
-// Constant 3
-MOV x0, #3
-STR x0, [SP, #-8]!
-LDR x0, [SP], #8
-// Comparing switch expression with case expression
-CMP x19, x0
-// If not equal, jump to next case
-B.ne case_next_2_6371f0c1
-// Executing case 2 body
-// Print statement
-.balign 16     // Garantizar alineamiento a 16 bytes
-// String constant: Miércoles
-STR x10, [SP, #-8]!
-// Pushing character 0: 77
-MOV w0, #77
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 1: 105
-MOV w0, #105
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 2: 233
-MOV w0, #233
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 3: 114
-MOV w0, #114
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 4: 99
-MOV w0, #99
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 5: 111
+// Pushing character 1: 111
 MOV w0, #111
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Pushing character 6: 108
+// Pushing character 2: 108
 MOV w0, #108
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 7: 101
-MOV w0, #101
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 8: 115
-MOV w0, #115
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing NULL terminator
-MOV w0, #0
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Popping value for printing
-LDR x0, [SP], #8
-.balign 16     // Garantizar alineamiento a 16 bytes
-MOV X0, x0
-BL print_string
-.balign 16     // Garantizar alineamiento después de llamada a función
-// Implicit break at end of case
-B switch_end_44abb26d
-case_next_2_6371f0c1:
-// Evaluating case 3 expression
-// Constant 4
-MOV x0, #4
-STR x0, [SP, #-8]!
-LDR x0, [SP], #8
-// Comparing switch expression with case expression
-CMP x19, x0
-// If not equal, jump to next case
-B.ne case_next_3_9ed109b1
-// Executing case 3 body
-// Print statement
-.balign 16     // Garantizar alineamiento a 16 bytes
-// String constant: Jueves
-STR x10, [SP, #-8]!
-// Pushing character 0: 74
-MOV w0, #74
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 1: 117
-MOV w0, #117
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 2: 101
-MOV w0, #101
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 3: 118
-MOV w0, #118
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 4: 101
-MOV w0, #101
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 5: 115
-MOV w0, #115
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing NULL terminator
-MOV w0, #0
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Popping value for printing
-LDR x0, [SP], #8
-.balign 16     // Garantizar alineamiento a 16 bytes
-MOV X0, x0
-BL print_string
-.balign 16     // Garantizar alineamiento después de llamada a función
-// Implicit break at end of case
-B switch_end_44abb26d
-case_next_3_9ed109b1:
-// Evaluating case 4 expression
-// Constant 5
-MOV x0, #5
-STR x0, [SP, #-8]!
-LDR x0, [SP], #8
-// Comparing switch expression with case expression
-CMP x19, x0
-// If not equal, jump to next case
-B.ne case_next_4_dfedc05a
-// Executing case 4 body
-// Print statement
-.balign 16     // Garantizar alineamiento a 16 bytes
-// String constant: Viernes
-STR x10, [SP, #-8]!
-// Pushing character 0: 86
-MOV w0, #86
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 1: 105
-MOV w0, #105
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 2: 101
-MOV w0, #101
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 3: 114
-MOV w0, #114
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 4: 110
-MOV w0, #110
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 5: 101
-MOV w0, #101
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 6: 115
-MOV w0, #115
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing NULL terminator
-MOV w0, #0
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Popping value for printing
-LDR x0, [SP], #8
-.balign 16     // Garantizar alineamiento a 16 bytes
-MOV X0, x0
-BL print_string
-.balign 16     // Garantizar alineamiento después de llamada a función
-// Implicit break at end of case
-B switch_end_44abb26d
-case_next_4_dfedc05a:
-// Evaluating case 5 expression
-// Constant 6
-MOV x0, #6
-STR x0, [SP, #-8]!
-LDR x0, [SP], #8
-// Comparing switch expression with case expression
-CMP x19, x0
-// If not equal, jump to next case
-B.ne case_next_5_60756d9c
-// Executing case 5 body
-// Print statement
-.balign 16     // Garantizar alineamiento a 16 bytes
-// String constant: Sábado
-STR x10, [SP, #-8]!
-// Pushing character 0: 83
-MOV w0, #83
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 1: 225
-MOV w0, #225
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 2: 98
-MOV w0, #98
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
 // Pushing character 3: 97
 MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Visiting right operand
+// String constant:  Mundo
+STR x10, [SP, #-8]!
+// Pushing character 0: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 77
+MOV w0, #77
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 117
+MOV w0, #117
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 110
+MOV w0, #110
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
@@ -373,31 +73,33 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value for printing
+// Popping operands
+LDR x1, [SP], #8
 LDR x0, [SP], #8
+// String concatenation
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
-BL print_string
+MOV X1, x1
+BL concat_strings
 .balign 16     // Garantizar alineamiento después de llamada a función
-// Implicit break at end of case
-B switch_end_44abb26d
-case_next_5_60756d9c:
-// Evaluating case 6 expression
-// Constant 7
-MOV x0, #7
+// Pushing string result
 STR x0, [SP, #-8]!
-LDR x0, [SP], #8
-// Comparing switch expression with case expression
-CMP x19, x0
-// If not equal, jump to next case
-B.ne case_next_6_4565c2d4
-// Executing case 6 body
-// Print statement
-.balign 16     // Garantizar alineamiento a 16 bytes
-// String constant: Domingo
+// If statement
+// Evaluating condition
+// Equality operation
+// Visiting left operand
+// Loading variable 'i'
+// Calculating offset for variable 'i'
+MOV x0, #0
+ADD x0, sp, x0
+LDR x0, [x0, #0]
+// Pushing copy of variable value for 'i'
+STR x0, [SP, #-8]!
+// Visiting right operand
+// String constant: Hola Mundo
 STR x10, [SP, #-8]!
-// Pushing character 0: 68
-MOV w0, #68
+// Pushing character 0: 72
+MOV w0, #72
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
@@ -406,27 +108,42 @@ MOV w0, #111
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Pushing character 2: 109
-MOV w0, #109
+// Pushing character 2: 108
+MOV w0, #108
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Pushing character 3: 105
-MOV w0, #105
+// Pushing character 3: 97
+MOV w0, #97
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Pushing character 4: 110
+// Pushing character 4: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 77
+MOV w0, #77
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 6: 117
+MOV w0, #117
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 7: 110
 MOV w0, #110
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Pushing character 5: 103
-MOV w0, #103
+// Pushing character 8: 100
+MOV w0, #100
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Pushing character 6: 111
+// Pushing character 9: 111
 MOV w0, #111
 STRB w0, [x10]
 MOV x0, #1
@@ -436,37 +153,42 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value for printing
+// Popping operands
+LDR x1, [SP], #8
 LDR x0, [SP], #8
+// String equality comparison
 .balign 16     // Garantizar alineamiento a 16 bytes
-MOV X0, x0
-BL print_string
+// X0 contains first string address
+// X1 contains second string address
+BL string_equals
 .balign 16     // Garantizar alineamiento después de llamada a función
-// Implicit break at end of case
-B switch_end_44abb26d
-case_next_6_4565c2d4:
-// Default case
+STR x0, [SP, #-8]!
+LDR x0, [SP], #8
+// Checking condition
+CBZ x0, else_22818ae9
+// Then block
+// Block statement
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
-// String constant: Día inválido
+// String constant: I coincide
 STR x10, [SP, #-8]!
-// Pushing character 0: 68
-MOV w0, #68
+// Pushing character 0: 73
+MOV w0, #73
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Pushing character 1: 237
-MOV w0, #237
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 2: 97
-MOV w0, #97
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 3: 32
+// Pushing character 1: 32
 MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 111
+MOV w0, #111
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
@@ -480,32 +202,97 @@ MOV w0, #110
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Pushing character 6: 118
-MOV w0, #118
+// Pushing character 6: 99
+MOV w0, #99
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Pushing character 7: 225
-MOV w0, #225
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 8: 108
-MOV w0, #108
-STRB w0, [x10]
-MOV x0, #1
-ADD x10, x10, x0
-// Pushing character 9: 105
+// Pushing character 7: 105
 MOV w0, #105
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Pushing character 10: 100
+// Pushing character 8: 100
 MOV w0, #100
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Pushing character 11: 111
+// Pushing character 9: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Popping value for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_string
+.balign 16     // Garantizar alineamiento después de llamada a función
+// If statement
+// Evaluating condition
+// Boolean constant: true
+MOV x0, #1
+STR x0, [SP, #-8]!
+LDR x0, [SP], #8
+// Checking condition
+CBZ x0, else_44c3cf04
+// Then block
+// Block statement
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// String constant: If anidado
+STR x10, [SP, #-8]!
+// Pushing character 0: 73
+MOV w0, #73
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 102
+MOV w0, #102
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 6: 100
+MOV w0, #100
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 7: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 8: 100
+MOV w0, #100
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 9: 111
 MOV w0, #111
 STRB w0, [x10]
 MOV x0, #1
@@ -521,7 +308,12 @@ LDR x0, [SP], #8
 MOV X0, x0
 BL print_string
 .balign 16     // Garantizar alineamiento después de llamada a función
-switch_end_44abb26d:
+B endif_8d86cb5a
+else_44c3cf04:
+endif_8d86cb5a:
+B endif_b6a30dd7
+else_22818ae9:
+endif_b6a30dd7:
 .balign 16       // Alineamiento para código de salida
 // Program Exit
     MOV X0, #0
@@ -530,6 +322,162 @@ switch_end_44abb26d:
 
 
 // Standard Library Functions
+
+//--------------------------------------------------------------
+// concat_strings - Concatenates two strings
+//
+// Input:
+//   x0 - Address of the first string
+//   x1 - Address of the second string
+//
+// Output:
+//   x0 - Address of the concatenated string (in heap)
+//--------------------------------------------------------------
+.balign 4       // Alinear a 4 bytes (una palabra)
+concat_strings:
+    // Save registers
+    stp x29, x30, [sp, #-16]!  // Save frame pointer and link register
+    stp x19, x20, [sp, #-16]!  // Save callee-saved registers
+    stp x21, x22, [sp, #-16]!
+    stp x23, x24, [sp, #-16]!
+    
+    // x19 will hold the first string address
+    mov x19, x0
+    // x20 will hold the second string address
+    mov x20, x1
+    
+    // Calculate length of first string
+    mov x21, #0                // Initialize counter for first string length
+.balign 4       // Alinear a 4 bytes (una palabra)
+len_first_loop:
+    ldrb w0, [x19, x21]        // Load byte from string
+    cbz w0, len_first_done     // If zero (end of string), exit loop
+    add x21, x21, #1           // Increment counter
+    b len_first_loop           // Continue loop
+.balign 4       // Alinear a 4 bytes (una palabra)
+len_first_done:
+    
+    // Calculate length of second string
+    mov x22, #0                // Initialize counter for second string length
+.balign 4       // Alinear a 4 bytes (una palabra)
+len_second_loop:
+    ldrb w0, [x20, x22]        // Load byte from string
+    cbz w0, len_second_done    // If zero (end of string), exit loop
+    add x22, x22, #1           // Increment counter
+    b len_second_loop          // Continue loop
+.balign 4       // Alinear a 4 bytes (una palabra)
+len_second_done:
+    
+    // Calculate total size needed
+    add x23, x21, x22
+    add x23, x23, #1           // Add 1 for the NULL terminator
+    
+    // Get heap pointer (assumed to be in x10)
+    mov x24, x10               // Save current heap pointer for our result
+    add x10, x10, x23          // Advance heap pointer for next allocation
+    
+    // Copy first string to the result
+    mov x0, #0                 // Initialize index
+.balign 4       // Alinear a 4 bytes (una palabra)
+copy_first_loop:
+    cmp x0, x21                // Compare with length of first string
+    beq copy_first_done        // If equal, we're done
+    ldrb w1, [x19, x0]         // Load byte from first string
+    strb w1, [x24, x0]         // Store byte to result
+    add x0, x0, #1             // Increment index
+    b copy_first_loop          // Continue loop
+.balign 4       // Alinear a 4 bytes (una palabra)
+copy_first_done:
+
+    // Copy second string to the result (append)
+    mov x0, #0                 // Initialize index for second string
+.balign 4       // Alinear a 4 bytes (una palabra)
+copy_second_loop:
+    cmp x0, x22                // Compare with length of second string
+    beq copy_second_done       // If equal, we're done
+    ldrb w1, [x20, x0]         // Load byte from second string
+    add x2, x0, x21            // Calculate position in result (offset by length of first string)
+    strb w1, [x24, x2]         // Store byte to result
+    add x0, x0, #1             // Increment index
+    b copy_second_loop          // Continue loop
+.balign 4       // Alinear a 4 bytes (una palabra)
+copy_second_done:
+
+    // Add null terminator
+    add x0, x21, x22           // Calculate position for null terminator
+    mov w1, #0                 // Null byte
+    strb w1, [x24, x0]         // Store null terminator
+    
+    // Return pointer to concatenated string
+    mov x0, x24
+    
+    // Clean up and restore registers
+    ldp x23, x24, [sp], #16
+    ldp x21, x22, [sp], #16
+    ldp x19, x20, [sp], #16
+    ldp x29, x30, [sp], #16
+    ret
+
+
+
+//--------------------------------------------------------------
+// string_equals - Compares two strings for equality
+//
+// Input:
+//   x0 - Address of the first string
+//   x1 - Address of the second string
+//
+// Output:
+//   x0 - 1 if strings are equal, 0 if not equal
+//--------------------------------------------------------------
+.balign 4       // Alinear a 4 bytes (una palabra)
+string_equals:
+    // Save registers
+    stp x29, x30, [sp, #-16]!  // Save frame pointer and link register
+    stp x19, x20, [sp, #-16]!  // Save callee-saved registers
+    stp x21, x22, [sp, #-16]!  // Save more callee-saved registers
+    
+    // x19 will hold the first string address
+    mov x19, x0
+    // x20 will hold the second string address
+    mov x20, x1
+    
+.balign 4       // Alinear a 4 bytes (una palabra)
+compare_loop:
+    // Load bytes from both strings
+    ldrb w21, [x19], #1        // Load byte from first string and advance pointer
+    ldrb w22, [x20], #1        // Load byte from second string and advance pointer
+    
+    // Check if bytes are different
+    cmp w21, w22
+    bne strings_not_equal
+    
+    // Check if we've reached the end of both strings
+    cbz w21, strings_equal     // If current byte is zero and both are equal so far
+    
+    // Continue comparing
+    b compare_loop
+    
+.balign 4       // Alinear a 4 bytes (una palabra)
+strings_equal:
+    // Strings are equal
+    mov x0, #1                 // Return true (1)
+    b string_equals_done
+    
+.balign 4       // Alinear a 4 bytes (una palabra)
+strings_not_equal:
+    // Strings are not equal
+    mov x0, #0                 // Return false (0)
+    
+.balign 4       // Alinear a 4 bytes (una palabra)
+string_equals_done:
+    // Restore registers and return
+    ldp x21, x22, [sp], #16    // Restore callee-saved registers
+    ldp x19, x20, [sp], #16    // Restore callee-saved registers
+    ldp x29, x30, [sp], #16    // Restore frame pointer and link register
+    ret                        // Return to caller
+
+
 
 //--------------------------------------------------------------
 // print_string - Prints a null-terminated string to stdout

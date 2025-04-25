@@ -481,7 +481,7 @@ copy_second_loop:
     add x2, x0, x21            // Calculate position in result (offset by length of first string)
     strb w1, [x24, x2]         // Store byte to result
     add x0, x0, #1             // Increment index
-    b copy_second_loop         // Continue loop
+    b copy_second_loop          // Continue loop
 copy_second_done:
 
     // Add null terminator
@@ -498,6 +498,60 @@ copy_second_done:
     ldp x19, x20, [sp], #16
     ldp x29, x30, [sp], #16
     ret
+" },
+
+    { "string_equals", @"
+//--------------------------------------------------------------
+// string_equals - Compares two strings for equality
+//
+// Input:
+//   x0 - Address of the first string
+//   x1 - Address of the second string
+//
+// Output:
+//   x0 - 1 if strings are equal, 0 if not equal
+//--------------------------------------------------------------
+string_equals:
+    // Save registers
+    stp x29, x30, [sp, #-16]!  // Save frame pointer and link register
+    stp x19, x20, [sp, #-16]!  // Save callee-saved registers
+    stp x21, x22, [sp, #-16]!  // Save more callee-saved registers
+    
+    // x19 will hold the first string address
+    mov x19, x0
+    // x20 will hold the second string address
+    mov x20, x1
+    
+compare_loop:
+    // Load bytes from both strings
+    ldrb w21, [x19], #1        // Load byte from first string and advance pointer
+    ldrb w22, [x20], #1        // Load byte from second string and advance pointer
+    
+    // Check if bytes are different
+    cmp w21, w22
+    bne strings_not_equal
+    
+    // Check if we've reached the end of both strings
+    cbz w21, strings_equal     // If current byte is zero and both are equal so far
+    
+    // Continue comparing
+    b compare_loop
+    
+strings_equal:
+    // Strings are equal
+    mov x0, #1                 // Return true (1)
+    b string_equals_done
+    
+strings_not_equal:
+    // Strings are not equal
+    mov x0, #0                 // Return false (0)
+    
+string_equals_done:
+    // Restore registers and return
+    ldp x21, x22, [sp], #16    // Restore callee-saved registers
+    ldp x19, x20, [sp], #16    // Restore callee-saved registers
+    ldp x29, x30, [sp], #16    // Restore frame pointer and link register
+    ret                        // Return to caller
 " },
 };
 }

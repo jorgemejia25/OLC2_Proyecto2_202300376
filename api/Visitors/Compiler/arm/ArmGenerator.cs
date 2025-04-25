@@ -53,7 +53,7 @@ public class ArmGenerator
                 break;
 
             case StackObject.StackObjectType.Float:
-       
+
                 break;
 
             case StackObject.StackObjectType.String:
@@ -453,6 +453,18 @@ public class ArmGenerator
         _instructions.Add($"MOV X0, {rs1}");
         _instructions.Add($"MOV X1, {rs2}");
         _instructions.Add($"BL concat_strings");
+    }
+
+    // Método público para usar funciones de la biblioteca estándar
+    public void UseStdLib(string functionName)
+    {
+        _stdLib.Use(functionName);
+    }
+
+    // Método para llamada a función (branch and link)
+    public void Bl(string label)
+    {
+        _instructions.Add($"BL {label}");
     }
 
     public void Comment(string comment)
