@@ -46,7 +46,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
                 // Determinar el tipo y usar la función de impresión adecuada
                 if (value.Type == StackObject.StackObjectType.Integer)
                 {
-                    c.PrintInteger(Register.X0);
+                    c.PrintIntegerNoNewline(Register.X0);
                 }
                 else if (value.Type == StackObject.StackObjectType.String)
                 {
@@ -74,14 +74,28 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
             }
 
             // Imprimir un salto de línea al final
-            c.Comment("Printing newline at end");
-            // c.PrintNewLine();
+            c.Comment("Adding newline at end");
+            // Imprimir un salto de línea usando syscall directamente
+            c.Mov(Register.X0, 1);         // fd = 1 (stdout)
+            c.Mov(Register.X1, Register.SP); // Dirección para almacenar el carácter de salto de línea
+            c.Mov(Register.W2, 10);        // ASCII code for '\n'
+            c.Strb(Register.W2, Register.X1); // Almacenar el carácter en la pila
+            c.Mov(Register.X2, 1);         // Longitud = 1 byte
+            c.Mov(Register.W8, 64);        // Syscall número 64 para write
+            c.Svc();                       // Make syscall
         }
         else
         {
             // Si no hay expresiones, solo imprimir un salto de línea
-            c.Comment("Empty print statement, printing only newline");
-            // c.PrintNewLine();
+            c.Comment("Empty print statement, only printing newline");
+            // Imprimir un salto de línea usando syscall directamente
+            c.Mov(Register.X0, 1);         // fd = 1 (stdout)
+            c.Mov(Register.X1, Register.SP); // Dirección para almacenar el carácter de salto de línea
+            c.Mov(Register.W2, 10);        // ASCII code for '\n'
+            c.Strb(Register.W2, Register.X1); // Almacenar el carácter en la pila
+            c.Mov(Register.X2, 1);         // Longitud = 1 byte
+            c.Mov(Register.W8, 64);        // Syscall número 64 para write
+            c.Svc();                       // Make syscall
         }
 
         return null;
@@ -418,7 +432,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
 
         // Actualizar el tipo de la variable si es necesario
         varObject.Type = valueObject.Type;
-        
+
         // No necesitamos volver a apilar el valor aquí, ya que está en X0
         c.Comment("Assignment complete");
 
@@ -1031,9 +1045,8 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         // Generar etiquetas únicas para los saltos
         string loopStartLabel = GenerateUniqueLabel("for_start");
         string loopCondLabel = GenerateUniqueLabel("for_cond");
-        string loopBodyLabel = GenerateUniqueLabel("for_body");
-        string loopEndLabel = GenerateUniqueLabel("for_end");
         string loopPostLabel = GenerateUniqueLabel("for_post");
+        string loopEndLabel = GenerateUniqueLabel("for_end");
 
         // Guardar las etiquetas actuales para break y continue
         string oldBreakLabel = _currentBreakLabel;
@@ -1041,13 +1054,15 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
 
         // Establecer las nuevas etiquetas para el bucle actual
         _currentBreakLabel = loopEndLabel;
-        _currentContinueLabel = loopPostLabel;
 
         // Determinar qué tipo de bucle for estamos manejando
         if (context.forCondition() != null)
         {
             // Tipo 1: for condición { }
             c.Comment("For with condition (similar to while)");
+
+            // Para este tipo de bucle, el continue debe volver directamente al inicio
+            _currentContinueLabel = loopStartLabel;
 
             // Punto de inicio del bucle donde evaluamos la condición
             c.Label(loopStartLabel);
@@ -1076,6 +1091,9 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
             // Tipo 2: for i := 0; i < 10; i++ { }
             c.Comment("For with clause (C-style)");
             var forClause = context.forClause();
+
+            // Para este tipo de bucle, el continue debe saltar a la sección de post-statement
+            _currentContinueLabel = loopPostLabel;
 
             // Crear un nuevo scope para las variables del for
             c.NewScope();
@@ -1122,6 +1140,8 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         {
             // Tipo 3: for i, v := range slice { }
             c.Comment("For-range loop not implemented yet");
+            // Para consistencia, también establecemos la etiqueta continue aquí
+            _currentContinueLabel = loopStartLabel;
             // La implementación completa del for-range requiere soporte para slices
             // y será implementada en una iteración futura
         }

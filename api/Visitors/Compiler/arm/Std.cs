@@ -46,8 +46,8 @@ public class StandardLibrary
         }
         else if (function == "print_integer_no_newline")
         {
-            _usedSymbols.Add("minus_sign");
-            _usedFunctions.Add("minus_sign");
+            _usedSymbols.Add("minus_sign_nonl");
+            _usedFunctions.Add("minus_sign_nonl");
         }
         else if (function == "print_string")
         {
@@ -273,7 +273,7 @@ print_integer_no_newline:
     
     // Handle negative number
     mov x0, #1                 // fd = 1 (stdout)
-    adr x1, minus_sign         // Address of minus sign
+    adr x1, minus_sign_nonl    // Address of minus sign
     mov x2, #1                 // Length = 1
     mov w8, #64                // Syscall write
     svc #0
@@ -348,6 +348,9 @@ print_result_nonl:
     ldp x19, x20, [sp], #16
     ldp x29, x30, [sp], #16    // Restore frame pointer and link register
     ret                        // Return to caller
+
+minus_sign_nonl:
+    .ascii ""-""               // Minus sign
 " },
 
     { "print_string", @"

@@ -470,6 +470,14 @@ public class ArmGenerator
         _instructions.Add($"BL print_integer");
     }
 
+    public void PrintIntegerNoNewline(string rs)
+    {
+        _stdLib.Use("print_integer_no_newline");
+        Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
+        _instructions.Add($"MOV X0, {rs}");
+        _instructions.Add($"BL print_integer_no_newline");
+    }
+
     public void PrintString(string rs)
     {
         _stdLib.Use("print_string");
