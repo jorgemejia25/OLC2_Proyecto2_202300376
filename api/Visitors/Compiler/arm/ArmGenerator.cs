@@ -331,6 +331,10 @@ public class ArmGenerator
         _instructions.Add($"FDIV {fd}, {fs1}, {fs2}");
     }
 
+    public void Fcmp(string fs1, string fs2)
+    {
+        _instructions.Add($"FCMP {fs1}, {fs2}");
+    }
 
     // Nuevo método para la operación de módulo
     public void Mod(string rd, string rs1, string rs2)

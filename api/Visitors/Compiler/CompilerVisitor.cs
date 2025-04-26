@@ -940,8 +940,13 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         Visit(context.expr(1));
 
         c.Comment("Popping operands");
-        var right = c.PopObject(Register.X1);
-        var left = c.PopObject(Register.X0);
+
+        // Primero, determinar si alguno de los operandos es flotante
+        var isRightFloat = c.TopObject().Type == StackObject.StackObjectType.Float;
+        var right = c.PopObject(isRightFloat ? Register.D1 : Register.X1);
+        
+        var isLeftFloat = c.TopObject().Type == StackObject.StackObjectType.Float;
+        var left = c.PopObject(isLeftFloat ? Register.D0 : Register.X0);
 
         // Generar etiquetas únicas para los saltos
         string trueLabel = GenerateUniqueLabel("eq_true");
@@ -984,17 +989,52 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
             return null;
         }
 
-        // Para tipos que no son string, usar la comparación normal
-        c.Comment($"Equality check with operator: {operation}");
-        c.Cmp(Register.X0, Register.X1);
+        // Verificar si alguno es float para manejar comparaciones de punto flotante
+        if (isLeftFloat || isRightFloat)
+        {
+            c.Comment("Float equality comparison");
 
-        if (operation == "==")
-        {
-            c.B("eq", trueLabel); // B.EQ = Branch if EQual
+            // Convertir explícitamente los operandos a float si es necesario
+            if (!isLeftFloat)
+            {
+                c.Comment("Converting left operand from int to float");
+                c.Scvtf(Register.D0, Register.X0);
+            }
+
+            if (!isRightFloat)
+            {
+                c.Comment("Converting right operand from int to float");
+                c.Scvtf(Register.D1, Register.X1);
+            }
+
+            // Comparar los valores flotantes
+            c.Comment("Comparing float values");
+            c.Fcmp(Register.D0, Register.D1);
+
+            // Saltar según el operador de comparación
+            if (operation == "==")
+            {
+                c.B("eq", trueLabel); // B.EQ = Branch if EQual
+            }
+            else if (operation == "!=")
+            {
+                c.B("ne", trueLabel); // B.NE = Branch if Not Equal
+            }
         }
-        else if (operation == "!=")
+        else
         {
-            c.B("ne", trueLabel); // B.NE = Branch if Not Equal
+            // Para tipos que no son string ni float, usar la comparación normal de enteros
+            c.Comment($"Integer equality check with operator: {operation}");
+            c.Cmp(Register.X0, Register.X1);
+
+            if (operation == "==")
+            {
+                c.B("eq", trueLabel); // B.EQ = Branch if EQual
+            }
+            else if (operation == "!=")
+            {
+                c.B("ne", trueLabel); // B.NE = Branch if Not Equal
+            }
         }
 
         // Si llegamos aquí, la comparación es falsa
