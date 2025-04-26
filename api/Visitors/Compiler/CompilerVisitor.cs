@@ -944,7 +944,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         // Primero, determinar si alguno de los operandos es flotante
         var isRightFloat = c.TopObject().Type == StackObject.StackObjectType.Float;
         var right = c.PopObject(isRightFloat ? Register.D1 : Register.X1);
-        
+
         var isLeftFloat = c.TopObject().Type == StackObject.StackObjectType.Float;
         var left = c.PopObject(isLeftFloat ? Register.D0 : Register.X0);
 
