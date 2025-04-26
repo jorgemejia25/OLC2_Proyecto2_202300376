@@ -494,6 +494,36 @@ public class ArmGenerator
         _instructions.Add($"BL print_rune");
     }
 
+    public void PrintNewline()
+    {
+        // Imprimir un salto de línea usando syscall directamente
+        _instructions.Add("// Print newline character");
+        _instructions.Add("MOV X0, #1");         // fd = 1 (stdout)
+        _instructions.Add("SUB SP, SP, #16");     // Reservar espacio en la pila
+        _instructions.Add("MOV W1, #10");         // ASCII code for '\n'
+        _instructions.Add("STRB W1, [SP]");       // Guardar el carácter en la pila
+        _instructions.Add("MOV X1, SP");         // Puntero al carácter en la pila
+        _instructions.Add("MOV X2, #1");         // Longitud = 1 byte
+        _instructions.Add("MOV W8, #64");        // Syscall número 64 para write
+        _instructions.Add("SVC #0");             // Hacer la syscall
+        _instructions.Add("ADD SP, SP, #16");     // Restaurar espacio de la pila
+    }
+
+    public void PrintSpace()
+    {
+        // Imprimir un espacio usando syscall directamente
+        _instructions.Add("// Print space character");
+        _instructions.Add("MOV X0, #1");         // fd = 1 (stdout)
+        _instructions.Add("SUB SP, SP, #16");     // Reservar espacio en la pila
+        _instructions.Add("MOV W1, #32");         // ASCII code for space ' '
+        _instructions.Add("STRB W1, [SP]");       // Guardar el carácter en la pila
+        _instructions.Add("MOV X1, SP");         // Puntero al carácter en la pila
+        _instructions.Add("MOV X2, #1");         // Longitud = 1 byte
+        _instructions.Add("MOV W8, #64");        // Syscall número 64 para write
+        _instructions.Add("SVC #0");             // Hacer la syscall
+        _instructions.Add("ADD SP, SP, #16");     // Restaurar espacio de la pila
+    }
+
     public void PrintBool(string rs)
     {
         _stdLib.Use("print_bool");

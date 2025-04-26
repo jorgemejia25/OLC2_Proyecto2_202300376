@@ -69,33 +69,19 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
                 if (i < expressions.Length - 1)
                 {
                     c.Comment("Printing space between values");
-                    // c.PrintSpace();
+                    c.PrintSpace();
                 }
             }
 
             // Imprimir un salto de línea al final
             c.Comment("Adding newline at end");
-            // Imprimir un salto de línea usando syscall directamente
-            c.Mov(Register.X0, 1);         // fd = 1 (stdout)
-            c.Mov(Register.X1, Register.SP); // Dirección para almacenar el carácter de salto de línea
-            c.Mov(Register.W2, 10);        // ASCII code for '\n'
-            c.Strb(Register.W2, Register.X1); // Almacenar el carácter en la pila
-            c.Mov(Register.X2, 1);         // Longitud = 1 byte
-            c.Mov(Register.W8, 64);        // Syscall número 64 para write
-            c.Svc();                       // Make syscall
+            c.PrintNewline();
         }
         else
         {
             // Si no hay expresiones, solo imprimir un salto de línea
             c.Comment("Empty print statement, only printing newline");
-            // Imprimir un salto de línea usando syscall directamente
-            c.Mov(Register.X0, 1);         // fd = 1 (stdout)
-            c.Mov(Register.X1, Register.SP); // Dirección para almacenar el carácter de salto de línea
-            c.Mov(Register.W2, 10);        // ASCII code for '\n'
-            c.Strb(Register.W2, Register.X1); // Almacenar el carácter en la pila
-            c.Mov(Register.X2, 1);         // Longitud = 1 byte
-            c.Mov(Register.W8, 64);        // Syscall número 64 para write
-            c.Svc();                       // Make syscall
+            c.PrintNewline();
         }
 
         return null;

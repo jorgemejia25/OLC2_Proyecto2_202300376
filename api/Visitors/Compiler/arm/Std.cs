@@ -438,12 +438,8 @@ print_char:
     // Continue loop
     b       print_loop    
 print_done:
-    // Add newline
-    mov     x0, #1         // File descriptor (stdout)
-    adr     x1, newline_char // Address of the newline character
-    mov     x2, #1         // Number of bytes to write
-    mov     w8, #64        // Syscall number for write
-    svc     #0             // Make syscall
+    // Eliminar la adición del newline
+    // El salto de línea lo agregará VisitPrintStatement al final de toda la instrucción fmt.Println
 
     // Clean up and restore registers
     ldp     x21, x22, [sp], #16
@@ -558,12 +554,8 @@ print_rune_bytes:
     mov w8, #64                // Syscall write
     svc #0
     
-    // Add newline
-    mov x0, #1                 // fd = 1 (stdout)
-    adr x1, rune_newline       // Address of newline character
-    mov x2, #1                 // Length = 1
-    mov w8, #64                // Syscall write
-    svc #0
+    // Eliminar la adición del newline
+    // El salto de línea lo agregará VisitPrintStatement al final de toda la instrucción fmt.Println
     
     // Clean up and restore registers
     add sp, sp, #16            // Free buffer space
@@ -597,7 +589,7 @@ print_bool:
     mov x2, #5                 // Length = 5 (f-a-l-s-e)
     mov w8, #64                // Syscall write
     svc #0
-    b print_bool_newline
+    b print_bool_done
     
 print_true:
     // Print ""true""
@@ -607,13 +599,9 @@ print_true:
     mov w8, #64                // Syscall write
     svc #0
     
-print_bool_newline:
-    // Add newline
-    mov x0, #1                 // fd = 1 (stdout)
-    adr x1, bool_newline       // Address of newline character
-    mov x2, #1                 // Length = 1
-    mov w8, #64                // Syscall write
-    svc #0
+print_bool_done:
+    // Eliminar la adición del newline
+    // El salto de línea lo agregará VisitPrintStatement al final de toda la instrucción fmt.Println
     
     // Restore registers and return
     ldp x19, x20, [sp], #16    // Restore callee-saved registers
@@ -857,7 +845,7 @@ skip_minus:
 
     // Check if the fractional part is zero
     fcmp d2, #0.0
-    beq add_newline            // If fractional part is zero, skip to adding newline
+    beq exit_function          // Si la parte fraccional es cero, saltar a la salida (sin salto de línea)
 
     // Print dot
     mov x0, #1                 // fd = 1 (stdout)
@@ -879,7 +867,7 @@ skip_minus:
     // Remove trailing zeros if needed
     // x0 now contains fractional part * 1000000
     mov x19, x0                // Save in x19
-    cbz x19, add_newline       // If zero, skip to adding newline
+    cbz x19, exit_function     // Si es cero, saltar a la salida (sin salto de línea)
 
     // Count trailing zeros
     mov x21, #10               // Divisor
@@ -896,7 +884,7 @@ trailing_zeros_loop:
     udiv x20, x20, x21         // Remove last digit
     add x22, x22, #1           // Increment counter
     cbnz x20, trailing_zeros_loop // Continue if not zero
-    b add_newline              // If we hit all zeros, skip to adding newline
+    b exit_function            // Si solo hay ceros, saltar a la salida (sin salto de línea)
 
 print_frac_part:
     // Calculate divisor to remove trailing zeros
@@ -914,15 +902,10 @@ print_adjusted_frac:
     udiv x0, x19, x20          // x0 = adjusted fractional part
     bl print_integer_no_newline // Print fractional part WITHOUT newline
 
-add_newline:
-    // Add newline at the end
-    mov x0, #1                 // fd = 1 (stdout)
-    adr x1, nl_char            // Address of newline character
-    mov x2, #1                 // Length = 1
-    mov w8, #64                // Syscall write
-    svc #0                     // Print newline
-
 exit_function:
+    // Eliminar la adición del newline
+    // El salto de línea lo agregará VisitPrintStatement al final de toda la instrucción fmt.Println
+    
     // Restore context
     ldp x23, x24, [sp], #16    // Restore callee-saved registers
     ldp x21, x22, [sp], #16    // Restore callee-saved registers
