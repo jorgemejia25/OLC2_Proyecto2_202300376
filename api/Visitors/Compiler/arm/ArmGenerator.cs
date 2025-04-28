@@ -29,13 +29,38 @@ public class ArmGenerator
 
     private int _stackDepth = 0;
 
+    // Registro de funciones para manejo de invocaciones
+    private readonly Dictionary<string, string> _functionLabels = new Dictionary<string, string>();
+
+    public void RegisterFunction(string funcName, string label)
+    {
+        _functionLabels[funcName] = label;
+    }
+
+    public bool HasFunction(string funcName)
+    {
+        return _functionLabels.ContainsKey(funcName);
+    }
+
+    public string GetFunctionLabel(string funcName)
+    {
+        if (_functionLabels.TryGetValue(funcName, out string label))
+            return label;
+
+        throw new Exception($"Function '{funcName}' not found");
+    }
+
+    // Método para retornar de una función
+    public void Ret()
+    {
+        _instructions.Add("RET");
+    }
 
     // Método para substraer inmediato
     public void sub(string rd, string rs, int imm)
     {
         _instructions.Add($"SUB {rd}, {rs}, #{imm}");
     }
-
 
     // Stack operations
     public void PushObject(StackObject obj)
@@ -419,6 +444,11 @@ public class ArmGenerator
         _instructions.Add($"MOV {rd}, #{inm}");
     }
 
+    public void MovReg(string rd, string rs)
+    {
+        _instructions.Add($"MOV {rd}, {rs}");
+    }
+
     public void Push(string rs)
     {
         _instructions.Add($"STR {rs}, [SP, #-8]!");
@@ -428,7 +458,6 @@ public class ArmGenerator
     {
         _instructions.Add($"LDR {rd}, [SP], #8");
     }
-
 
     // Float operations
     public void Scvtf(string rd, string rs)

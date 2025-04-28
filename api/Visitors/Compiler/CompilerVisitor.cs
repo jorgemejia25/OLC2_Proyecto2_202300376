@@ -1330,4 +1330,263 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
 
         return null;
     }
+
+    public override Object? VisitFuncDeclaration(GoLangParser.FuncDeclarationContext context)
+    {
+        var funcName = context.ID().GetText();
+        c.Comment($"Function declaration: {funcName}");
+
+        // Generar etiqueta única para la función
+        string funcLabel = $"func_{funcName}";
+        
+        // Generar etiqueta para el punto de retorno a la función llamante
+        string returnLabel = $"ret_{funcName}";
+
+        // Saltar la ejecución de la función ya que estamos en la sección de declaración
+        c.B($"skip_{funcName}");
+
+        // Escribir el label para la función
+        c.Label(funcLabel);
+
+        // Setup del stack frame
+        c.Comment("Function prologue: saving frame pointer and return address");
+        c.Push(Register.X29);  // Guardar el frame pointer actual (FP)
+        c.Push(Register.X30);  // Guardar la dirección de retorno (LR)
+        
+        // Establecer nuevo frame pointer
+        c.Comment("FP = SP");
+        c.MovReg(Register.X29, Register.SP);  // FP = SP
+
+        c.NewScope();  // Crear un nuevo ámbito para la función
+        
+        // Procesar los parámetros de la función si existen
+        if (context.funcParams() != null)
+        {
+            var params_list = context.funcParams().funcParam();
+            int paramCount = params_list.Length;
+            
+            c.Comment($"Setting up {paramCount} parameters");
+            
+            // Los parámetros en ARM64 se pasan en registros X0-X7 para los primeros 8 parámetros
+            // Los adicionales están en la pila
+            for (int i = 0; i < paramCount; i++)
+            {
+                var paramName = params_list[i].ID().GetText();
+                var paramType = params_list[i].type().GetText();
+                c.Comment($"Parameter {i+1}: {paramName} (type: {paramType})");
+                
+                if (i < 8)  // Los primeros 8 parámetros están en registros X0-X7
+                {
+                    // Guardar el valor del parámetro en la pila
+                    c.Push($"x{i}");
+                    
+                    // Crear un objeto de pila para este parámetro con el tipo correcto
+                    var paramObject = new StackObject
+                    {
+                        Type = DetermineStackObjectType(paramType),
+                        Length = 8,
+                        Depth = c.stack.Count > 0 ? c.stack.Last().Depth : 0,
+                        ID = paramName
+                    };
+                    
+                    // Agregar el objeto a la pila
+                    c.PushObject(paramObject);
+                    c.TagObject(paramName);
+                }
+                else  // Parámetros adicionales están ya en la pila relativa al FP
+                {
+                    // Necesitaríamos copiarlos desde su posición de pila actual
+                    // Esta implementación requeriría cálculos más complejos de offset
+                }
+            }
+        }
+        
+        // Visitar el bloque de la función
+        c.Comment("Function body");
+        Visit(context.block());
+        
+        // Si no hay un return explícito, asegurarnos de agregar uno aquí
+        c.Label(returnLabel);
+        c.Comment("Function epilogue");
+        
+        // Restaurar frame pointer y dirección de retorno
+        c.Comment("SP = FP");
+        c.MovReg(Register.SP, Register.X29);  // SP = FP
+        c.Pop(Register.X30);  // Restaurar LR
+        c.Pop(Register.X29);  // Restaurar FP
+        
+        // Retornar a la función llamante
+        c.Comment("Return to caller");
+        c.Ret();
+        
+        // Etiqueta para saltarse la definición de la función durante la ejecución normal
+        c.Label($"skip_{funcName}");
+        
+        // Registrar la función en la tabla de símbolos o estructura interna
+        // para poder manejar las invocaciones
+        c.RegisterFunction(funcName, funcLabel);
+
+        return null;
+    }
+    
+    // Método auxiliar para determinar el tipo de objeto en la pila según el tipo de la variable
+    private StackObject.StackObjectType DetermineStackObjectType(string typeName)
+    {
+        if (typeName == "int")
+            return StackObject.StackObjectType.Integer;
+        else if (typeName == "float64")
+            return StackObject.StackObjectType.Float;
+        else if (typeName == "string")
+            return StackObject.StackObjectType.String;
+        else if (typeName == "bool")
+            return StackObject.StackObjectType.Boolean;
+        else if (typeName == "rune")
+            return StackObject.StackObjectType.Rune;
+        else
+            return StackObject.StackObjectType.Integer; // Por defecto, asumimos int
+    }
+
+    public override Object? VisitInvokeLiteral(GoLangParser.InvokeLiteralContext context)
+    {
+        // Aquí manejamos la invocación a funciones como expresión
+        return VisitInvoke(context.invoke());
+    }
+
+    public override Object? VisitInvoke(GoLangParser.InvokeContext context)
+    {
+        var funcName = context.ID().GetText();
+        c.Comment($"Function call: {funcName}");
+        
+        // Procesar argumentos si existen
+        if (context.invokeParams() != null)
+        {
+            var expressions = context.invokeParams().expr();
+            c.Comment($"Processing {expressions.Length} arguments");
+            
+            // Lista para almacenar valores y tipos de los argumentos
+            var arguments = new List<(StackObject obj, bool isFloat)>();
+            
+            // Primera pasada: evaluar todos los argumentos
+            for (int i = 0; i < expressions.Length; i++)
+            {
+                c.Comment($"Evaluating argument {i+1}");
+                Visit(expressions[i]);
+                
+                // Determinar si es un argumento de punto flotante
+                bool isFloat = c.TopObject().Type == StackObject.StackObjectType.Float;
+                
+                // Guardar información del argumento pero dejarlo en la pila por ahora
+                arguments.Add((c.TopObject(), isFloat));
+            }
+            
+            // Segunda pasada: asignar registros de destino y cargar argumentos
+            // Asignar desde el último al primero para que queden en orden en los registros
+            for (int i = expressions.Length - 1; i >= 0; i--)
+            {
+                var (obj, isFloat) = arguments[i];
+                string targetReg;
+                
+                // Los primeros 8 argumentos van en registros x0-x7
+                if (i < 8) {
+                    // Asignar el registro correcto según el índice
+                    targetReg = isFloat ? $"d{i}" : $"x{i}";
+                } else {
+                    // Los argumentos adicionales irían a la pila (no implementado completamente)
+                    targetReg = isFloat ? "d0" : "x0";
+                }
+                
+                c.Comment($"Loading argument {i+1} into {targetReg}");
+                c.PopObject(targetReg);
+            }
+        }
+        
+        // Llamar a la función
+        string funcLabel = $"func_{funcName}";
+        c.Comment($"Calling function {funcName}");
+        c.Bl(funcLabel);
+        
+        // El valor de retorno debería estar en X0 según la convención de llamada
+        c.Comment("Pushing function return value");
+        c.Push(Register.X0);
+        
+        // Crear un objeto para el valor de retorno
+        var returnObject = new StackObject
+        {
+            Type = StackObject.StackObjectType.Integer,  // Asumimos que es entero por defecto
+            Length = 8,
+            Depth = c.stack.Count > 0 ? c.stack.Last().Depth : 0,
+            ID = null  // No tiene nombre
+        };
+        c.PushObject(returnObject);
+        
+        return null;
+    }
+
+    public override Object? VisitReturnStatement(GoLangParser.ReturnStatementContext context)
+    {
+        c.Comment("Return statement");
+
+        // Evaluar la expresión de retorno si existe
+        if (context.expr() != null)
+        {
+            c.Comment("Evaluating return expression");
+            Visit(context.expr());
+
+            // Colocar el resultado en X0 como valor de retorno
+            c.PopObject(Register.X0);
+            c.Comment("Return value in X0");
+        }
+
+        // Restaurar el stack pointer y regresar
+        c.Comment("SP = FP");
+        c.MovReg(Register.SP, Register.X29);  // SP = FP
+        c.Pop(Register.X30);  // Restaurar LR
+        c.Pop(Register.X29);  // Restaurar FP
+
+        // Retornar a la función llamante
+        c.Comment("Return to caller");
+        c.Ret();
+
+        return null;
+    }
+
+    public override Object? VisitProgram(GoLangParser.ProgramContext context)
+    {
+        c.Comment("Program start - compiling statements");
+
+        // Primera pasada: procesar todas las declaraciones de funciones
+        foreach (var statement in context.statement())
+        {
+            if (statement.funcDeclaration() != null)
+            {
+                Visit(statement.funcDeclaration());
+            }
+        }
+
+        // Segunda pasada: procesar el resto de statements que no sean declaraciones de funciones
+        foreach (var statement in context.statement())
+        {
+            if (statement.funcDeclaration() == null)
+            {
+                Visit(statement);
+            }
+        }
+
+        // Verificar si existe la función main y llamarla al final
+        if (c.HasFunction("main"))
+        {
+            c.Comment("Calling main function");
+            c.Bl("func_main");
+        }
+        else
+        {
+            c.Comment("No main function found - program will exit without calling main");
+        }
+
+        // Finalizar el programa
+        c.Comment("Program end");
+        c.EndProgram();
+
+        return null;
+    }
 }
