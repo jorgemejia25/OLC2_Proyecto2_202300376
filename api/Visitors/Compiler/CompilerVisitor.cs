@@ -1338,7 +1338,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
 
         // Generar etiqueta única para la función
         string funcLabel = $"func_{funcName}";
-        
+
         // Generar etiqueta para el punto de retorno a la función llamante
         string returnLabel = $"ret_{funcName}";
 
@@ -1352,34 +1352,34 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         c.Comment("Function prologue: saving frame pointer and return address");
         c.Push(Register.X29);  // Guardar el frame pointer actual (FP)
         c.Push(Register.X30);  // Guardar la dirección de retorno (LR)
-        
+
         // Establecer nuevo frame pointer
         c.Comment("FP = SP");
         c.MovReg(Register.X29, Register.SP);  // FP = SP
 
         c.NewScope();  // Crear un nuevo ámbito para la función
-        
+
         // Procesar los parámetros de la función si existen
         if (context.funcParams() != null)
         {
             var params_list = context.funcParams().funcParam();
             int paramCount = params_list.Length;
-            
+
             c.Comment($"Setting up {paramCount} parameters");
-            
+
             // Los parámetros en ARM64 se pasan en registros X0-X7 para los primeros 8 parámetros
             // Los adicionales están en la pila
             for (int i = 0; i < paramCount; i++)
             {
                 var paramName = params_list[i].ID().GetText();
                 var paramType = params_list[i].type().GetText();
-                c.Comment($"Parameter {i+1}: {paramName} (type: {paramType})");
-                
+                c.Comment($"Parameter {i + 1}: {paramName} (type: {paramType})");
+
                 if (i < 8)  // Los primeros 8 parámetros están en registros X0-X7
                 {
                     // Guardar el valor del parámetro en la pila
                     c.Push($"x{i}");
-                    
+
                     // Crear un objeto de pila para este parámetro con el tipo correcto
                     var paramObject = new StackObject
                     {
@@ -1388,7 +1388,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
                         Depth = c.stack.Count > 0 ? c.stack.Last().Depth : 0,
                         ID = paramName
                     };
-                    
+
                     // Agregar el objeto a la pila
                     c.PushObject(paramObject);
                     c.TagObject(paramName);
@@ -1400,35 +1400,35 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
                 }
             }
         }
-        
+
         // Visitar el bloque de la función
         c.Comment("Function body");
         Visit(context.block());
-        
+
         // Si no hay un return explícito, asegurarnos de agregar uno aquí
         c.Label(returnLabel);
         c.Comment("Function epilogue");
-        
+
         // Restaurar frame pointer y dirección de retorno
         c.Comment("SP = FP");
         c.MovReg(Register.SP, Register.X29);  // SP = FP
         c.Pop(Register.X30);  // Restaurar LR
         c.Pop(Register.X29);  // Restaurar FP
-        
+
         // Retornar a la función llamante
         c.Comment("Return to caller");
         c.Ret();
-        
+
         // Etiqueta para saltarse la definición de la función durante la ejecución normal
         c.Label($"skip_{funcName}");
-        
+
         // Registrar la función en la tabla de símbolos o estructura interna
         // para poder manejar las invocaciones
         c.RegisterFunction(funcName, funcLabel);
 
         return null;
     }
-    
+
     // Método auxiliar para determinar el tipo de objeto en la pila según el tipo de la variable
     private StackObject.StackObjectType DetermineStackObjectType(string typeName)
     {
@@ -1456,59 +1456,62 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
     {
         var funcName = context.ID().GetText();
         c.Comment($"Function call: {funcName}");
-        
+
         // Procesar argumentos si existen
         if (context.invokeParams() != null)
         {
             var expressions = context.invokeParams().expr();
             c.Comment($"Processing {expressions.Length} arguments");
-            
+
             // Lista para almacenar valores y tipos de los argumentos
             var arguments = new List<(StackObject obj, bool isFloat)>();
-            
+
             // Primera pasada: evaluar todos los argumentos
             for (int i = 0; i < expressions.Length; i++)
             {
-                c.Comment($"Evaluating argument {i+1}");
+                c.Comment($"Evaluating argument {i + 1}");
                 Visit(expressions[i]);
-                
+
                 // Determinar si es un argumento de punto flotante
                 bool isFloat = c.TopObject().Type == StackObject.StackObjectType.Float;
-                
+
                 // Guardar información del argumento pero dejarlo en la pila por ahora
                 arguments.Add((c.TopObject(), isFloat));
             }
-            
+
             // Segunda pasada: asignar registros de destino y cargar argumentos
             // Asignar desde el último al primero para que queden en orden en los registros
             for (int i = expressions.Length - 1; i >= 0; i--)
             {
                 var (obj, isFloat) = arguments[i];
                 string targetReg;
-                
+
                 // Los primeros 8 argumentos van en registros x0-x7
-                if (i < 8) {
+                if (i < 8)
+                {
                     // Asignar el registro correcto según el índice
                     targetReg = isFloat ? $"d{i}" : $"x{i}";
-                } else {
+                }
+                else
+                {
                     // Los argumentos adicionales irían a la pila (no implementado completamente)
                     targetReg = isFloat ? "d0" : "x0";
                 }
-                
-                c.Comment($"Loading argument {i+1} into {targetReg}");
+
+                c.Comment($"Loading argument {i + 1} into {targetReg}");
                 c.PopObject(targetReg);
             }
         }
-        
+
         // Llamar a la función
         string funcLabel = $"func_{funcName}";
         c.Comment($"Calling function {funcName}");
         c.Bl(funcLabel);
-        
+
         // El valor de retorno debería estar en X0 según la convención de llamada
         c.Comment("Pushing function return value");
         c.Push(Register.X0);
-        
+
         // Crear un objeto para el valor de retorno
         var returnObject = new StackObject
         {
@@ -1518,7 +1521,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
             ID = null  // No tiene nombre
         };
         c.PushObject(returnObject);
-        
+
         return null;
     }
 
@@ -1547,6 +1550,149 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         c.Comment("Return to caller");
         c.Ret();
 
+        return null;
+    }
+
+    public override Object? VisitStrconvAtoi(GoLangParser.StrconvAtoiContext context)
+    {
+        c.Comment("strconv.Atoi - Convertir string a entero");
+
+        // Visitar la expresión del string a convertir
+        Visit(context.expr());
+
+        // Obtener el objeto string de la pila
+        var stringObj = c.PopObject(Register.X0);
+
+        // Verificar que sea un string
+        if (stringObj.Type != StackObject.StackObjectType.String)
+        {
+            c.Comment("Error: El argumento de strconv.Atoi debe ser una cadena");
+            // En caso de error, retornar 0
+            c.Mov(Register.X0, 0);
+            c.Push(Register.X0);
+
+            var resultObj = c.IntObject();
+            c.PushObject(resultObj);
+            return null;
+        }
+
+        // El registro X0 ya contiene la dirección del string
+
+        // Crear una etiqueta única para la función de conversión
+        string convertLabel = GenerateUniqueLabel("atoi_convert");
+        string endLabel = GenerateUniqueLabel("atoi_end");
+        string errorLabel = GenerateUniqueLabel("atoi_error");
+
+        c.Comment("Inicializando variables para la conversión");
+        c.Mov(Register.X1, 0);      // X1 = resultado acumulado
+        c.Mov(Register.X2, 1);      // X2 = signo (1 = positivo, -1 = negativo)
+        c.Mov(Register.X3, 0);      // X3 = índice del carácter actual
+
+        // Verificar si el primer carácter es un signo
+        c.Comment("Verificando si hay signo");
+        c.Ldrb("w4", Register.X0);  // Cargar el primer byte
+        c.Cmp("w4", "45");            // Comparar con '-' (ASCII 45)
+        c.B("ne", "check_digit");   // Si no es negativo, verificar si es dígito
+
+        // Es signo negativo
+        c.Comment("Procesando signo negativo");
+        c.Mov(Register.X2, -1);     // Establecer signo negativo
+        c.Add(Register.X3, Register.X3, "1");  // Avanzar al siguiente carácter
+
+        // Etiquetar el punto para verificar si es un dígito
+        c.Label("check_digit");
+
+        // Bucle principal para recorrer la cadena
+        c.Label(convertLabel);
+
+        // Cargar el carácter actual usando el índice
+        c.Add("x4", Register.X0, Register.X3);  // X4 = X0 + X3 (dirección + índice)
+        c.Ldrb("w4", "x4");         // Cargar el byte en la posición actual
+
+        // Verificar si hemos llegado al final de la cadena (carácter nulo)
+        c.Cmp("w4", "0");             // Comparar con NULL
+        c.B("eq", endLabel);        // Si es NULL, terminar conversión
+
+        // Verificar si es un dígito (ASCII 48-57)
+        c.Sub("w5", "w4", "48");      // W5 = carácter - '0'
+        c.Cmp("w5", "9");             // Comparar si está en el rango 0-9
+        c.B("hi", errorLabel);      // Si es mayor que 9, no es dígito
+        c.Cmp("w5", "0");             // Comparar si es menor que 0
+        c.B("lt", errorLabel);      // Si es menor que 0, no es dígito
+
+        // Es un dígito válido, actualizar el resultado
+        c.Comment("Procesando dígito");
+        c.Mov("x6", 10);            // Base 10
+        c.Mul(Register.X1, Register.X1, "x6");  // X1 = X1 * 10
+        c.Add(Register.X1, Register.X1, "x5");  // X1 = X1 + dígito
+
+        // Incrementar el índice y continuar
+        c.Add(Register.X3, Register.X3, "1");  // Incrementar índice
+        c.B(convertLabel);          // Continuar bucle
+
+        // En caso de error, devolver 0
+        c.Label(errorLabel);
+        c.Comment("Error en conversión: Carácter inválido");
+        c.Mov(Register.X0, 0);      // Resultado = 0 en caso de error
+        c.B(endLabel);
+
+        // Final de la conversión
+        c.Label(endLabel);
+        c.Comment("Aplicando signo al resultado");
+        c.Mul(Register.X0, Register.X1, Register.X2);  // X0 = resultado * signo
+
+        // Guardar el resultado en la pila
+        c.Comment("Guardando el resultado entero en la pila");
+        c.Push(Register.X0);
+
+        // Crear un objeto de tipo entero para el resultado
+        c.Comment("Creando objeto entero para el resultado");
+        var resultObject = c.IntObject();
+        c.PushObject(resultObject);
+
+        return null;
+    }
+
+    public override Object? VisitStrconvParseFloat(GoLangParser.StrconvParseFloatContext context)
+    {
+        c.Comment("strconv.ParseFloat - Convertir string a float64");
+        
+        // Visitar la expresión del string a convertir
+        Visit(context.expr());
+        
+        // Obtener el objeto string de la pila
+        var stringObj = c.PopObject(Register.X0);
+        
+        // Verificar que sea un string
+        if (stringObj.Type != StackObject.StackObjectType.String)
+        {
+            c.Comment("Error: El argumento de strconv.ParseFloat debe ser una cadena");
+            // En caso de error, retornar 0.0
+            c.Mov(Register.X0, 0);
+            c.Scvtf(Register.D0, Register.X0);  // Convertir 0 a float
+            c.Push(Register.D0);
+            
+            var resultObj = c.FloatObject();
+            c.PushObject(resultObj);
+            return null;
+        }
+        
+        // Llamar a la función de biblioteca estándar para convertir string a float
+        c.UseStdLib("string_to_float");
+        c.Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
+        c.Comment("X0 contiene la dirección del string a convertir");
+        // El string ya está en X0
+        c.Bl("string_to_float"); // La función devolverá el resultado en D0
+        
+        // Guardar el resultado en la pila
+        c.Comment("Guardando el resultado float en la pila");
+        c.Push(Register.D0);
+        
+        // Crear un objeto de tipo float para el resultado
+        c.Comment("Creando objeto float para el resultado");
+        var resultObject = c.FloatObject();
+        c.PushObject(resultObject);
+        
         return null;
     }
 

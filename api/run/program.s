@@ -371,16 +371,16 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Comparison with operator: <=
 CMP x0, x1
-B.le cmp_true_7a449e3b
+B.le cmp_true_e78e6452
 MOV x0, #0
-B cmp_end_d9d667d6
-cmp_true_7a449e3b:
+B cmp_end_85b0a8c6
+cmp_true_e78e6452:
 MOV x0, #1
-cmp_end_d9d667d6:
+cmp_end_85b0a8c6:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_267fd748
+CBZ x0, else_4e40d3e1
 // Then block
 // Block statement
 // Return statement
@@ -396,9 +396,9 @@ LDR x30, [SP], #8
 LDR x29, [SP], #8
 // Return to caller
 RET
-B endif_b4c8cc0f
-else_267fd748:
-endif_b4c8cc0f:
+B endif_61ee2a5c
+else_4e40d3e1:
+endif_61ee2a5c:
 // Return statement
 // Evaluating return expression
 // MulDiv operation
@@ -498,16 +498,16 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_9c533cb6
+B.eq eq_true_5d98e57c
 MOV x0, #0
-B eq_end_8c229ec9
-eq_true_9c533cb6:
+B eq_end_465be960
+eq_true_5d98e57c:
 MOV x0, #1
-eq_end_8c229ec9:
+eq_end_465be960:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_d599c608
+CBZ x0, else_4ddd2690
 // Then block
 // Block statement
 // Return statement
@@ -539,8 +539,8 @@ LDR x30, [SP], #8
 LDR x29, [SP], #8
 // Return to caller
 RET
-B endif_29b4d357
-else_d599c608:
+B endif_e6e5b430
+else_4ddd2690:
 // Else block
 // Else-if branch
 // If statement
@@ -565,16 +565,16 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Comparison with operator: >
 CMP x0, x1
-B.gt cmp_true_98a45a8b
+B.gt cmp_true_5a68ff29
 MOV x0, #0
-B cmp_end_65f9fea9
-cmp_true_98a45a8b:
+B cmp_end_2594108b
+cmp_true_5a68ff29:
 MOV x0, #1
-cmp_end_65f9fea9:
+cmp_end_2594108b:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Short-circuit evaluation: if first operand is false, result is false
-CBZ x0, and_false_1cdf859f
+CBZ x0, and_false_aee57b5c
 // First operand is true, evaluating second operand
 // Equality operation
 // Visiting left operand
@@ -594,22 +594,22 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_8500a9b1
+B.eq eq_true_cc216dff
 MOV x0, #0
-B eq_end_30ec6e2e
-eq_true_8500a9b1:
+B eq_end_72e38727
+eq_true_cc216dff:
 MOV x0, #1
-eq_end_30ec6e2e:
+eq_end_72e38727:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
-B and_end_d86c378f
-and_false_1cdf859f:
+B and_end_410e4c44
+and_false_aee57b5c:
 MOV x0, #0
-and_end_d86c378f:
+and_end_410e4c44:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_0397bc6a
+CBZ x0, else_f7cabc2c
 // Then block
 // Block statement
 // Return statement
@@ -657,8 +657,8 @@ LDR x30, [SP], #8
 LDR x29, [SP], #8
 // Return to caller
 RET
-B endif_6bc4f084
-else_0397bc6a:
+B endif_7c9d8b9d
+else_f7cabc2c:
 // Else block
 // Else branch with block
 // Block statement
@@ -743,8 +743,8 @@ LDR x30, [SP], #8
 LDR x29, [SP], #8
 // Return to caller
 RET
-endif_6bc4f084:
-endif_29b4d357:
+endif_7c9d8b9d:
+endif_e6e5b430:
 ret_ackermann:
 // Function epilogue
 // SP = FP
@@ -793,16 +793,16 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_c18b8833
+B.eq eq_true_dfed119c
 MOV x0, #0
-B eq_end_b4670e7d
-eq_true_c18b8833:
+B eq_end_e7bf815e
+eq_true_dfed119c:
 MOV x0, #1
-eq_end_b4670e7d:
+eq_end_e7bf815e:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_6786ba36
+CBZ x0, else_0dea5e6f
 // Then block
 // Block statement
 // Print statement
@@ -1000,9 +1000,9 @@ LDR x30, [SP], #8
 LDR x29, [SP], #8
 // Return to caller
 RET
-B endif_773b423b
-else_6786ba36:
-endif_773b423b:
+B endif_982b85bc
+else_0dea5e6f:
+endif_982b85bc:
 // Expression statement
 // Function call: hanoi
 // Processing 4 arguments
@@ -1369,6 +1369,10 @@ STR x30, [SP, #-8]!
 MOV x29, sp
 // Function body
 // Block statement
+// Implicit declaration: puntos
+// Constant 0
+MOV x0, #0
+STR x0, [SP, #-8]!
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 1 expressions to print
@@ -2472,16 +2476,16 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_06201c1a
+B.eq eq_true_b1f0107b
 MOV x0, #0
-B eq_end_e0f15f40
-eq_true_06201c1a:
+B eq_end_0bc2c75c
+eq_true_b1f0107b:
 MOV x0, #1
-eq_end_e0f15f40:
+eq_end_0bc2c75c:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_0cca5445
+CBZ x0, else_4d6ded43
 // Then block
 // Block statement
 // Assignment statement
@@ -2794,8 +2798,8 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-B endif_afea5e22
-else_0cca5445:
+B endif_9358ac38
+else_4d6ded43:
 // Else block
 // Else branch with block
 // Block statement
@@ -3087,7 +3091,7 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-endif_afea5e22:
+endif_9358ac38:
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 1 expressions to print
@@ -4147,6 +4151,582 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
+// If statement
+// Evaluating condition
+// Equality operation
+// Visiting left operand
+// Loading variable 'resultadoSuma'
+// Calculating offset for variable 'resultadoSuma'
+MOV x0, #0
+ADD x0, sp, x0
+LDR x0, [x0, #0]
+// Pushing copy of variable value for 'resultadoSuma'
+STR x0, [SP, #-8]!
+// Visiting right operand
+// Constant 30
+MOV x0, #30
+STR x0, [SP, #-8]!
+// Popping operands
+LDR x1, [SP], #8
+LDR x0, [SP], #8
+// Integer equality check with operator: ==
+CMP x0, x1
+B.eq eq_true_ea81c123
+MOV x0, #0
+B eq_end_1be26c25
+eq_true_ea81c123:
+MOV x0, #1
+eq_end_1be26c25:
+STR x0, [SP, #-8]!
+LDR x0, [SP], #8
+// Checking condition
+CBZ x0, else_859034ec
+// Then block
+// Block statement
+// Assignment statement
+// Assignment to variable: puntosFuncionesParametros
+// AddSub operation
+// Visiting left operand
+// Loading variable 'puntosFuncionesParametros'
+// Calculating offset for variable 'puntosFuncionesParametros'
+MOV x0, #8
+ADD x0, sp, x0
+LDR x0, [x0, #0]
+// Pushing copy of variable value for 'puntosFuncionesParametros'
+STR x0, [SP, #-8]!
+// Visiting right operand
+// Constant 5
+MOV x0, #5
+STR x0, [SP, #-8]!
+// Popping operands
+LDR x1, [SP], #8
+LDR x0, [SP], #8
+ADD x0, x0, x1
+// Pushing integer result
+STR x0, [SP, #-8]!
+LDR x0, [SP], #8
+// Storing value to variable 'puntosFuncionesParametros' at offset 8
+MOV x1, #8
+ADD x1, sp, x1
+STR x0, [x1, #0]
+// Assignment complete
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Processing 1 expressions to print
+// Processing expression 1 of 1
+// String constant: OK Función con parámetros y retorno: correcto
+STR x10, [SP, #-8]!
+// Pushing character 0: 79
+MOV w0, #79
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 75
+MOV w0, #75
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 70
+MOV w0, #70
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 117
+MOV w0, #117
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 6: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 7: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 8: 243
+MOV w0, #243
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 9: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 10: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 11: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 12: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 13: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 14: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 15: 112
+MOV w0, #112
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 16: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 17: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 18: 225
+MOV w0, #225
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 19: 109
+MOV w0, #109
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 20: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 21: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 22: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 23: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 24: 115
+MOV w0, #115
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 25: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 26: 121
+MOV w0, #121
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 27: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 28: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 29: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 30: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 31: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 32: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 33: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 34: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 35: 58
+MOV w0, #58
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 36: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 37: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 38: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 39: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 40: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 41: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 42: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 43: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 44: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Popping value 1 for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_string
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Adding newline at end
+// Print newline character
+MOV X0, #1
+SUB SP, SP, #16
+MOV W1, #10
+STRB W1, [SP]
+MOV X1, SP
+MOV X2, #1
+MOV W8, #64
+SVC #0
+ADD SP, SP, #16
+B endif_a45cab17
+else_859034ec:
+// Else block
+// Else branch with block
+// Block statement
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Processing 1 expressions to print
+// Processing expression 1 of 1
+// String constant: X Función con parámetros y retorno: incorrecto
+STR x10, [SP, #-8]!
+// Pushing character 0: 88
+MOV w0, #88
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 70
+MOV w0, #70
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 117
+MOV w0, #117
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 6: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 7: 243
+MOV w0, #243
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 8: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 9: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 10: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 11: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 12: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 13: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 14: 112
+MOV w0, #112
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 15: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 16: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 17: 225
+MOV w0, #225
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 18: 109
+MOV w0, #109
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 19: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 20: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 21: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 22: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 23: 115
+MOV w0, #115
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 24: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 25: 121
+MOV w0, #121
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 26: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 27: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 28: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 29: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 30: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 31: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 32: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 33: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 34: 58
+MOV w0, #58
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 35: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 36: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 37: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 38: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 39: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 40: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 41: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 42: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 43: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 44: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 45: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Popping value 1 for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_string
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Adding newline at end
+// Print newline character
+MOV X0, #1
+SUB SP, SP, #16
+MOV W1, #10
+STRB W1, [SP]
+MOV X1, SP
+MOV X2, #1
+MOV W8, #64
+SVC #0
+ADD SP, SP, #16
+endif_a45cab17:
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 1 expressions to print
@@ -4579,16 +5159,16 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_02df3aad
+B.eq eq_true_51e25707
 MOV x0, #0
-B eq_end_2e8f86b9
-eq_true_02df3aad:
+B eq_end_ff8f9d57
+eq_true_51e25707:
 MOV x0, #1
-eq_end_2e8f86b9:
+eq_end_ff8f9d57:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_9c32c697
+CBZ x0, else_8e2fd89e
 // Then block
 // Block statement
 // Assignment statement
@@ -4796,8 +5376,8 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-B endif_53ee3bae
-else_9c32c697:
+B endif_c9ae23b3
+else_8e2fd89e:
 // Else block
 // Else branch with block
 // Block statement
@@ -4984,7 +5564,7 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-endif_53ee3bae:
+endif_c9ae23b3:
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 1 expressions to print
@@ -5620,16 +6200,16 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_89521095
+B.eq eq_true_b3c6cbfc
 MOV x0, #0
-B eq_end_86f872af
-eq_true_89521095:
+B eq_end_ab4e8e9a
+eq_true_b3c6cbfc:
 MOV x0, #1
-eq_end_86f872af:
+eq_end_ab4e8e9a:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_a59e0f4d
+CBZ x0, else_d704edcd
 // Then block
 // Block statement
 // Assignment statement
@@ -5837,8 +6417,8 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-B endif_a695b0a0
-else_a59e0f4d:
+B endif_bda188e3
+else_d704edcd:
 // Else block
 // Else branch with block
 // Block statement
@@ -6025,7 +6605,2289 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-endif_a695b0a0:
+endif_bda188e3:
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Processing 1 expressions to print
+// Processing expression 1 of 1
+// String constant: \n==== strconv.Atoi ====
+STR x10, [SP, #-8]!
+// Pushing escape sequence character: \
+MOV w0, #92
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing escape sequence character: n
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 61
+MOV w0, #61
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 61
+MOV w0, #61
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 61
+MOV w0, #61
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 61
+MOV w0, #61
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 6: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 7: 115
+MOV w0, #115
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 8: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 9: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 10: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 11: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 12: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 13: 118
+MOV w0, #118
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 14: 46
+MOV w0, #46
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 15: 65
+MOV w0, #65
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 16: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 17: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 18: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 19: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 20: 61
+MOV w0, #61
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 21: 61
+MOV w0, #61
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 22: 61
+MOV w0, #61
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 23: 61
+MOV w0, #61
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Popping value 1 for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_string
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Adding newline at end
+// Print newline character
+MOV X0, #1
+SUB SP, SP, #16
+MOV W1, #10
+STRB W1, [SP]
+MOV X1, SP
+MOV X2, #1
+MOV W8, #64
+SVC #0
+ADD SP, SP, #16
+// Implicit declaration: puntosAtoi
+// Constant 0
+MOV x0, #0
+STR x0, [SP, #-8]!
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Processing 1 expressions to print
+// Processing expression 1 of 1
+// String constant: Conversión de string a int:
+STR x10, [SP, #-8]!
+// Pushing character 0: 67
+MOV w0, #67
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 118
+MOV w0, #118
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 6: 115
+MOV w0, #115
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 7: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 8: 243
+MOV w0, #243
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 9: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 10: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 11: 100
+MOV w0, #100
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 12: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 13: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 14: 115
+MOV w0, #115
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 15: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 16: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 17: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 18: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 19: 103
+MOV w0, #103
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 20: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 21: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 22: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 23: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 24: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 25: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 26: 58
+MOV w0, #58
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Popping value 1 for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_string
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Adding newline at end
+// Print newline character
+MOV X0, #1
+SUB SP, SP, #16
+MOV W1, #10
+STRB W1, [SP]
+MOV X1, SP
+MOV X2, #1
+MOV W8, #64
+SVC #0
+ADD SP, SP, #16
+// Implicit declaration: numeroEntero
+// strconv.Atoi - Convertir string a entero
+// String constant: 123
+STR x10, [SP, #-8]!
+// Pushing character 0: 49
+MOV w0, #49
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 50
+MOV w0, #50
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 51
+MOV w0, #51
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+LDR x0, [SP], #8
+// Inicializando variables para la conversión
+MOV x1, #0
+MOV x2, #1
+MOV x3, #0
+// Verificando si hay signo
+LDRB w4, [x0]
+CMP w4, 45
+B.ne check_digit
+// Procesando signo negativo
+MOV x2, #-1
+ADD x3, x3, 1
+check_digit:
+atoi_convert_90d8390e:
+ADD x4, x0, x3
+LDRB w4, [x4]
+CMP w4, 0
+B.eq atoi_end_fa703584
+SUB w5, w4, 48
+CMP w5, 9
+B.hi atoi_error_c11057c5
+CMP w5, 0
+B.lt atoi_error_c11057c5
+// Procesando dígito
+MOV x6, #10
+MUL x1, x1, x6
+ADD x1, x1, x5
+ADD x3, x3, 1
+B atoi_convert_90d8390e
+atoi_error_c11057c5:
+// Error en conversión: Carácter inválido
+MOV x0, #0
+B atoi_end_fa703584
+atoi_end_fa703584:
+// Aplicando signo al resultado
+MUL x0, x1, x2
+// Guardando el resultado entero en la pila
+STR x0, [SP, #-8]!
+// Creando objeto entero para el resultado
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Processing 2 expressions to print
+// Processing expression 1 of 2
+// String constant: \"123\" convertido a int:
+STR x10, [SP, #-8]!
+// Pushing escape sequence character: \
+MOV w0, #92
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing escape sequence character: "
+MOV w0, #34
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 49
+MOV w0, #49
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 50
+MOV w0, #50
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 51
+MOV w0, #51
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing escape sequence character: \
+MOV w0, #92
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing escape sequence character: "
+MOV w0, #34
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 7: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 8: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 9: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 10: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 11: 118
+MOV w0, #118
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 12: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 13: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 14: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 15: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 16: 100
+MOV w0, #100
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 17: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 18: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 19: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 20: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 21: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 22: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 23: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 24: 58
+MOV w0, #58
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Popping value 1 for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_string
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Printing space between values
+// Print space character
+MOV X0, #1
+SUB SP, SP, #16
+MOV W1, #32
+STRB W1, [SP]
+MOV X1, SP
+MOV X2, #1
+MOV W8, #64
+SVC #0
+ADD SP, SP, #16
+// Processing expression 2 of 2
+// Loading variable 'numeroEntero'
+// Calculating offset for variable 'numeroEntero'
+MOV x0, #0
+ADD x0, sp, x0
+LDR x0, [x0, #0]
+// Pushing copy of variable value for 'numeroEntero'
+STR x0, [SP, #-8]!
+// Popping value 2 for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_integer_no_newline
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Adding newline at end
+// Print newline character
+MOV X0, #1
+SUB SP, SP, #16
+MOV W1, #10
+STRB W1, [SP]
+MOV X1, SP
+MOV X2, #1
+MOV W8, #64
+SVC #0
+ADD SP, SP, #16
+// If statement
+// Evaluating condition
+// Equality operation
+// Visiting left operand
+// Loading variable 'numeroEntero'
+// Calculating offset for variable 'numeroEntero'
+MOV x0, #0
+ADD x0, sp, x0
+LDR x0, [x0, #0]
+// Pushing copy of variable value for 'numeroEntero'
+STR x0, [SP, #-8]!
+// Visiting right operand
+// Constant 123
+MOV x0, #123
+STR x0, [SP, #-8]!
+// Popping operands
+LDR x1, [SP], #8
+LDR x0, [SP], #8
+// Integer equality check with operator: ==
+CMP x0, x1
+B.eq eq_true_ae09d260
+MOV x0, #0
+B eq_end_650f6b19
+eq_true_ae09d260:
+MOV x0, #1
+eq_end_650f6b19:
+STR x0, [SP, #-8]!
+LDR x0, [SP], #8
+// Checking condition
+CBZ x0, else_b17848cb
+// Then block
+// Block statement
+// Assignment statement
+// Assignment to variable: puntosAtoi
+// AddSub operation
+// Visiting left operand
+// Loading variable 'puntosAtoi'
+// Calculating offset for variable 'puntosAtoi'
+MOV x0, #8
+ADD x0, sp, x0
+LDR x0, [x0, #0]
+// Pushing copy of variable value for 'puntosAtoi'
+STR x0, [SP, #-8]!
+// Visiting right operand
+// Constant 2
+MOV x0, #2
+STR x0, [SP, #-8]!
+// Popping operands
+LDR x1, [SP], #8
+LDR x0, [SP], #8
+ADD x0, x0, x1
+// Pushing integer result
+STR x0, [SP, #-8]!
+LDR x0, [SP], #8
+// Storing value to variable 'puntosAtoi' at offset 8
+MOV x1, #8
+ADD x1, sp, x1
+STR x0, [x1, #0]
+// Assignment complete
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Processing 1 expressions to print
+// Processing expression 1 of 1
+// String constant: OK strconv.Atoi: correcto
+STR x10, [SP, #-8]!
+// Pushing character 0: 79
+MOV w0, #79
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 75
+MOV w0, #75
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 115
+MOV w0, #115
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 6: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 7: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 8: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 9: 118
+MOV w0, #118
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 10: 46
+MOV w0, #46
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 11: 65
+MOV w0, #65
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 12: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 13: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 14: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 15: 58
+MOV w0, #58
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 16: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 17: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 18: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 19: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 20: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 21: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 22: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 23: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 24: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Popping value 1 for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_string
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Adding newline at end
+// Print newline character
+MOV X0, #1
+SUB SP, SP, #16
+MOV W1, #10
+STRB W1, [SP]
+MOV X1, SP
+MOV X2, #1
+MOV W8, #64
+SVC #0
+ADD SP, SP, #16
+B endif_3d39ffe7
+else_b17848cb:
+// Else block
+// Else branch with block
+// Block statement
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Processing 1 expressions to print
+// Processing expression 1 of 1
+// String constant: X strconv.Atoi: incorrecto
+STR x10, [SP, #-8]!
+// Pushing character 0: 88
+MOV w0, #88
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 115
+MOV w0, #115
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 6: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 7: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 8: 118
+MOV w0, #118
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 9: 46
+MOV w0, #46
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 10: 65
+MOV w0, #65
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 11: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 12: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 13: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 14: 58
+MOV w0, #58
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 15: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 16: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 17: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 18: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 19: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 20: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 21: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 22: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 23: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 24: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 25: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Popping value 1 for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_string
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Adding newline at end
+// Print newline character
+MOV X0, #1
+SUB SP, SP, #16
+MOV W1, #10
+STRB W1, [SP]
+MOV X1, SP
+MOV X2, #1
+MOV W8, #64
+SVC #0
+ADD SP, SP, #16
+endif_3d39ffe7:
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Processing 1 expressions to print
+// Processing expression 1 of 1
+// String constant: \n==== strconv.ParseFloat ====
+STR x10, [SP, #-8]!
+// Pushing escape sequence character: \
+MOV w0, #92
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing escape sequence character: n
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 61
+MOV w0, #61
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 61
+MOV w0, #61
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 61
+MOV w0, #61
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 61
+MOV w0, #61
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 6: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 7: 115
+MOV w0, #115
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 8: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 9: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 10: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 11: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 12: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 13: 118
+MOV w0, #118
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 14: 46
+MOV w0, #46
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 15: 80
+MOV w0, #80
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 16: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 17: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 18: 115
+MOV w0, #115
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 19: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 20: 70
+MOV w0, #70
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 21: 108
+MOV w0, #108
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 22: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 23: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 24: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 25: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 26: 61
+MOV w0, #61
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 27: 61
+MOV w0, #61
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 28: 61
+MOV w0, #61
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 29: 61
+MOV w0, #61
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Popping value 1 for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_string
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Adding newline at end
+// Print newline character
+MOV X0, #1
+SUB SP, SP, #16
+MOV W1, #10
+STRB W1, [SP]
+MOV X1, SP
+MOV X2, #1
+MOV W8, #64
+SVC #0
+ADD SP, SP, #16
+// Implicit declaration: puntosParseFloat
+// Constant 0
+MOV x0, #0
+STR x0, [SP, #-8]!
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Processing 1 expressions to print
+// Processing expression 1 of 1
+// String constant: Conversión de string a float64:
+STR x10, [SP, #-8]!
+// Pushing character 0: 67
+MOV w0, #67
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 118
+MOV w0, #118
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 6: 115
+MOV w0, #115
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 7: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 8: 243
+MOV w0, #243
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 9: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 10: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 11: 100
+MOV w0, #100
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 12: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 13: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 14: 115
+MOV w0, #115
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 15: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 16: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 17: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 18: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 19: 103
+MOV w0, #103
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 20: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 21: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 22: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 23: 102
+MOV w0, #102
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 24: 108
+MOV w0, #108
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 25: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 26: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 27: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 28: 54
+MOV w0, #54
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 29: 52
+MOV w0, #52
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 30: 58
+MOV w0, #58
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Popping value 1 for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_string
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Adding newline at end
+// Print newline character
+MOV X0, #1
+SUB SP, SP, #16
+MOV W1, #10
+STRB W1, [SP]
+MOV X1, SP
+MOV X2, #1
+MOV W8, #64
+SVC #0
+ADD SP, SP, #16
+// Implicit declaration: numeroDecimal1
+// strconv.ParseFloat - Convertir string a float64
+// String constant: 123.45
+STR x10, [SP, #-8]!
+// Pushing character 0: 49
+MOV w0, #49
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 50
+MOV w0, #50
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 51
+MOV w0, #51
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 46
+MOV w0, #46
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 52
+MOV w0, #52
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 53
+MOV w0, #53
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+// X0 contiene la dirección del string a convertir
+BL string_to_float
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Guardando el resultado float en la pila
+STR d0, [SP, #-8]!
+// Creando objeto float para el resultado
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Processing 2 expressions to print
+// Processing expression 1 of 2
+// String constant: \"123.45\" convertido a float64:
+STR x10, [SP, #-8]!
+// Pushing escape sequence character: \
+MOV w0, #92
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing escape sequence character: "
+MOV w0, #34
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 49
+MOV w0, #49
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 50
+MOV w0, #50
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 51
+MOV w0, #51
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 46
+MOV w0, #46
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 6: 52
+MOV w0, #52
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 7: 53
+MOV w0, #53
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing escape sequence character: \
+MOV w0, #92
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing escape sequence character: "
+MOV w0, #34
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 10: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 11: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 12: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 13: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 14: 118
+MOV w0, #118
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 15: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 16: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 17: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 18: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 19: 100
+MOV w0, #100
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 20: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 21: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 22: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 23: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 24: 102
+MOV w0, #102
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 25: 108
+MOV w0, #108
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 26: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 27: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 28: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 29: 54
+MOV w0, #54
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 30: 52
+MOV w0, #52
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 31: 58
+MOV w0, #58
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Popping value 1 for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_string
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Printing space between values
+// Print space character
+MOV X0, #1
+SUB SP, SP, #16
+MOV W1, #32
+STRB W1, [SP]
+MOV X1, SP
+MOV X2, #1
+MOV W8, #64
+SVC #0
+ADD SP, SP, #16
+// Processing expression 2 of 2
+// Loading variable 'numeroDecimal1'
+// Calculating offset for variable 'numeroDecimal1'
+MOV x0, #0
+ADD x0, sp, x0
+LDR x0, [x0, #0]
+// Pushing copy of variable value for 'numeroDecimal1'
+STR x0, [SP, #-8]!
+// Popping value 2 for printing
+LDR d0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+BL print_double
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Adding newline at end
+// Print newline character
+MOV X0, #1
+SUB SP, SP, #16
+MOV W1, #10
+STRB W1, [SP]
+MOV X1, SP
+MOV X2, #1
+MOV W8, #64
+SVC #0
+ADD SP, SP, #16
+// Implicit declaration: numeroDecimal2
+// strconv.ParseFloat - Convertir string a float64
+// String constant: 123
+STR x10, [SP, #-8]!
+// Pushing character 0: 49
+MOV w0, #49
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 50
+MOV w0, #50
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 51
+MOV w0, #51
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+// X0 contiene la dirección del string a convertir
+BL string_to_float
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Guardando el resultado float en la pila
+STR d0, [SP, #-8]!
+// Creando objeto float para el resultado
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Processing 2 expressions to print
+// Processing expression 1 of 2
+// String constant: \"123\" convertido a float64:
+STR x10, [SP, #-8]!
+// Pushing escape sequence character: \
+MOV w0, #92
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing escape sequence character: "
+MOV w0, #34
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 49
+MOV w0, #49
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 50
+MOV w0, #50
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 51
+MOV w0, #51
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing escape sequence character: \
+MOV w0, #92
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing escape sequence character: "
+MOV w0, #34
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 7: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 8: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 9: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 10: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 11: 118
+MOV w0, #118
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 12: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 13: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 14: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 15: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 16: 100
+MOV w0, #100
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 17: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 18: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 19: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 20: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 21: 102
+MOV w0, #102
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 22: 108
+MOV w0, #108
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 23: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 24: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 25: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 26: 54
+MOV w0, #54
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 27: 52
+MOV w0, #52
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 28: 58
+MOV w0, #58
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Popping value 1 for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_string
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Printing space between values
+// Print space character
+MOV X0, #1
+SUB SP, SP, #16
+MOV W1, #32
+STRB W1, [SP]
+MOV X1, SP
+MOV X2, #1
+MOV W8, #64
+SVC #0
+ADD SP, SP, #16
+// Processing expression 2 of 2
+// Loading variable 'numeroDecimal2'
+// Calculating offset for variable 'numeroDecimal2'
+MOV x0, #0
+ADD x0, sp, x0
+LDR x0, [x0, #0]
+// Pushing copy of variable value for 'numeroDecimal2'
+STR x0, [SP, #-8]!
+// Popping value 2 for printing
+LDR d0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+BL print_double
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Adding newline at end
+// Print newline character
+MOV X0, #1
+SUB SP, SP, #16
+MOV W1, #10
+STRB W1, [SP]
+MOV X1, SP
+MOV X2, #1
+MOV W8, #64
+SVC #0
+ADD SP, SP, #16
+// If statement
+// Evaluating condition
+// Logical AND operation
+// Evaluating first operand
+// Equality operation
+// Visiting left operand
+// Loading variable 'numeroDecimal1'
+// Calculating offset for variable 'numeroDecimal1'
+MOV x0, #8
+ADD x0, sp, x0
+LDR x0, [x0, #0]
+// Pushing copy of variable value for 'numeroDecimal1'
+STR x0, [SP, #-8]!
+// Visiting right operand
+// Float constant: 123.45
+// Loading float value: 123.45 (hex: 0x405EDCCCCCCCCCCD)
+MOVZ x0, #0xCCCD, LSL #0
+MOVK x0, #0xCCCC, LSL #16
+MOVK x0, #0xDCCC, LSL #32
+MOVK x0, #0x405E, LSL #48
+FMOV d0, x0
+STR d0, [SP, #-8]!
+// Popping operands
+LDR d1, [SP], #8
+LDR d0, [SP], #8
+// Float equality comparison
+// Comparing float values
+FCMP d0, d1
+B.eq eq_true_dd746fd3
+MOV x0, #0
+B eq_end_ab3bf7e6
+eq_true_dd746fd3:
+MOV x0, #1
+eq_end_ab3bf7e6:
+STR x0, [SP, #-8]!
+LDR x0, [SP], #8
+// Short-circuit evaluation: if first operand is false, result is false
+CBZ x0, and_false_cd5f1f34
+// First operand is true, evaluating second operand
+// Equality operation
+// Visiting left operand
+// Loading variable 'numeroDecimal2'
+// Calculating offset for variable 'numeroDecimal2'
+MOV x0, #0
+ADD x0, sp, x0
+LDR x0, [x0, #0]
+// Pushing copy of variable value for 'numeroDecimal2'
+STR x0, [SP, #-8]!
+// Visiting right operand
+// Float constant: 123.0
+// Loading float value: 123 (hex: 0x405EC00000000000)
+MOVZ x0, #0x0, LSL #0
+MOVK x0, #0x0, LSL #16
+MOVK x0, #0xC000, LSL #32
+MOVK x0, #0x405E, LSL #48
+FMOV d0, x0
+STR d0, [SP, #-8]!
+// Popping operands
+LDR d1, [SP], #8
+LDR d0, [SP], #8
+// Float equality comparison
+// Comparing float values
+FCMP d0, d1
+B.eq eq_true_692d007c
+MOV x0, #0
+B eq_end_14e4cdfe
+eq_true_692d007c:
+MOV x0, #1
+eq_end_14e4cdfe:
+STR x0, [SP, #-8]!
+LDR x0, [SP], #8
+B and_end_0e8932e4
+and_false_cd5f1f34:
+MOV x0, #0
+and_end_0e8932e4:
+STR x0, [SP, #-8]!
+LDR x0, [SP], #8
+// Checking condition
+CBZ x0, else_73fd8abe
+// Then block
+// Block statement
+// Assignment statement
+// Assignment to variable: puntosParseFloat
+// AddSub operation
+// Visiting left operand
+// Loading variable 'puntosParseFloat'
+// Calculating offset for variable 'puntosParseFloat'
+MOV x0, #16
+ADD x0, sp, x0
+LDR x0, [x0, #0]
+// Pushing copy of variable value for 'puntosParseFloat'
+STR x0, [SP, #-8]!
+// Visiting right operand
+// Constant 2
+MOV x0, #2
+STR x0, [SP, #-8]!
+// Popping operands
+LDR x1, [SP], #8
+LDR x0, [SP], #8
+ADD x0, x0, x1
+// Pushing integer result
+STR x0, [SP, #-8]!
+LDR x0, [SP], #8
+// Storing value to variable 'puntosParseFloat' at offset 16
+MOV x1, #16
+ADD x1, sp, x1
+STR x0, [x1, #0]
+// Assignment complete
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Processing 1 expressions to print
+// Processing expression 1 of 1
+// String constant: OK strconv.ParseFloat: correcto
+STR x10, [SP, #-8]!
+// Pushing character 0: 79
+MOV w0, #79
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 75
+MOV w0, #75
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 115
+MOV w0, #115
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 6: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 7: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 8: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 9: 118
+MOV w0, #118
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 10: 46
+MOV w0, #46
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 11: 80
+MOV w0, #80
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 12: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 13: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 14: 115
+MOV w0, #115
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 15: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 16: 70
+MOV w0, #70
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 17: 108
+MOV w0, #108
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 18: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 19: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 20: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 21: 58
+MOV w0, #58
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 22: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 23: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 24: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 25: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 26: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 27: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 28: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 29: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 30: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Popping value 1 for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_string
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Adding newline at end
+// Print newline character
+MOV X0, #1
+SUB SP, SP, #16
+MOV W1, #10
+STRB W1, [SP]
+MOV X1, SP
+MOV X2, #1
+MOV W8, #64
+SVC #0
+ADD SP, SP, #16
+B endif_6d532f65
+else_73fd8abe:
+// Else block
+// Else branch with block
+// Block statement
+// Print statement
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Processing 1 expressions to print
+// Processing expression 1 of 1
+// String constant: X strconv.ParseFloat: incorrecto
+STR x10, [SP, #-8]!
+// Pushing character 0: 88
+MOV w0, #88
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 115
+MOV w0, #115
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 4: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 5: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 6: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 7: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 8: 118
+MOV w0, #118
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 9: 46
+MOV w0, #46
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 10: 80
+MOV w0, #80
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 11: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 12: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 13: 115
+MOV w0, #115
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 14: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 15: 70
+MOV w0, #70
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 16: 108
+MOV w0, #108
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 17: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 18: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 19: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 20: 58
+MOV w0, #58
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 21: 32
+MOV w0, #32
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 22: 105
+MOV w0, #105
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 23: 110
+MOV w0, #110
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 24: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 25: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 26: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 27: 114
+MOV w0, #114
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 28: 101
+MOV w0, #101
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 29: 99
+MOV w0, #99
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 30: 116
+MOV w0, #116
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 31: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Popping value 1 for printing
+LDR x0, [SP], #8
+.balign 16     // Garantizar alineamiento a 16 bytes
+MOV X0, x0
+BL print_string
+.balign 16     // Garantizar alineamiento después de llamada a función
+// Adding newline at end
+// Print newline character
+MOV X0, #1
+SUB SP, SP, #16
+MOV W1, #10
+STRB W1, [SP]
+MOV X1, SP
+MOV X2, #1
+MOV W8, #64
+SVC #0
+ADD SP, SP, #16
+endif_6d532f65:
+// Removing leftover object from stack
+LDR x0, [SP], #8
+// Removing leftover object from stack
+LDR x0, [SP], #8
+// Removing leftover object from stack
+LDR x0, [SP], #8
+// Removing leftover object from stack
+LDR x0, [SP], #8
+// Removing leftover object from stack
+LDR x0, [SP], #8
+// Removing leftover object from stack
+LDR x0, [SP], #8
 // Removing leftover object from stack
 LDR x0, [SP], #8
 // Removing leftover object from stack
@@ -6375,6 +9237,362 @@ print_result_nonl:
 .balign 4       // Alinear a 4 bytes (una palabra)
 minus_sign_nonl:
     .ascii "-"               // Minus sign
+
+
+
+//--------------------------------------------------------------
+// string_to_float - Converts a string to a floating-point value
+//
+// Input:
+//   x0 - Address of null-terminated string to convert
+//
+// Output:
+//   d0 - Floating point value
+//--------------------------------------------------------------
+.balign 4       // Alinear a 4 bytes (una palabra)
+string_to_float:
+    // Save registers
+    stp x29, x30, [sp, #-16]!  // Save frame pointer and link register
+    stp x19, x20, [sp, #-16]!  // Save callee-saved registers
+    stp x21, x22, [sp, #-16]!  // Save more callee-saved registers
+    stp x23, x24, [sp, #-16]!  // Save more callee-saved registers
+    stp x25, x26, [sp, #-16]!  // Save more callee-saved registers
+    stp d8, d9, [sp, #-16]!    // Save FP registers
+
+    // Initialize
+    mov x19, x0                // Save string pointer
+    mov x20, #0                // Integer part result
+    mov x21, #0                // Fractional part numerator
+    mov x22, #1                // Fractional part denominator (power of 10)
+    mov x23, #1                // Sign (1: positive, -1: negative)
+    mov x24, #0                // State: 0=integer part, 1=decimal part
+    mov x25, #10               // Constant 10 for multiplications
+
+    // Check for negative sign
+    ldrb w0, [x19]
+    cmp w0, #45                // '-' character
+    bne parse_digits
+    mov x23, #-1               // Set sign to negative
+    add x19, x19, #1           // Move to next character
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+parse_digits:
+    ldrb w0, [x19]             // Load next character
+    cbz w0, conversion_done    // If null terminator, we're done
+
+    // Check for decimal point
+    cmp w0, #46                // '.' character
+    beq decimal_point
+
+    // Check if it's a valid digit
+    sub w0, w0, #48            // Convert from ASCII to numeric value
+    cmp w0, #9                 // Check if it's 0-9
+    bhi conversion_error       // Not a digit
+
+    // Process digit
+    cmp x24, #0                // Check if we're processing integer part
+    beq process_int_digit
+
+    // Process fractional digit
+    mul x21, x21, x25          // Shift left existing fractional part (multiply by 10)
+    add x21, x21, x0           // Add new digit to fractional part
+    mul x22, x22, x25          // Multiply denominator by 10
+    b next_char
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+process_int_digit:
+    mul x20, x20, x25          // Multiply int part by 10
+    add x20, x20, x0           // Add digit
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+next_char:
+    add x19, x19, #1           // Move to next character
+    b parse_digits
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+decimal_point:
+    mov x24, #1                // Set state to fractional part
+    add x19, x19, #1           // Move past the decimal point
+    b parse_digits
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+conversion_error:
+    // On error, return 0.0
+    fmov d0, xzr
+    b cleanup
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+conversion_done:
+    // Convert integer part to double
+    scvtf d0, x20
+    
+    // If there's a fractional part
+    cbz x21, apply_sign
+    
+    // Convert fractional part to double
+    scvtf d8, x21
+    scvtf d9, x22
+    fdiv d8, d8, d9           // d8 = fractional part value
+    fadd d0, d0, d8           // Add to integer part
+    
+.balign 4       // Alinear a 4 bytes (una palabra)
+apply_sign:
+    // Apply sign
+    scvtf d8, x23
+    fmul d0, d0, d8
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+cleanup:
+    // Restore registers and return
+    ldp d8, d9, [sp], #16
+    ldp x25, x26, [sp], #16
+    ldp x23, x24, [sp], #16
+    ldp x21, x22, [sp], #16
+    ldp x19, x20, [sp], #16
+    ldp x29, x30, [sp], #16
+    ret
+
+
+
+//--------------------------------------------------------------
+// print_integer - Prints a signed integer to stdout
+//
+// Input:
+//   x0 - The integer value to print
+//--------------------------------------------------------------
+.balign 4       // Alinear a 4 bytes (una palabra)
+print_integer:
+    // Save registers
+    stp x29, x30, [sp, #-16]!  // Save frame pointer and link register
+    stp x19, x20, [sp, #-16]!  // Save callee-saved registers
+    stp x21, x22, [sp, #-16]!
+    stp x23, x24, [sp, #-16]!
+    stp x25, x26, [sp, #-16]!
+    stp x27, x28, [sp, #-16]!
+    
+    // Check if number is negative
+    mov x19, x0                // Save original number
+    cmp x19, #0                // Compare with zero
+    bge positive_number        // Branch if greater or equal to zero
+    
+    // Handle negative number
+    mov x0, #1                 // fd = 1 (stdout)
+    adr x1, minus_sign         // Address of minus sign
+    mov x2, #1                 // Length = 1
+    mov w8, #64                // Syscall write
+    svc #0
+    
+    neg x19, x19               // Make number positive
+    
+.balign 4       // Alinear a 4 bytes (una palabra)
+positive_number:
+    // Prepare buffer for converting result to ASCII
+    sub sp, sp, #32            // Reserve space on stack
+    mov x22, sp                // x22 points to buffer
+    
+    // Initialize digit counter
+    mov x23, #0                // Digit counter
+    
+    // Handle special case for zero
+    cmp x19, #0
+    bne convert_loop
+    
+    // If number is zero, just write '0'
+    mov w24, #48               // ASCII '0'
+    strb w24, [x22, x23]       // Store in buffer
+    add x23, x23, #1           // Increment counter
+    b print_result             // Skip conversion loop
+    
+.balign 4       // Alinear a 4 bytes (una palabra)
+convert_loop:
+    // Divide the number by 10
+    mov x24, #10
+    udiv x25, x19, x24         // x25 = x19 / 10 (quotient)
+    msub x26, x25, x24, x19    // x26 = x19 - (x25 * 10) (remainder)
+    
+    // Convert remainder to ASCII and store in buffer
+    add x26, x26, #48          // Convert to ASCII ('0' = 48)
+    strb w26, [x22, x23]       // Store digit in buffer
+    add x23, x23, #1           // Increment digit counter
+    
+    // Prepare for next iteration
+    mov x19, x25               // Quotient becomes the new number
+    cbnz x19, convert_loop     // If number is not zero, continue
+    
+    // Reverse the buffer since digits are in reverse order
+    mov x27, #0                // Start index
+.balign 4       // Alinear a 4 bytes (una palabra)
+reverse_loop:
+    sub x28, x23, x27          // x28 = length - current index
+    sub x28, x28, #1           // x28 = length - current index - 1
+    
+    cmp x27, x28               // Compare indices
+    bge print_result           // If crossed, finish reversing
+    
+    // Swap characters
+    ldrb w24, [x22, x27]       // Load character from start
+    ldrb w25, [x22, x28]       // Load character from end
+    strb w25, [x22, x27]       // Store end character at start
+    strb w24, [x22, x28]       // Store start character at end
+    
+    add x27, x27, #1           // Increment start index
+    b reverse_loop             // Continue reversing
+    
+.balign 4       // Alinear a 4 bytes (una palabra)
+print_result:
+    // Add newline
+    mov w24, #10               // Newline character
+    strb w24, [x22, x23]       // Add to end of buffer
+    add x23, x23, #1           // Increment counter
+    
+    // Print the result
+    mov x0, #1                 // fd = 1 (stdout)
+    mov x1, x22                // Buffer address
+    mov x2, x23                // Buffer length
+    mov w8, #64                // Syscall write
+    svc #0
+    
+    // Clean up and restore registers
+    add sp, sp, #32            // Free buffer space
+    ldp x27, x28, [sp], #16    // Restore callee-saved registers
+    ldp x25, x26, [sp], #16
+    ldp x23, x24, [sp], #16
+    ldp x21, x22, [sp], #16
+    ldp x19, x20, [sp], #16
+    ldp x29, x30, [sp], #16    // Restore frame pointer and link register
+    ret                        // Return to caller
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+minus_sign:
+    .ascii "-"               // Minus sign
+
+
+//--------------------------------------------------------------
+// print_double - Prints a double value to stdout
+// 
+// Input:
+//    d0 - The double value to print
+//--------------------------------------------------------------
+.balign 4       // Alinear a 4 bytes (una palabra)
+print_double:
+    // Save context
+    stp x29, x30, [sp, #-16]!  // Save frame pointer and link register
+    stp x19, x20, [sp, #-16]!  // Save callee-saved registers
+    stp x21, x22, [sp, #-16]!  // Save more callee-saved registers
+    stp x23, x24, [sp, #-16]!  // Save even more callee-saved registers
+
+    // Check if number is negative
+    fmov x19, d0                // Save original number
+    tst x19, #(1 << 63)         // Check sign bit
+    beq skip_minus              // Branch if not negative (equal to zero test)
+
+    // Print minus sign
+    mov x0, #1                 // fd = 1 (stdout)
+    adr x1, minus_sign         // Address of minus sign
+    mov x2, #1                 // Length = 1
+    mov w8, #64                // Syscall write
+    svc #0
+
+    // Make value positive
+    fneg d0, d0                // Negate the double value
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+skip_minus:
+    // Save original value in d7 for later use
+    fmov d7, d0
+
+    // Convert integer part
+    fcvtzs x0, d0              // Convert double to signed integer
+    scvtf d1, x0               // Convert back to float to get the integer part only
+    
+    // Print integer part WITHOUT newline
+    bl print_integer_no_newline // Call modified function
+
+    // Get the fractional part (d2 = d0 - integer part)
+    fsub d2, d7, d1            
+
+    // Check if the fractional part is zero
+    fcmp d2, #0.0
+    beq exit_function          // Si la parte fraccional es cero, saltar a la salida (sin salto de línea)
+
+    // Print dot
+    mov x0, #1                 // fd = 1 (stdout)
+    adr x1, dot_char           // Address of dot character
+    mov x2, #1                 // Length = 1
+    mov x8, #64                // Syscall write
+    svc #0                     // Print dot
+
+    // Multiply by precision (6 digits after decimal)
+    movz x1, #0x000F, lsl #16  // 0x000F0000
+    movk x1, #0x4240, lsl #0   // x1 = 1000000 (1e6)
+    scvtf d3, x1               // d3 = 1000000.0
+    fmul d2, d2, d3            // d2 = frac * 1000000.0
+
+    // Round to nearest integer    
+    frintn d2, d2              // Round to nearest integer
+    fcvtzs x0, d2              // Convert double to signed integer 
+    
+    // Remove trailing zeros if needed
+    // x0 now contains fractional part * 1000000
+    mov x19, x0                // Save in x19
+    cbz x19, exit_function     // Si es cero, saltar a la salida (sin salto de línea)
+
+    // Count trailing zeros
+    mov x21, #10               // Divisor
+    mov x22, #0                // Counter for trailing zeros
+    mov x20, x19               // Working copy
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+trailing_zeros_loop:
+    // Check if number is divisible by 10 with no remainder
+    udiv x23, x20, x21         // x23 = x20 / 10
+    msub x24, x23, x21, x20    // x24 = x20 - (x23 * 10) = remainder
+    cbnz x24, print_frac_part  // If there's a remainder, we're done counting
+
+    // No remainder, so it's trailing zero
+    udiv x20, x20, x21         // Remove last digit
+    add x22, x22, #1           // Increment counter
+    cbnz x20, trailing_zeros_loop // Continue if not zero
+    b exit_function            // Si solo hay ceros, saltar a la salida (sin salto de línea)
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+print_frac_part:
+    // Calculate divisor to remove trailing zeros
+    mov x20, #1                // Start with divisor = 1
+    mov x24, x22               // Copy counter to x24
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+calc_divisor_loop:
+    cbz x24, print_adjusted_frac // If counter is zero, we're done
+    mul x20, x20, x21          // Multiply by 10
+    sub x24, x24, #1           // Decrement counter
+    b calc_divisor_loop        // Continue
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+print_adjusted_frac:
+    // Divide by calculated divisor to remove trailing zeros
+    udiv x0, x19, x20          // x0 = adjusted fractional part
+    bl print_integer_no_newline // Print fractional part WITHOUT newline
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+exit_function:
+    // Eliminar la adición del newline
+    // El salto de línea lo agregará VisitPrintStatement al final de toda la instrucción fmt.Println
+    
+    // Restore context
+    ldp x23, x24, [sp], #16    // Restore callee-saved registers
+    ldp x21, x22, [sp], #16    // Restore callee-saved registers
+    ldp x19, x20, [sp], #16    // Restore callee-saved registers
+    ldp x29, x30, [sp], #16    // Restore frame pointer and link register
+    ret                        // Return to caller
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+dot_char:
+    .ascii "." 
+
+.balign 4       // Alinear a 4 bytes (una palabra)
+nl_char:
+    .ascii "\n"              // Newline character
 
 
 

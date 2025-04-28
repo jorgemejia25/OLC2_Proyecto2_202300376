@@ -439,6 +439,23 @@ public class ArmGenerator
         _instructions.Add($"LDR {rd}, [{rs1}, #{offset}]");
     }
 
+    public void Ldrb(string rd, string rs1, int offset = 0)
+    {
+        if (offset == 0)
+        {
+            _instructions.Add($"LDRB {rd}, [{rs1}]");
+        }
+        else
+        {
+            _instructions.Add($"LDRB {rd}, [{rs1}, #{offset}]");
+        }
+    }
+
+    public void Ldrb(string rd, string rs)
+    {
+        _instructions.Add($"LDRB {rd}, [{rs}]");
+    }
+
     public void Mov(string rd, int inm)
     {
         _instructions.Add($"MOV {rd}, #{inm}");

@@ -13,7 +13,8 @@ public class StandardLibrary
         { "print_bool", "void" },
         { "concat_strings", "string" },
         { "string_equals", "bool" },
-        { "float_mod", "float64" }
+        { "float_mod", "float64" },
+        { "string_to_float", "float64" }
     };
 
     private static readonly Dictionary<string, List<(string paramName, string paramType)>> _functionParameters = new Dictionary<string, List<(string, string)>>
@@ -25,7 +26,8 @@ public class StandardLibrary
         { "print_bool", new List<(string, string)> { ("value", "bool") } },
         { "concat_strings", new List<(string, string)> { ("str1", "string"), ("str2", "string") } },
         { "string_equals", new List<(string, string)> { ("str1", "string"), ("str2", "string") } },
-        { "float_mod", new List<(string, string)> { ("x", "float64"), ("y", "float64") } }
+        { "float_mod", new List<(string, string)> { ("x", "float64"), ("y", "float64") } },
+        { "string_to_float", new List<(string, string)> { ("str", "string") } }
     };
 
     public void Use(string function)
@@ -918,6 +920,111 @@ dot_char:
 
 nl_char:
     .ascii ""\n""              // Newline character
+" },
+
+    { "string_to_float", @"
+//--------------------------------------------------------------
+// string_to_float - Converts a string to a floating-point value
+//
+// Input:
+//   x0 - Address of null-terminated string to convert
+//
+// Output:
+//   d0 - Floating point value
+//--------------------------------------------------------------
+string_to_float:
+    // Save registers
+    stp x29, x30, [sp, #-16]!  // Save frame pointer and link register
+    stp x19, x20, [sp, #-16]!  // Save callee-saved registers
+    stp x21, x22, [sp, #-16]!  // Save more callee-saved registers
+    stp x23, x24, [sp, #-16]!  // Save more callee-saved registers
+    stp x25, x26, [sp, #-16]!  // Save more callee-saved registers
+    stp d8, d9, [sp, #-16]!    // Save FP registers
+
+    // Initialize
+    mov x19, x0                // Save string pointer
+    mov x20, #0                // Integer part result
+    mov x21, #0                // Fractional part numerator
+    mov x22, #1                // Fractional part denominator (power of 10)
+    mov x23, #1                // Sign (1: positive, -1: negative)
+    mov x24, #0                // State: 0=integer part, 1=decimal part
+    mov x25, #10               // Constant 10 for multiplications
+
+    // Check for negative sign
+    ldrb w0, [x19]
+    cmp w0, #45                // '-' character
+    bne parse_digits
+    mov x23, #-1               // Set sign to negative
+    add x19, x19, #1           // Move to next character
+
+parse_digits:
+    ldrb w0, [x19]             // Load next character
+    cbz w0, conversion_done    // If null terminator, we're done
+
+    // Check for decimal point
+    cmp w0, #46                // '.' character
+    beq decimal_point
+
+    // Check if it's a valid digit
+    sub w0, w0, #48            // Convert from ASCII to numeric value
+    cmp w0, #9                 // Check if it's 0-9
+    bhi conversion_error       // Not a digit
+
+    // Process digit
+    cmp x24, #0                // Check if we're processing integer part
+    beq process_int_digit
+
+    // Process fractional digit
+    mul x21, x21, x25          // Shift left existing fractional part (multiply by 10)
+    add x21, x21, x0           // Add new digit to fractional part
+    mul x22, x22, x25          // Multiply denominator by 10
+    b next_char
+
+process_int_digit:
+    mul x20, x20, x25          // Multiply int part by 10
+    add x20, x20, x0           // Add digit
+
+next_char:
+    add x19, x19, #1           // Move to next character
+    b parse_digits
+
+decimal_point:
+    mov x24, #1                // Set state to fractional part
+    add x19, x19, #1           // Move past the decimal point
+    b parse_digits
+
+conversion_error:
+    // On error, return 0.0
+    fmov d0, xzr
+    b cleanup
+
+conversion_done:
+    // Convert integer part to double
+    scvtf d0, x20
+    
+    // If there's a fractional part
+    cbz x21, apply_sign
+    
+    // Convert fractional part to double
+    scvtf d8, x21
+    scvtf d9, x22
+    fdiv d8, d8, d9           // d8 = fractional part value
+    fadd d0, d0, d8           // Add to integer part
+    
+apply_sign:
+    // Apply sign
+    scvtf d8, x23
+    fmul d0, d0, d8
+
+cleanup:
+    // Restore registers and return
+    ldp d8, d9, [sp], #16
+    ldp x25, x26, [sp], #16
+    ldp x23, x24, [sp], #16
+    ldp x21, x22, [sp], #16
+    ldp x19, x20, [sp], #16
+    ldp x29, x30, [sp], #16
+    ret
 " }
 };
 }
