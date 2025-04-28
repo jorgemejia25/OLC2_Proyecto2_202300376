@@ -1656,13 +1656,13 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
     public override Object? VisitStrconvParseFloat(GoLangParser.StrconvParseFloatContext context)
     {
         c.Comment("strconv.ParseFloat - Convertir string a float64");
-        
+
         // Visitar la expresión del string a convertir
         Visit(context.expr());
-        
+
         // Obtener el objeto string de la pila
         var stringObj = c.PopObject(Register.X0);
-        
+
         // Verificar que sea un string
         if (stringObj.Type != StackObject.StackObjectType.String)
         {
@@ -1671,28 +1671,62 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
             c.Mov(Register.X0, 0);
             c.Scvtf(Register.D0, Register.X0);  // Convertir 0 a float
             c.Push(Register.D0);
-            
+
             var resultObj = c.FloatObject();
             c.PushObject(resultObj);
             return null;
         }
-        
+
         // Llamar a la función de biblioteca estándar para convertir string a float
         c.UseStdLib("string_to_float");
         c.Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
         c.Comment("X0 contiene la dirección del string a convertir");
         // El string ya está en X0
         c.Bl("string_to_float"); // La función devolverá el resultado en D0
-        
+
         // Guardar el resultado en la pila
         c.Comment("Guardando el resultado float en la pila");
         c.Push(Register.D0);
-        
+
         // Crear un objeto de tipo float para el resultado
         c.Comment("Creando objeto float para el resultado");
         var resultObject = c.FloatObject();
         c.PushObject(resultObject);
-        
+
+        return null;
+    }
+
+    public override Object? VisitReflectTypeOf(GoLangParser.ReflectTypeOfContext context)
+    {
+        c.Comment("reflect.TypeOf - Obtener tipo de datos como string");
+
+        // Visitar la expresión para obtener el valor cuyo tipo queremos conocer
+        Visit(context.expr());
+
+        // Obtener el objeto de la pila, pero NO consumirlo ya que solo necesitamos su tipo
+        // En lugar de usar PopObject que consume el objeto, solo lo inspeccionamos
+        var obj = c.stack.Last();
+
+        // Determinar el tipo basado en el objeto
+        string typeString = obj.Type switch
+        {
+            StackObject.StackObjectType.Integer => "int",
+            StackObject.StackObjectType.Float => "float64",
+            StackObject.StackObjectType.String => "string",
+            StackObject.StackObjectType.Boolean => "bool",
+            StackObject.StackObjectType.Rune => "rune",
+            _ => "unknown"
+        };
+
+        c.Comment($"Tipo determinado: {typeString}");
+
+        // Ahora sí, eliminar el objeto de la pila ya que ya tenemos su tipo
+        c.PopObject(Register.X0);
+
+        // Crear una cadena constante con el nombre del tipo
+        var stringObj = c.StringObject();
+        c.PushConstant(stringObj, typeString);
+
         return null;
     }
 
