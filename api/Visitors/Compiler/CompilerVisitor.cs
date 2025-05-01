@@ -1237,11 +1237,109 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         else if (context.forRange() != null)
         {
             // Tipo 3: for i, v := range slice { }
-            c.Comment("For-range loop not implemented yet");
-            // Para consistencia, también establecemos la etiqueta continue aquí
+            c.Comment("For-range loop");
+            var forRange = context.forRange();
+
+            // Para este tipo de bucle, el continue debe volver al inicio de la iteración
             _currentContinueLabel = loopStartLabel;
-            // La implementación completa del for-range requiere soporte para slices
-            // y será implementada en una iteración futura
+
+            // Crear un nuevo scope para las variables del for range
+            c.NewScope();
+
+            // Obtener identificadores para índice y valor (o sólo valor)
+            string indexVarName = forRange.ID(0).GetText();
+            string valueVarName = null;
+            if (forRange.ID().Length > 1)
+            {
+                valueVarName = forRange.ID(1).GetText();
+            }
+
+            // Evaluamos la expresión que representa el slice (debe ser un slice)
+            c.Comment("Evaluating slice expression");
+            Visit(forRange.expr());
+
+            // Obtener el slice y guardarlo en un registro temporal (x19)
+            var sliceObj = c.PopObject(Register.X19);
+
+            // Verificar que estamos trabajando con un slice
+            if (sliceObj.Type != StackObject.StackObjectType.IntSlice)
+            {
+                c.Comment("Warning: Attempting to use for-range on a non-slice object.");
+            }
+
+            // Obtener la longitud del slice (primeros 8 bytes en la dirección del slice)
+            c.Comment("Getting slice length");
+            c.Ldr(Register.X20, Register.X19);  // X20 = longitud del slice
+
+            // Inicializar el contador de índice en 0
+            c.Comment("Initializing index counter to 0");
+            c.Mov(Register.X21, 0);  // X21 = contador de índice (i)
+
+            // Declarar la variable de índice en el scope actual
+            c.Comment($"Declaring index variable: {indexVarName}");
+            c.Mov(Register.X0, 0);
+            c.Push(Register.X0);  // Inicializar con 0
+            var indexObj = c.IntObject();
+            c.PushObject(indexObj);
+            c.TagObject(indexVarName);
+
+            // Si existe una variable de valor, también la declaramos
+            if (valueVarName != null)
+            {
+                c.Comment($"Declaring value variable: {valueVarName}");
+                c.Mov(Register.X0, 0);
+                c.Push(Register.X0);  // Inicializar con 0
+                var valueObj = c.IntObject();
+                c.PushObject(valueObj);
+                c.TagObject(valueVarName);
+            }
+
+            // Punto de inicio del bucle
+            c.Label(loopStartLabel);
+
+            // Verificar si hemos llegado al final del slice (índice >= longitud)
+            c.Comment("Checking if we reached the end of the slice");
+            c.Cmp(Register.X21, Register.X20);
+            c.B("ge", loopEndLabel);  // Si índice >= longitud, terminar el bucle
+
+            // Actualizar el valor de la variable de índice
+            c.Comment($"Updating index variable {indexVarName} with current index");
+            var (indexOffset, indexVarObj) = c.GetObject(indexVarName);
+            c.Mov(Register.X0, indexOffset);
+            c.Add(Register.X0, Register.SP, Register.X0);  // Calcular dirección en la pila
+            c.MovReg(Register.X1, Register.X21);  // X1 = valor actual del índice
+            c.Str(Register.X1, Register.X0);  // Actualizar la variable de índice
+
+            // Si existe una variable de valor, obtener y actualizar su valor
+            if (valueVarName != null)
+            {
+                c.Comment($"Updating value variable {valueVarName} with current element");
+                
+                // Calcular la dirección del elemento actual: dir_slice + 8 + (índice * 8)
+                c.MovReg(Register.X0, Register.X19);  // X0 = dirección del slice
+                c.Add(Register.X0, Register.X0, "8");  // Saltar los primeros 8 bytes (longitud)
+                c.Mov(Register.X1, 8);  // Tamaño de cada elemento (8 bytes)
+                c.Mul(Register.X2, Register.X21, Register.X1);  // X2 = índice * 8
+                c.Add(Register.X0, Register.X0, Register.X2);  // X0 = dirección del elemento
+
+                // Cargar el valor del elemento
+                c.Ldr(Register.X0, Register.X0);  // X0 = valor del elemento
+
+                // Actualizar la variable de valor
+                var (valueOffset, valueVarObj) = c.GetObject(valueVarName);
+                c.Mov(Register.X1, valueOffset);
+                c.Add(Register.X1, Register.SP, Register.X1);  // Calcular dirección en la pila
+                c.Str(Register.X0, Register.X1);  // Actualizar la variable de valor
+            }
+
+            // Ejecutar el cuerpo del bucle
+            c.Comment("Executing for-range loop body");
+            Visit(context.block());
+
+            // Incrementar el índice y volver al inicio del bucle
+            c.Comment("Incrementing index and continuing loop");
+            c.Add(Register.X21, Register.X21, "1");  // Incrementar índice
+            c.B(loopStartLabel);  // Volver al inicio del bucle
         }
 
         // Etiqueta para el final del bucle
@@ -2059,7 +2157,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
 
         // 13. Fin de la búsqueda
         c.Label(loopEndLabel);
-        
+
         // 14. Guardar el resultado en la pila
         c.Push(Register.X0);
 
