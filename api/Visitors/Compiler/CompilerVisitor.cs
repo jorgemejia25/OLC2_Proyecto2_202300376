@@ -1885,6 +1885,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
             StackObject.StackObjectType.String => "string",
             StackObject.StackObjectType.Boolean => "bool",
             StackObject.StackObjectType.Rune => "rune",
+            StackObject.StackObjectType.IntSlice => "[]int", // Manejar slice de enteros específicamente
             _ => "unknown"
         };
 
