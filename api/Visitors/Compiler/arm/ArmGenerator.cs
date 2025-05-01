@@ -9,6 +9,7 @@ public class StackObject
         String,
         Boolean,
         Rune,    // Nuevo tipo para caracteres rune
+        IntSlice // Nuevo tipo para slices de enteros
     }
 
     public StackObjectType Type { get; set; }
@@ -164,6 +165,29 @@ public class ArmGenerator
                 Mov(Register.X0, (int)value);
                 Push(Register.X0);
                 break;
+            case StackObject.StackObjectType.IntSlice:
+                // Manejar slices de enteros
+                int[] intArray = (int[])value;
+                int length = intArray.Length;
+
+                // Guardar la dirección inicial del slice en el heap
+                Push(Register.HP);
+
+                // Primero guardar la longitud del slice (8 bytes)
+                Comment($"Pushing int slice length: {length}");
+                Mov(Register.X0, length);
+                Str(Register.X0, Register.HP);
+                Addi(Register.HP, Register.HP, 8);  // Avanzar 8 bytes (tamaño de la longitud)
+
+                // Luego guardar cada entero del slice
+                for (int i = 0; i < length; i++)
+                {
+                    Comment($"Pushing int slice element {i}: {intArray[i]}");
+                    Mov(Register.X0, intArray[i]);
+                    Str(Register.X0, Register.HP);  // Guardar el valor del entero (8 bytes)
+                    Addi(Register.HP, Register.HP, 8);  // Avanzar 8 bytes por cada entero
+                }
+                break;
         }
 
         PushObject(obj);
@@ -240,6 +264,19 @@ public class ArmGenerator
         var obj = new StackObject
         {
             Type = StackObject.StackObjectType.Rune,
+            ID = null,
+            Length = 8,
+            Depth = _stackDepth
+        };
+        _stackDepth += 8;
+        return obj;
+    }
+
+    public StackObject IntSliceObject()
+    {
+        var obj = new StackObject
+        {
+            Type = StackObject.StackObjectType.IntSlice,
             ID = null,
             Length = 8,
             Depth = _stackDepth
@@ -589,6 +626,15 @@ public class ArmGenerator
         _instructions.Add($"MOV X0, {rs1}");
         _instructions.Add($"MOV X1, {rs2}");
         _instructions.Add($"BL concat_strings");
+    }
+
+    public void PrintIntSlice(string rs)
+    {
+        _stdLib.Use("print_int_slice");
+        _stdLib.Use("print_integer_no_newline"); // Añadir dependencia explícita a print_integer_no_newline
+        Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
+        _instructions.Add($"MOV X0, {rs}");
+        _instructions.Add($"BL print_int_slice");
     }
 
     // Método público para usar funciones de la biblioteca estándar

@@ -41,6 +41,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
                 // Imprimir el valor
                 c.Comment($"Popping value {i + 1} for printing");
                 var isDouble = c.TopObject().Type == StackObject.StackObjectType.Float;
+                var isIntSlice = c.TopObject().Type == StackObject.StackObjectType.IntSlice;
                 var value = c.PopObject(isDouble ? Register.D0 : Register.X0);
 
                 // Determinar el tipo y usar la función de impresión adecuada
@@ -63,6 +64,11 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
                 else if (value.Type == StackObject.StackObjectType.Float)
                 {
                     c.PrintFloat();
+                }
+                else if (value.Type == StackObject.StackObjectType.IntSlice)
+                {
+                    c.Comment("Printing int slice");
+                    c.PrintIntSlice(Register.X0);
                 }
 
                 // Si no es la última expresión, imprimir un espacio
@@ -1766,6 +1772,65 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         // Finalizar el programa
         c.Comment("Program end");
         c.EndProgram();
+
+        return null;
+    }
+
+    public override Object? VisitSliceInit(GoLangParser.SliceInitContext context)
+    {
+        c.Comment("Slice initialization");
+
+        // Verificar si tenemos una inicialización anidada (slice 2D)
+        if (context.nestedSliceInit() != null)
+        {
+            c.Comment("2D slice initialization not supported yet");
+            // Implementación futura para slices 2D
+            return null;
+        }
+
+        // Verificar si tenemos valores explícitos o es un slice vacío
+        var exprList = context.exprList();
+        int length = (exprList == null) ? 0 : exprList.expr().Length;
+
+        c.Comment($"Initializing slice with {length} elements");
+
+        // Calcular cuánto espacio necesitamos en el heap: 
+        // 8 bytes para longitud + (8 bytes por elemento)
+        int totalSize = 8 + (length * 8);
+
+        // Guardar la dirección inicial en el heap
+        c.Push(Register.HP);
+
+        // Guardar longitud al principio del slice (primeros 8 bytes)
+        c.Mov(Register.X0, length);
+        c.Str(Register.X0, Register.HP);
+        c.Addi(Register.HP, Register.HP, 8);
+
+        // Si el slice está vacío, terminamos aquí
+        if (length == 0)
+        {
+            var sliceObj = c.IntSliceObject();
+            c.PushObject(sliceObj);
+            return null;
+        }
+
+        // Evaluar cada expresión y guardar su valor en el heap
+        for (int i = 0; i < length; i++)
+        {
+            c.Comment($"Evaluating and storing element {i}");
+            Visit(exprList.expr(i));
+
+            // Obtener el valor y asegurarnos de que sea un entero
+            var obj = c.PopObject(Register.X0);
+
+            // Guardar el valor en el heap
+            c.Str(Register.X0, Register.HP);
+            c.Addi(Register.HP, Register.HP, 8);
+        }
+
+        // Crear un objeto de slice que apunte a los datos
+        var sliceObject = c.IntSliceObject();
+        c.PushObject(sliceObject);
 
         return null;
     }

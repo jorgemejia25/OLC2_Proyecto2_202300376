@@ -14,7 +14,8 @@ public class StandardLibrary
         { "concat_strings", "string" },
         { "string_equals", "bool" },
         { "float_mod", "float64" },
-        { "string_to_float", "float64" }
+        { "string_to_float", "float64" },
+        { "print_int_slice", "void" }
     };
 
     private static readonly Dictionary<string, List<(string paramName, string paramType)>> _functionParameters = new Dictionary<string, List<(string, string)>>
@@ -27,7 +28,8 @@ public class StandardLibrary
         { "concat_strings", new List<(string, string)> { ("str1", "string"), ("str2", "string") } },
         { "string_equals", new List<(string, string)> { ("str1", "string"), ("str2", "string") } },
         { "float_mod", new List<(string, string)> { ("x", "float64"), ("y", "float64") } },
-        { "string_to_float", new List<(string, string)> { ("str", "string") } }
+        { "string_to_float", new List<(string, string)> { ("str", "string") } },
+        { "print_int_slice", new List<(string, string)> { ("slice", "[]int") } }
     };
 
     public void Use(string function)
@@ -76,6 +78,14 @@ public class StandardLibrary
         else if (function == "print_double")
         {
             // Asegurarnos de que se incluyan todas las dependencias
+            _usedFunctions.Add("print_integer_no_newline");
+        }
+        else if (function == "print_int_slice")
+        {
+            // Asegurarnos de que print_int_slice incluya su dependencia a print_integer_no_newline
+            _usedSymbols.Add("open_bracket");
+            _usedSymbols.Add("close_bracket");
+            _usedSymbols.Add("slice_space");
             _usedFunctions.Add("print_integer_no_newline");
         }
     }
@@ -1025,6 +1035,175 @@ cleanup:
     ldp x19, x20, [sp], #16
     ldp x29, x30, [sp], #16
     ret
-" }
+" },
+    { "print_int_slice", @"
+//--------------------------------------------------------------
+// print_int_slice - Imprime un slice de enteros
+//
+// Input:
+//   x0 - Dirección del slice (puntero al primer elemento)
+//--------------------------------------------------------------
+print_int_slice:
+    // Guardar registros
+    stp x29, x30, [sp, #-16]!  // Guardar frame pointer y link register
+    stp x19, x20, [sp, #-16]!  // Guardar registros callee-saved
+    stp x21, x22, [sp, #-16]!  // Guardar registros para trabajo temporal
+    stp x23, x24, [sp, #-16]!  // Guardar más registros
+    
+    // x19 = dirección del slice
+    mov x19, x0
+    
+    // Imprimir corchete de apertura '['
+    mov x0, #1                 // fd = 1 (stdout)
+    sub sp, sp, #16            // Reservar espacio temporal
+    mov w1, #91                // '[' en ASCII
+    strb w1, [sp]              // Guardar en espacio reservado
+    mov x1, sp                 // Dirección del carácter
+    mov x2, #1                 // Longitud = 1 byte
+    mov w8, #64                // Syscall write
+    svc #0
+    
+    // Cargar la longitud del slice (primeros 8 bytes)
+    ldr x20, [x19]             // x20 = longitud
+    add x19, x19, #8           // Avanzar al primer elemento
+    
+    // x21 = contador de elementos
+    mov x21, #0
+    
+print_slice_loop:
+    // Verificar si llegamos al final del slice
+    cmp x21, x20
+    beq print_slice_end
+    
+    // Si no es el primer elemento, imprimir espacio
+    cbz x21, skip_slice_space
+    
+    // Imprimir espacio entre elementos
+    mov w1, #32                // ' ' en ASCII
+    strb w1, [sp]              // Guardar en espacio reservado
+    mov x0, #1                 // fd = 1 (stdout)
+    mov x1, sp                 // Dirección del carácter
+    mov x2, #1                 // Longitud = 1 byte
+    mov w8, #64                // Syscall write
+    svc #0
+    
+skip_slice_space:
+    // Cargar el valor numérico en x22
+    lsl x23, x21, #3           // Multiplicar índice por 8
+    add x23, x19, x23          // Calcular dirección del elemento
+    ldr x22, [x23]             // Cargar valor del elemento
+    
+    // Imprimir el número entero (implementación simple)
+    // Reservar espacio para buffer de conversión
+    sub sp, sp, #32
+    mov x23, sp                // x23 = puntero a buffer
+    
+    // Verificar si el número es negativo
+    cmp x22, #0
+    bge slice_positive_num
+    
+    // Manejar número negativo
+    mov w1, #45                // '-' en ASCII
+    strb w1, [sp, #-1]!        // Guardar y decrementar stack
+    mov x0, #1                 // fd = 1 (stdout)
+    mov x1, sp                 // Dirección del carácter
+    mov x2, #1                 // Longitud = 1 byte
+    mov w8, #64                // Syscall write
+    svc #0
+    add sp, sp, #1             // Restaurar stack
+    
+    neg x22, x22               // Convertir a positivo
+    
+slice_positive_num:
+    // Inicializar contador de dígitos
+    mov x24, #0
+    
+    // Caso especial para el cero
+    cmp x22, #0
+    bne slice_convert_loop
+    
+    // Si es cero, simplemente imprimimos '0'
+    mov w1, #48                // '0' en ASCII
+    strb w1, [x23]             // Guardar en buffer
+    mov x24, #1                // Un dígito
+    b slice_print_digits
+    
+slice_convert_loop:
+    // Si el número es cero, terminar la conversión
+    cbz x22, slice_reverse_digits
+    
+    // Obtener el último dígito
+    mov x0, #10
+    udiv x1, x22, x0           // x1 = x22 / 10
+    msub x2, x1, x0, x22       // x2 = x22 - (x1 * 10) = último dígito
+    
+    // Convertir a ASCII y guardar
+    add w2, w2, #48            // Convertir a ASCII ('0' = 48)
+    strb w2, [x23, x24]        // Guardar en buffer
+    add x24, x24, #1           // Incrementar contador
+    
+    // Dividir entre 10 para siguiente iteración
+    udiv x22, x22, x0          // x22 = x22 / 10
+    b slice_convert_loop
+    
+slice_reverse_digits:
+    // Si no hay dígitos, salir
+    cbz x24, slice_print_digits
+    
+    // Invertir los dígitos (están al revés)
+    mov x0, #0                 // Índice inicio
+    sub x1, x24, #1            // Índice final = longitud - 1
+    
+slice_reverse_loop:
+    // Verificar si terminamos
+    cmp x0, x1
+    bge slice_print_digits
+    
+    // Intercambiar dígitos
+    ldrb w2, [x23, x0]         // Cargar dígito inicio
+    ldrb w3, [x23, x1]         // Cargar dígito final
+    strb w3, [x23, x0]         // Guardar dígito final en inicio
+    strb w2, [x23, x1]         // Guardar dígito inicio en final
+    
+    // Actualizar índices
+    add x0, x0, #1             // Incrementar índice inicio
+    sub x1, x1, #1             // Decrementar índice final
+    b slice_reverse_loop
+    
+slice_print_digits:
+    // Imprimir los dígitos
+    mov x0, #1                 // fd = 1 (stdout)
+    mov x1, x23                // Dirección del buffer
+    mov x2, x24                // Longitud = contador de dígitos
+    mov w8, #64                // Syscall write
+    svc #0
+    
+    // Liberar espacio del buffer
+    add sp, sp, #32
+    
+    // Incrementar contador y continuar
+    add x21, x21, #1           // Siguiente elemento
+    b print_slice_loop
+    
+print_slice_end:
+    // Imprimir corchete de cierre ']'
+    mov w1, #93                // ']' en ASCII
+    strb w1, [sp]              // Guardar en espacio reservado
+    mov x0, #1                 // fd = 1 (stdout)
+    mov x1, sp                 // Dirección del carácter
+    mov x2, #1                 // Longitud = 1 byte
+    mov w8, #64                // Syscall write
+    svc #0
+    
+    // Liberar espacio reservado
+    add sp, sp, #16
+    
+    // Restaurar registros y retornar
+    ldp x23, x24, [sp], #16
+    ldp x21, x22, [sp], #16
+    ldp x19, x20, [sp], #16
+    ldp x29, x30, [sp], #16
+    ret
+"},
 };
 }
