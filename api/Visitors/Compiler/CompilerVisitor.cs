@@ -1977,4 +1977,96 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
 
         return null;
     }
+
+    public override Object? VisitSlicesIndex(GoLangParser.SlicesIndexContext context)
+    {
+        c.Comment("slices.Index operation");
+
+        // Primero visitamos la expresión que representa el slice
+        c.Comment("Visiting slice expression");
+        Visit(context.expr(0));
+
+        // Luego visitamos la expresión que representa el elemento a buscar
+        c.Comment("Visiting search element expression");
+        Visit(context.expr(1));
+
+        // Desapilar el elemento a buscar en X1
+        c.Comment("Popping search element value");
+        var elementObj = c.PopObject(Register.X1);
+
+        // Desapilar la dirección del slice en X0
+        c.Comment("Popping slice address");
+        var sliceObj = c.PopObject(Register.X0);
+
+        // Verificar que estamos trabajando con un slice
+        if (sliceObj.Type != StackObject.StackObjectType.IntSlice)
+        {
+            c.Comment("Warning: Attempting to use slices.Index on a non-slice object.");
+        }
+
+        // Generar etiquetas para el algoritmo
+        string loopStartLabel = GenerateUniqueLabel("sliceindex_loop");
+        string loopEndLabel = GenerateUniqueLabel("sliceindex_end");
+        string foundLabel = GenerateUniqueLabel("sliceindex_found");
+        string notFoundLabel = GenerateUniqueLabel("sliceindex_notfound");
+
+        // 1. Guardar la dirección base del slice en X2
+        c.MovReg(Register.X2, Register.X0);
+
+        // 2. Cargar la longitud del slice (primeros 8 bytes)
+        c.Ldr(Register.X3, Register.X2);  // X3 = longitud
+
+        // 3. Inicializar el índice actual en 0
+        c.Mov(Register.X4, 0);  // X4 = índice actual
+
+        // 4. Guardar el elemento a buscar en X5
+        c.MovReg(Register.X5, Register.X1);  // X5 = elemento a buscar
+
+        // 5. Comenzar el bucle de búsqueda
+        c.Label(loopStartLabel);
+
+        // 6. Verificar si hemos llegado al final del slice
+        c.Cmp(Register.X4, Register.X3);
+        c.B("ge", notFoundLabel);  // Si índice >= longitud, no se encontró
+
+        // 7. Calcular la dirección del elemento actual: dir_base + 8 + (índice * 8)
+        c.Comment("Calculating element address: base + 8 + index*8");
+        c.MovReg(Register.X6, Register.X2);  // X6 = dirección base
+        c.Add(Register.X6, Register.X6, "8");  // Saltar los primeros 8 bytes (longitud)
+        c.Mov(Register.X7, 8);  // Tamaño de cada elemento (8 bytes)
+        c.Mul(Register.X8, Register.X4, Register.X7);  // X8 = índice * 8
+        c.Add(Register.X6, Register.X6, Register.X8);  // X6 = dirección del elemento actual
+
+        // 8. Cargar el valor del elemento actual
+        c.Ldr(Register.X7, Register.X6);  // X7 = valor del elemento actual
+
+        // 9. Comparar con el elemento buscado
+        c.Cmp(Register.X7, Register.X5);
+        c.B("eq", foundLabel);  // Si son iguales, hemos encontrado el elemento
+
+        // 10. Incrementar el índice y continuar el bucle
+        c.Add(Register.X4, Register.X4, "1");  // Incrementar índice
+        c.B(loopStartLabel);  // Volver al inicio del bucle
+
+        // 11. Caso: elemento encontrado
+        c.Label(foundLabel);
+        c.MovReg(Register.X0, Register.X4);  // X0 = índice encontrado
+        c.B(loopEndLabel);
+
+        // 12. Caso: elemento no encontrado
+        c.Label(notFoundLabel);
+        c.Mov(Register.X0, -1);  // X0 = -1 (no encontrado)
+
+        // 13. Fin de la búsqueda
+        c.Label(loopEndLabel);
+        
+        // 14. Guardar el resultado en la pila
+        c.Push(Register.X0);
+
+        // 15. Crear un objeto entero para el resultado
+        var intObject = c.IntObject();
+        c.PushObject(intObject);
+
+        return null;
+    }
 }
