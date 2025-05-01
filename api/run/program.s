@@ -1358,19 +1358,19 @@ LDR x0, [SP], #8
 // Checking index bounds
 LDR x2, [x0, #0]
 CMP x1, x2
-B.lt index_ok_0f998ac8
-index_error_b66992e3:
+B.lt index_ok_aa258498
+index_error_5251ae33:
 // Index out of bounds error: Using default value 0
 MOV x0, #0
-B index_end_2e393bdb
-index_ok_0f998ac8:
+B index_end_b7cb313f
+index_ok_aa258498:
 // Calculating element address: base + 8 + index*8
 ADD x0, x0, 8
 MOV x2, #8
 MUL x1, x1, x2
 ADD x0, x0, x1
 LDR x0, [x0, #0]
-index_end_2e393bdb:
+index_end_b7cb313f:
 // Pushing element value to stack
 STR x0, [SP, #-8]!
 // Print statement
@@ -1526,16 +1526,16 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_3f591d26
+B.eq eq_true_e63bdc7b
 MOV x0, #0
-B eq_end_029b1564
-eq_true_3f591d26:
+B eq_end_1d68eff6
+eq_true_e63bdc7b:
 MOV x0, #1
-eq_end_029b1564:
+eq_end_1d68eff6:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_93b793f9
+CBZ x0, else_ce9043ae
 // Then block
 // Block statement
 // Assignment statement
@@ -1743,8 +1743,8 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-B endif_fba2936b
-else_93b793f9:
+B endif_66627b4a
+else_ce9043ae:
 // Else block
 // Else branch with block
 // Block statement
@@ -1931,7 +1931,7 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-endif_fba2936b:
+endif_66627b4a:
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 1 expressions to print
@@ -2127,11 +2127,11 @@ LDR x2, [SP], #8
 // Checking index bounds
 LDR x3, [x2, #0]
 CMP x1, x3
-B.lt assign_index_ok_33501025
-assign_index_error_880a73af:
+B.lt assign_index_ok_8dcdd823
+assign_index_error_0e44bd87:
 // Index out of bounds error in assignment
-B assign_index_end_10de1fa9
-assign_index_ok_33501025:
+B assign_index_end_410b23c9
+assign_index_ok_8dcdd823:
 // Calculating element address: base + 8 + index*8
 ADD x2, x2, 8
 MOV x3, #8
@@ -2139,7 +2139,7 @@ MUL x1, x1, x3
 ADD x2, x2, x1
 // Storing value at the calculated address
 STR x0, [x2, #0]
-assign_index_end_10de1fa9:
+assign_index_end_410b23c9:
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 2 expressions to print
@@ -2363,19 +2363,19 @@ LDR x0, [SP], #8
 // Checking index bounds
 LDR x2, [x0, #0]
 CMP x1, x2
-B.lt index_ok_ede7125f
-index_error_2f8422b4:
+B.lt index_ok_abd0a352
+index_error_8cfbc3c3:
 // Index out of bounds error: Using default value 0
 MOV x0, #0
-B index_end_1f22b760
-index_ok_ede7125f:
+B index_end_41f77967
+index_ok_abd0a352:
 // Calculating element address: base + 8 + index*8
 ADD x0, x0, 8
 MOV x2, #8
 MUL x1, x1, x2
 ADD x0, x0, x1
 LDR x0, [x0, #0]
-index_end_1f22b760:
+index_end_41f77967:
 // Pushing element value to stack
 STR x0, [SP, #-8]!
 // Visiting right operand
@@ -2387,16 +2387,16 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_f65abef4
+B.eq eq_true_b2fa0140
 MOV x0, #0
-B eq_end_e57cc80b
-eq_true_f65abef4:
+B eq_end_ed9aafbd
+eq_true_b2fa0140:
 MOV x0, #1
-eq_end_e57cc80b:
+eq_end_ed9aafbd:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_eb2f9049
+CBZ x0, else_59e941c6
 // Then block
 // Block statement
 // Assignment statement
@@ -2644,8 +2644,8 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-B endif_736663f4
-else_eb2f9049:
+B endif_70a5cc19
+else_59e941c6:
 // Else block
 // Else branch with block
 // Block statement
@@ -2872,7 +2872,7 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-endif_736663f4:
+endif_70a5cc19:
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 1 expressions to print
@@ -3359,9 +3359,9 @@ MOV x2, x0
 LDR x3, [x2, #0]
 MOV x4, #0
 MOV x5, x1
-sliceindex_loop_3487715a:
+sliceindex_loop_70a48148:
 CMP x4, x3
-B.ge sliceindex_notfound_56366826
+B.ge sliceindex_notfound_b62096f6
 // Calculating element address: base + 8 + index*8
 MOV x6, x2
 ADD x6, x6, 8
@@ -3370,15 +3370,15 @@ MUL x8, x4, x7
 ADD x6, x6, x8
 LDR x7, [x6, #0]
 CMP x7, x5
-B.eq sliceindex_found_e051cbeb
+B.eq sliceindex_found_ea2c249d
 ADD x4, x4, 1
-B sliceindex_loop_3487715a
-sliceindex_found_e051cbeb:
+B sliceindex_loop_70a48148
+sliceindex_found_ea2c249d:
 MOV x0, x4
-B sliceindex_end_7944175f
-sliceindex_notfound_56366826:
+B sliceindex_end_7a1b5e33
+sliceindex_notfound_b62096f6:
 MOV x0, #-1
-sliceindex_end_7944175f:
+sliceindex_end_7a1b5e33:
 STR x0, [SP, #-8]!
 // Implicit declaration: indice2
 // slices.Index operation
@@ -3402,9 +3402,9 @@ MOV x2, x0
 LDR x3, [x2, #0]
 MOV x4, #0
 MOV x5, x1
-sliceindex_loop_fa7aeafb:
+sliceindex_loop_942fc89d:
 CMP x4, x3
-B.ge sliceindex_notfound_d4e4097b
+B.ge sliceindex_notfound_8795e792
 // Calculating element address: base + 8 + index*8
 MOV x6, x2
 ADD x6, x6, 8
@@ -3413,15 +3413,15 @@ MUL x8, x4, x7
 ADD x6, x6, x8
 LDR x7, [x6, #0]
 CMP x7, x5
-B.eq sliceindex_found_34f2904d
+B.eq sliceindex_found_ceb36aa9
 ADD x4, x4, 1
-B sliceindex_loop_fa7aeafb
-sliceindex_found_34f2904d:
+B sliceindex_loop_942fc89d
+sliceindex_found_ceb36aa9:
 MOV x0, x4
-B sliceindex_end_b47894c4
-sliceindex_notfound_d4e4097b:
+B sliceindex_end_b2dda335
+sliceindex_notfound_8795e792:
 MOV x0, #-1
-sliceindex_end_b47894c4:
+sliceindex_end_b2dda335:
 STR x0, [SP, #-8]!
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
@@ -3681,16 +3681,16 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_f0c6c677
+B.eq eq_true_48f768f7
 MOV x0, #0
-B eq_end_7a858935
-eq_true_f0c6c677:
+B eq_end_0e9d016a
+eq_true_48f768f7:
 MOV x0, #1
-eq_end_7a858935:
+eq_end_0e9d016a:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Short-circuit evaluation: if first operand is false, result is false
-CBZ x0, and_false_6008a0fa
+CBZ x0, and_false_659be012
 // First operand is true, evaluating second operand
 // Equality operation
 // Visiting left operand
@@ -3719,22 +3719,22 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_994a2066
+B.eq eq_true_0f61b50a
 MOV x0, #0
-B eq_end_260e3261
-eq_true_994a2066:
+B eq_end_72031ede
+eq_true_0f61b50a:
 MOV x0, #1
-eq_end_260e3261:
+eq_end_72031ede:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
-B and_end_a2644249
-and_false_6008a0fa:
+B and_end_29708c1c
+and_false_659be012:
 MOV x0, #0
-and_end_a2644249:
+and_end_29708c1c:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_e87d6870
+CBZ x0, else_22b67b6b
 // Then block
 // Block statement
 // Assignment statement
@@ -3917,8 +3917,8 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-B endif_9ee02b9e
-else_e87d6870:
+B endif_ed0f5125
+else_22b67b6b:
 // Else block
 // Else branch with block
 // Block statement
@@ -4080,7 +4080,7 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-endif_9ee02b9e:
+endif_ed0f5125:
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 1 expressions to print
@@ -5056,7 +5056,7 @@ BL string_equals
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Short-circuit evaluation: if first operand is false, result is false
-CBZ x0, and_false_c29df12d
+CBZ x0, and_false_e6077ece
 // First operand is true, evaluating second operand
 // Equality operation
 // Visiting left operand
@@ -5196,14 +5196,14 @@ BL string_equals
 .balign 16     // Garantizar alineamiento después de llamada a función
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
-B and_end_55ad7989
-and_false_c29df12d:
+B and_end_7899bbc8
+and_false_e6077ece:
 MOV x0, #0
-and_end_55ad7989:
+and_end_7899bbc8:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_16657cc3
+CBZ x0, else_4b97f663
 // Then block
 // Block statement
 // Assignment statement
@@ -5386,8 +5386,8 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-B endif_ac60d08b
-else_16657cc3:
+B endif_afe91e33
+else_4b97f663:
 // Else block
 // Else branch with block
 // Block statement
@@ -5549,7 +5549,7 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-endif_ac60d08b:
+endif_afe91e33:
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 1 expressions to print
@@ -6219,16 +6219,16 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_478c846e
+B.eq eq_true_dd122922
 MOV x0, #0
-B eq_end_9ed7d8c2
-eq_true_478c846e:
+B eq_end_b553ead0
+eq_true_dd122922:
 MOV x0, #1
-eq_end_9ed7d8c2:
+eq_end_b553ead0:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Short-circuit evaluation: if first operand is false, result is false
-CBZ x0, and_false_201239a8
+CBZ x0, and_false_6f688d68
 // First operand is true, evaluating second operand
 // Equality operation
 // Visiting left operand
@@ -6248,22 +6248,22 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_46bfe72c
+B.eq eq_true_f8e7e290
 MOV x0, #0
-B eq_end_568f555c
-eq_true_46bfe72c:
+B eq_end_94771ace
+eq_true_f8e7e290:
 MOV x0, #1
-eq_end_568f555c:
+eq_end_94771ace:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
-B and_end_ac2f9367
-and_false_201239a8:
+B and_end_db06a13f
+and_false_6f688d68:
 MOV x0, #0
-and_end_ac2f9367:
+and_end_db06a13f:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_ba535169
+CBZ x0, else_f379be59
 // Then block
 // Block statement
 // Assignment statement
@@ -6401,8 +6401,8 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-B endif_c6558832
-else_ba535169:
+B endif_bb4518fb
+else_f379be59:
 // Else block
 // Else branch with block
 // Block statement
@@ -6519,7 +6519,7 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-endif_c6558832:
+endif_bb4518fb:
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 1 expressions to print
@@ -7191,16 +7191,16 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_968ba462
+B.eq eq_true_c60f5485
 MOV x0, #0
-B eq_end_9f3e67b8
-eq_true_968ba462:
+B eq_end_119a29e4
+eq_true_c60f5485:
 MOV x0, #1
-eq_end_9f3e67b8:
+eq_end_119a29e4:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Short-circuit evaluation: if first operand is false, result is false
-CBZ x0, and_false_c68a3b86
+CBZ x0, and_false_a1cd4917
 // First operand is true, evaluating second operand
 // Equality operation
 // Visiting left operand
@@ -7224,19 +7224,19 @@ LDR x0, [SP], #8
 // Checking index bounds
 LDR x2, [x0, #0]
 CMP x1, x2
-B.lt index_ok_f10853ec
-index_error_3aa21cbf:
+B.lt index_ok_ff76c310
+index_error_7339e172:
 // Index out of bounds error: Using default value 0
 MOV x0, #0
-B index_end_c68567a8
-index_ok_f10853ec:
+B index_end_d25e4606
+index_ok_ff76c310:
 // Calculating element address: base + 8 + index*8
 ADD x0, x0, 8
 MOV x2, #8
 MUL x1, x1, x2
 ADD x0, x0, x1
 LDR x0, [x0, #0]
-index_end_c68567a8:
+index_end_d25e4606:
 // Pushing element value to stack
 STR x0, [SP, #-8]!
 // Visiting right operand
@@ -7248,22 +7248,22 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_5a38b171
+B.eq eq_true_89bb4e8f
 MOV x0, #0
-B eq_end_b46236f0
-eq_true_5a38b171:
+B eq_end_e3947e2f
+eq_true_89bb4e8f:
 MOV x0, #1
-eq_end_b46236f0:
+eq_end_e3947e2f:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
-B and_end_73f2f98a
-and_false_c68a3b86:
+B and_end_b4b50fd3
+and_false_a1cd4917:
 MOV x0, #0
-and_end_73f2f98a:
+and_end_b4b50fd3:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_07d49b83
+CBZ x0, else_6d2d8273
 // Then block
 // Block statement
 // Assignment statement
@@ -7481,8 +7481,8 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-B endif_c7b59d11
-else_07d49b83:
+B endif_7fd3dfd2
+else_6d2d8273:
 // Else block
 // Else branch with block
 // Block statement
@@ -7679,7 +7679,7 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-endif_c7b59d11:
+endif_7fd3dfd2:
 // Assignment statement
 // Assignment to variable: puntos
 // AddSub operation
