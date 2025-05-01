@@ -401,8 +401,74 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         if (context.expr().Length > 1 && context.expr()[0] != null && context.expr()[1] != null)
         {
             // Manejo de asignación a índice de array
-            c.Comment("Array index assignment");
-            // Implementación pendiente para arrays
+            c.Comment("Slice/array index assignment: expr[index] = value");
+
+            // Primero, evaluar la expresión que representa el slice/array
+            c.Comment("Evaluating slice/array expression");
+            Visit(context.expr()[0]);
+
+            // Luego, evaluar la expresión que representa el índice
+            c.Comment("Evaluating index expression");
+            Visit(context.expr()[1]);
+
+            // Finalmente, evaluar la expresión del lado derecho (el valor a asignar)
+            c.Comment("Evaluating value expression");
+            Visit(context.expr()[2]);
+
+            // Desapilar en orden inverso: valor, índice, slice
+            c.Comment("Popping value to assign");
+            var valueObj = c.PopObject(Register.X0); // Valor a asignar
+
+            c.Comment("Popping index value");
+            var indexObj = c.PopObject(Register.X1); // Índice
+
+            c.Comment("Popping slice/array address");
+            var sliceObj = c.PopObject(Register.X2); // Dirección base del slice
+
+            // Verificar que estamos modificando un slice
+            if (sliceObj.Type != StackObject.StackObjectType.IntSlice)
+            {
+                c.Comment("Warning: Attempting to modify a non-slice object.");
+            }
+
+            // 1. Verificar que el índice no exceda el tamaño del slice
+            c.Comment("Checking index bounds");
+
+            // Cargar el tamaño del slice (primeros 8 bytes en la dirección del slice)
+            c.Ldr(Register.X3, Register.X2); // X3 = longitud del slice
+
+            // Comparar el índice con el tamaño
+            c.Cmp(Register.X1, Register.X3);
+
+            // Generar etiquetas para el manejo de error y acceso correcto
+            string indexOkLabel = GenerateUniqueLabel("assign_index_ok");
+            string indexErrorLabel = GenerateUniqueLabel("assign_index_error");
+            string endLabel = GenerateUniqueLabel("assign_index_end");
+
+            // Si el índice es mayor o igual que el tamaño, es un error (fuera de rango)
+            c.B("lt", indexOkLabel); // Saltar si el índice es menor que el tamaño
+
+            // Manejar error de índice fuera de rango
+            c.Label(indexErrorLabel);
+            c.Comment("Index out of bounds error in assignment");
+            c.B(endLabel);
+
+            // Índice válido, proceder con la asignación
+            c.Label(indexOkLabel);
+
+            // 2. Calcular la dirección del elemento: dirección_base + 8 (longitud) + índice * 8
+            c.Comment("Calculating element address: base + 8 + index*8");
+            c.Add(Register.X2, Register.X2, "8"); // Saltar los primeros 8 bytes (longitud)
+            c.Mov(Register.X3, 8); // Tamaño de cada elemento (8 bytes)
+            c.Mul(Register.X1, Register.X1, Register.X3); // X1 = índice * 8
+            c.Add(Register.X2, Register.X2, Register.X1); // X2 = base + 8 + índice*8
+
+            // 3. Almacenar el valor en la dirección calculada
+            c.Comment("Storing value at the calculated address");
+            c.Str(Register.X0, Register.X2); // Guardar el valor en la dirección calculada
+
+            c.Label(endLabel);
+
             return null;
         }
 
@@ -1831,6 +1897,83 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         // Crear un objeto de slice que apunte a los datos
         var sliceObject = c.IntSliceObject();
         c.PushObject(sliceObject);
+
+        return null;
+    }
+
+    public override Object? VisitIndexAccess(GoLangParser.IndexAccessContext context)
+    {
+        c.Comment("Index access operation (slice[index])");
+
+        // Primero visitamos la expresión que representa el slice
+        c.Comment("Visiting slice expression");
+        Visit(context.expr(0));
+
+        // Luego visitamos la expresión que representa el índice
+        c.Comment("Visiting index expression");
+        Visit(context.expr(1));
+
+        // Desapilar el índice en X1
+        c.Comment("Popping index value");
+        var indexObject = c.PopObject(Register.X1);
+
+        // Desapilar la dirección del slice en X0
+        c.Comment("Popping slice address");
+        var sliceObject = c.PopObject(Register.X0);
+
+        // Verificar que estamos accediendo a un slice
+        if (sliceObject.Type != StackObject.StackObjectType.IntSlice)
+        {
+            c.Comment("Warning: Attempting to index a non-slice object.");
+        }
+
+        // X0 contiene la dirección base del slice, ahora necesitamos:
+        // 1. Verificar que el índice no exceda el tamaño del slice
+        c.Comment("Checking index bounds");
+
+        // Cargar el tamaño del slice (primeros 8 bytes en la dirección del slice)
+        c.Ldr(Register.X2, Register.X0); // X2 = longitud del slice
+
+        // Comparar el índice con el tamaño
+        c.Cmp(Register.X1, Register.X2);
+
+        // Generar etiquetas para el manejo de error y acceso correcto
+        string indexOkLabel = GenerateUniqueLabel("index_ok");
+        string indexErrorLabel = GenerateUniqueLabel("index_error");
+        string endLabel = GenerateUniqueLabel("index_end");
+
+        // Si el índice es mayor o igual que el tamaño, es un error (fuera de rango)
+        c.B("lt", indexOkLabel); // Saltar si el índice es menor que el tamaño
+
+        // Manejar error de índice fuera de rango
+        c.Label(indexErrorLabel);
+        c.Comment("Index out of bounds error: Using default value 0");
+        c.Mov(Register.X0, 0); // Valor por defecto en caso de error
+        c.B(endLabel);
+
+        // Índice válido, acceder al elemento
+        c.Label(indexOkLabel);
+
+        // 2. Calcular la dirección del elemento: dirección_base + 8 (longitud) + índice * 8
+        c.Comment("Calculating element address: base + 8 + index*8");
+        c.Add(Register.X0, Register.X0, "8"); // Saltar los primeros 8 bytes (longitud)
+        c.Mov(Register.X2, 8); // Tamaño de cada elemento (8 bytes)
+        c.Mul(Register.X1, Register.X1, Register.X2); // X1 = índice * 8
+        c.Add(Register.X0, Register.X0, Register.X1); // X0 = base + 8 + índice*8
+
+        // 3. Cargar el valor del elemento desde la dirección calculada
+        c.Ldr(Register.X0, Register.X0); // X0 = valor en la dirección calculada
+
+        // Fin del acceso
+        c.Label(endLabel);
+
+        // Guardar el resultado en la pila
+        c.Comment("Pushing element value to stack");
+        c.Push(Register.X0);
+
+        // Crear un objeto entero para el resultado
+        var intObject = c.IntObject();
+        c.PushObject(intObject);
 
         return null;
     }
