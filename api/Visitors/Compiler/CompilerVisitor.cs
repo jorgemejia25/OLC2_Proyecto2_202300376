@@ -1314,7 +1314,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
             if (valueVarName != null)
             {
                 c.Comment($"Updating value variable {valueVarName} with current element");
-                
+
                 // Calcular la dirección del elemento actual: dir_slice + 8 + (índice * 8)
                 c.MovReg(Register.X0, Register.X19);  // X0 = dirección del slice
                 c.Add(Register.X0, Register.X0, "8");  // Saltar los primeros 8 bytes (longitud)
@@ -2165,6 +2165,40 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         // 15. Crear un objeto entero para el resultado
         var intObject = c.IntObject();
         c.PushObject(intObject);
+
+        return null;
+    }
+
+    public override Object? VisitLen(GoLangParser.LenContext context)
+    {
+        c.Comment("Function len - Get length of slice");
+
+        // Visitar la expresión para obtener el slice
+        Visit(context.expr());
+
+        // Obtener el objeto slice de la pila
+        var sliceObj = c.PopObject(Register.X0);
+
+        // Verificar si estamos trabajando con un slice
+        if (sliceObj.Type != StackObject.StackObjectType.IntSlice)
+        {
+            c.Comment("Warning: Attempting to get length of non-slice object");
+            // Por defecto, devolvemos 0 para tipos no compatibles
+            c.Mov(Register.X0, 0);
+        }
+        else
+        {
+            // Para un slice, la longitud está almacenada en los primeros 8 bytes
+            c.Comment("Loading slice length (stored in first 8 bytes of slice)");
+            c.Ldr(Register.X0, Register.X0);
+        }
+
+        // Guardar el resultado en la pila
+        c.Push(Register.X0);
+
+        // Crear un objeto entero para el resultado
+        var lengthObj = c.IntObject();
+        c.PushObject(lengthObj);
 
         return null;
     }
