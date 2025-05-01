@@ -15,7 +15,8 @@ public class StandardLibrary
         { "string_equals", "bool" },
         { "float_mod", "float64" },
         { "string_to_float", "float64" },
-        { "print_int_slice", "void" }
+        { "print_int_slice", "void" },
+        { "append_to_slice", "[]int" }
     };
 
     private static readonly Dictionary<string, List<(string paramName, string paramType)>> _functionParameters = new Dictionary<string, List<(string, string)>>
@@ -29,7 +30,8 @@ public class StandardLibrary
         { "string_equals", new List<(string, string)> { ("str1", "string"), ("str2", "string") } },
         { "float_mod", new List<(string, string)> { ("x", "float64"), ("y", "float64") } },
         { "string_to_float", new List<(string, string)> { ("str", "string") } },
-        { "print_int_slice", new List<(string, string)> { ("slice", "[]int") } }
+        { "print_int_slice", new List<(string, string)> { ("slice", "[]int") } },
+        { "append_to_slice", new List<(string, string)> { ("slice", "[]int"), ("element", "int") } }
     };
 
     public void Use(string function)
@@ -1205,5 +1207,90 @@ print_slice_end:
     ldp x29, x30, [sp], #16
     ret
 "},
+    { "append_to_slice", @"
+//--------------------------------------------------------------
+// append_to_slice - Añade un elemento a un slice y devuelve un nuevo slice
+//
+// Input:
+//   x0 - La dirección del slice original
+//   x1 - El elemento a añadir
+//
+// Output:
+//   x0 - La dirección del nuevo slice (con el elemento añadido)
+//--------------------------------------------------------------
+append_to_slice:
+    // Guardar registros
+    stp x29, x30, [sp, #-16]!  // Guardar frame pointer y link register
+    stp x19, x20, [sp, #-16]!  // Guardar registros callee-saved
+    stp x21, x22, [sp, #-16]!  // Guardar más registros
+
+    // Guardar la dirección original del slice en x19 y el elemento en x20
+    mov x19, x0                // x19 = dirección del slice original
+    mov x20, x1                // x20 = elemento a añadir
+
+    // Cargar la longitud del slice original
+    ldr x21, [x19]             // x21 = longitud actual del slice
+
+    // Calcular nueva longitud
+    add x22, x21, #1           // x22 = nueva longitud (longitud + 1)
+
+    // Calcular tamaño necesario para el nuevo slice: 8 bytes (longitud) + (elementos * 8)
+    mov x0, #8                 // 8 bytes para la longitud
+    mov x1, #8                 // 8 bytes por elemento
+    mul x2, x22, x1            // x2 = nueva longitud * 8
+    add x0, x0, x2             // x0 = bytes totales necesarios
+
+    // Guardar la posición actual del heap para el nuevo slice
+    mov x1, x10                // x1 = posición actual del heap
+    add x10, x10, x0           // Avanzar el puntero del heap
+
+    // El nuevo slice estará en x1, guardar su longitud
+    str x22, [x1]              // Almacenar la nueva longitud
+
+    // Inicializar los índices para la copia
+    mov x3, #0                 // x3 = índice del elemento actual
+    mov x4, #8                 // x4 = offset en el slice nuevo (después de la longitud)
+
+copy_loop:
+    // Verificar si hemos copiado todos los elementos del slice original
+    cmp x3, x21                // Comparar con la longitud original
+    bge append_new_element     // Si ya copiamos todos, añadir el nuevo elemento
+
+    // Calcular la dirección del elemento a copiar
+    add x5, x19, #8            // x5 = dirección del slice original + 8 (saltando longitud)
+    mov x6, #8                 // x6 = 8 (tamaño de cada elemento)
+    mul x7, x3, x6             // x7 = índice * 8
+    add x5, x5, x7             // x5 = dirección del elemento en el slice original
+
+    // Cargar el valor del elemento original
+    ldr x6, [x5]               // x6 = valor del elemento en el slice original
+
+    // Calcular la dirección donde se guardará en el nuevo slice
+    add x7, x1, x4             // x7 = dirección base del nuevo slice + offset actual
+
+    // Almacenar el elemento en el nuevo slice
+    str x6, [x7]               // Copiar el elemento al nuevo slice
+
+    // Avanzar a la siguiente posición
+    add x3, x3, #1             // Incrementar el índice
+    add x4, x4, #8             // Incrementar el offset para el siguiente elemento
+
+    // Continuar hasta copiar todo el slice
+    b copy_loop
+
+append_new_element:
+    // Añadir el nuevo elemento al final
+    add x5, x1, x4             // x5 = posición donde añadir el nuevo elemento
+    str x20, [x5]              // Almacenar el nuevo elemento
+
+    // Devolver la dirección del nuevo slice
+    mov x0, x1                 // x0 = dirección del nuevo slice
+
+    // Restaurar registros y retornar
+    ldp x21, x22, [sp], #16    // Restaurar registros
+    ldp x19, x20, [sp], #16    // Restaurar registros
+    ldp x29, x30, [sp], #16    // Restaurar frame pointer y link register
+    ret                        // Retornar a caller
+"}
 };
 }

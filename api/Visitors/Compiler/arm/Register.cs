@@ -12,6 +12,8 @@ public static class Register
     public static string X8 => "x8";
     public static string X9 => "x9";
 
+    public static string X10 => "x10";
+
     public static string HP => "x10";
     public static string X11 => "x11";
     public static string X12 => "x12";

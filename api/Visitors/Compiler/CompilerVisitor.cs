@@ -2202,4 +2202,49 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
 
         return null;
     }
+
+    public override Object? VisitAppend(GoLangParser.AppendContext context)
+    {
+        c.Comment("append function - Add element to a slice");
+
+        // Visitar la expresión que representa el slice
+        c.Comment("Visiting slice expression");
+        Visit(context.expr(0));
+
+        // Luego visitamos la expresión que representa el elemento a añadir
+        c.Comment("Visiting element expression to append");
+        Visit(context.expr(1));
+
+        // Desapilar el elemento en X1
+        c.Comment("Popping element to append");
+        var elementObj = c.PopObject(Register.X1);
+
+        // Desapilar la dirección del slice en X0
+        c.Comment("Popping slice address");
+        var sliceObj = c.PopObject(Register.X0);
+
+        // Verificar que estamos trabajando con un slice
+        if (sliceObj.Type != StackObject.StackObjectType.IntSlice)
+        {
+            c.Comment("Warning: Attempting to append to a non-slice object.");
+        }
+
+        // Llamar a la función de biblioteca estándar para hacer append
+        c.UseStdLib("append_to_slice");
+        c.Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
+        
+        // X0 contiene la dirección del slice original
+        // X1 contiene el elemento a añadir
+        c.Comment("X0 = slice address, X1 = element to append");
+        c.Bl("append_to_slice"); // Llama a la función, resultado en X0 (nueva dirección del slice)
+
+        // Guardar resultado en la pila (dirección del nuevo slice)
+        c.Push(Register.X0);
+
+        // Crear un objeto slice para el resultado
+        var resultSliceObj = c.IntSliceObject();
+        c.PushObject(resultSliceObj);
+
+        return null;
+    }
 }
