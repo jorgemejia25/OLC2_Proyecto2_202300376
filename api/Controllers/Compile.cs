@@ -52,46 +52,46 @@ namespace api.Controllers
             {
                 var tree = parser.program();
 
-                // // Crear un environment compartido
-                // var sharedEnvironment = new Environment();
+                // Crear un environment compartido
+                var sharedEnvironment = new Environment();
 
-                // // Crear el visitor principal con el environment compartido
-                // var mainVisitor = new SemanticVisitor(sharedEnvironment);
+                // Crear el visitor principal con el environment compartido
+                var mainVisitor = new SemanticVisitor(sharedEnvironment);
 
-                // // Crear un visitor específico para la fase de declaración con el mismo environment
-                // var declarationVisitor = new DeclarationVisitor(sharedEnvironment, mainVisitor);
+                // Crear un visitor específico para la fase de declaración con el mismo environment
+                var declarationVisitor = new DeclarationVisitor(sharedEnvironment, mainVisitor);
 
-                // _logger.LogInformation("Procesando declaraciones de structs y funciones...");
+                _logger.LogInformation("Procesando declaraciones de structs y funciones...");
 
-                // // Primera fase: Procesar solo declaraciones de structs y funciones
-                // declarationVisitor.Visit(tree);
+                // Primera fase: Procesar solo declaraciones de structs y funciones
+                declarationVisitor.Visit(tree);
 
-                // _logger.LogInformation($"Declaraciones procesadas. Funciones encontradas: {sharedEnvironment.GetFunctionCount()}");
+                _logger.LogInformation($"Declaraciones procesadas. Funciones encontradas: {sharedEnvironment.GetFunctionCount()}");
 
-                // // Validar que existe la función main
-                // if (sharedEnvironment.MainFunction == null)
-                // {
-                //     throw new SemanticError("El programa debe tener una función 'main'", null!);
-                // }
+                // Validar que existe la función main
+                if (sharedEnvironment.MainFunction == null)
+                {
+                    throw new SemanticError("El programa debe tener una función 'main'", null!);
+                }
 
-                // _logger.LogInformation("Ejecutando función main...");
+                _logger.LogInformation("Ejecutando función main...");
 
-                // // Obtener la función main del environment compartido
-                // var mainFunction = sharedEnvironment.MainFunction;
+                // Obtener la función main del environment compartido
+                var mainFunction = sharedEnvironment.MainFunction;
 
-                // // Crear un entorno específico para la ejecución de main
-                // sharedEnvironment.PushScope("main");
+                // Crear un entorno específico para la ejecución de main
+                sharedEnvironment.PushScope("main");
 
-                // try
-                // {
-                //     // Ejecutar el cuerpo de la función main
-                //     mainVisitor.Visit(mainFunction.Body);
-                // }
-                // finally
-                // {
-                //     // Limpiar el entorno después de la ejecución
-                //     sharedEnvironment.PopScope();
-                // }
+                try
+                {
+                    // Ejecutar el cuerpo de la función main
+                    mainVisitor.Visit(mainFunction.Body);
+                }
+                finally
+                {
+                    // Limpiar el entorno después de la ejecución
+                    sharedEnvironment.PopScope();
+                }
 
                 // Ejecutar el CompilerVisitor
                 var compilerVisitor = new CompilerVisitor();
