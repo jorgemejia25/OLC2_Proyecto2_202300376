@@ -34,14 +34,12 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
             for (int i = 0; i < expressions.Length; i++)
             {
                 c.Comment($"Processing expression {i + 1} of {expressions.Length}");
-
-                // Visitar la expresión para ponerla en la pila
                 Visit(expressions[i]);
 
-                // Imprimir el valor
-                c.Comment($"Popping value {i + 1} for printing");
+                // Determinar el tipo de objeto en la pila
                 var isDouble = c.TopObject().Type == StackObject.StackObjectType.Float;
                 var isIntSlice = c.TopObject().Type == StackObject.StackObjectType.IntSlice;
+                var isStringSlice = c.TopObject().Type == StackObject.StackObjectType.StringSlice;
                 var value = c.PopObject(isDouble ? Register.D0 : Register.X0);
 
                 // Determinar el tipo y usar la función de impresión adecuada
@@ -69,6 +67,11 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
                 {
                     c.Comment("Printing int slice");
                     c.PrintIntSlice(Register.X0);
+                }
+                else if (value.Type == StackObject.StackObjectType.StringSlice)
+                {
+                    c.Comment("Printing string slice");
+                    c.PrintStringSlice(Register.X0);
                 }
 
                 // Si no es la última expresión, imprimir un espacio
@@ -1815,7 +1818,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         c.Comment("Guardando el resultado entero en la pila");
         c.Push(Register.X0);
 
-        // Crear un objeto de tipo entero para el resultado
+        // Crear un objeto entero para el resultado
         c.Comment("Creando objeto entero para el resultado");
         var resultObject = c.IntObject();
         c.PushObject(resultObject);
@@ -1837,7 +1840,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         if (stringObj.Type != StackObject.StackObjectType.String)
         {
             c.Comment("Error: El argumento de strconv.ParseFloat debe ser una cadena");
-            // En caso de error, retornar 0.0
+            // En caso de error, devolver 0.0
             c.Mov(Register.X0, 0);
             c.Scvtf(Register.D0, Register.X0);  // Convertir 0 a float
             c.Push(Register.D0);
@@ -1957,16 +1960,39 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         var exprList = context.exprList();
         int length = (exprList == null) ? 0 : exprList.expr().Length;
 
-        c.Comment($"Initializing slice wimasters oth {length} elements");
+        c.Comment($"Initializing slice with {length} elements");
 
-        // Calcular cuánto espacio necesitamos en el heap: 
-        // 8 bytes para longitud + (8 bytes por elemento)
-        int totalSize = 8 + (length * 8);
+        // Determinar el tipo de slice que estamos inicializando
+        StackObject.StackObjectType sliceType = StackObject.StackObjectType.IntSlice; // Por defecto, asumimos slice de enteros
+
+        // Si hay al menos un elemento, verificamos su tipo para saber qué tipo de slice es
+        if (length > 0)
+        {
+            // Evaluar el primer elemento para determinar el tipo del slice
+            c.Comment("Evaluating first element to determine slice type");
+            Visit(exprList.expr(0));
+            var firstElement = c.TopObject();
+
+            // Verificar el tipo del primer elemento
+            if (firstElement.Type == StackObject.StackObjectType.String)
+            {
+                sliceType = StackObject.StackObjectType.StringSlice;
+                c.Comment("Detected string slice type");
+            }
+            else
+            {
+                c.Comment("Assuming int slice type");
+            }
+
+            // Desapilar el primer elemento, ya que lo volveremos a evaluar después
+            c.PopObject(Register.X0);
+        }
 
         // Guardar la dirección inicial en el heap
         c.Push(Register.HP);
 
         // Guardar longitud al principio del slice (primeros 8 bytes)
+        c.Comment($"Storing slice length: {length}");
         c.Mov(Register.X0, length);
         c.Str(Register.X0, Register.HP);
         c.Addi(Register.HP, Register.HP, 8);
@@ -1974,9 +2000,25 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         // Si el slice está vacío, terminamos aquí
         if (length == 0)
         {
-            var sliceObj = c.IntSliceObject();
-            c.PushObject(sliceObj);
+            if (sliceType == StackObject.StackObjectType.StringSlice)
+            {
+                var stringSliceObj = c.StringSliceObject();
+                c.PushObject(stringSliceObj);
+            }
+            else
+            {
+                var intSliceObj = c.IntSliceObject();
+                c.PushObject(intSliceObj);
+            }
             return null;
+        }
+
+        // Para slices de strings, reservamos primero el espacio para todos los punteros
+        if (sliceType == StackObject.StackObjectType.StringSlice)
+        {
+            c.Comment($"Reserving space for {length} string pointers");
+            // Reservar espacio para los punteros (8 bytes por string)
+            c.Addi(Register.HP, Register.HP, length * 8);
         }
 
         // Evaluar cada expresión y guardar su valor en el heap
@@ -1985,17 +2027,55 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
             c.Comment($"Evaluating and storing element {i}");
             Visit(exprList.expr(i));
 
-            // Obtener el valor y asegurarnos de que sea un entero
+            // Obtener el valor del elemento
             var obj = c.PopObject(Register.X0);
 
-            // Guardar el valor en el heap
-            c.Str(Register.X0, Register.HP);
-            c.Addi(Register.HP, Register.HP, 8);
+            if (sliceType == StackObject.StackObjectType.StringSlice)
+            {
+                // Para slices de strings, guardamos el puntero al string actual en la posición del array correspondiente
+                if (obj.Type != StackObject.StackObjectType.String)
+                {
+                    c.Comment($"Warning: Element {i} is not a string, but slice is of string type");
+                }
+
+                // Calcular el offset desde la base del slice (después de la longitud)
+                int offset = 8 + (i * 8);  // 8 bytes para la longitud + (i * 8 bytes por puntero)
+
+                // Guardar la dirección del string (que ya está en X0) en la posición correspondiente
+                // Primero obtenemos la dirección base del slice que está en la pila
+                c.Comment("Storing string pointer in slice");
+                c.Push(Register.X0);  // Guardar temporalmente la dirección del string
+                c.Mov(Register.X1, offset);  // Offset desde el inicio del slice
+                c.Ldr(Register.X2, Register.SP, 8);  // Cargar la dirección base del slice (está 8 bytes arriba en la pila)
+                c.Add(Register.X2, Register.X2, Register.X1);  // X2 = dirección base + offset
+                c.Pop(Register.X0);  // Recuperar la dirección del string
+                c.Str(Register.X0, Register.X2);  // Guardar la dirección del string en el slice
+            }
+            else
+            {
+                // Para slices de enteros, guardar directamente el valor
+                if (obj.Type != StackObject.StackObjectType.Integer)
+                {
+                    c.Comment($"Warning: Element {i} is not an integer, but slice is of integer type");
+                }
+
+                // Guardar el valor en el heap
+                c.Str(Register.X0, Register.HP);
+                c.Addi(Register.HP, Register.HP, 8);
+            }
         }
 
         // Crear un objeto de slice que apunte a los datos
-        var sliceObject = c.IntSliceObject();
-        c.PushObject(sliceObject);
+        if (sliceType == StackObject.StackObjectType.StringSlice)
+        {
+            var stringSliceObj = c.StringSliceObject();
+            c.PushObject(stringSliceObj);
+        }
+        else
+        {
+            var intSliceObj = c.IntSliceObject();
+            c.PushObject(intSliceObj);
+        }
 
         return null;
     }
@@ -2021,7 +2101,8 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         var sliceObject = c.PopObject(Register.X0);
 
         // Verificar que estamos accediendo a un slice
-        if (sliceObject.Type != StackObject.StackObjectType.IntSlice)
+        bool isStringSlice = sliceObject.Type == StackObject.StackObjectType.StringSlice;
+        if (sliceObject.Type != StackObject.StackObjectType.IntSlice && !isStringSlice)
         {
             c.Comment("Warning: Attempting to index a non-slice object.");
         }
@@ -2042,37 +2123,60 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         string endLabel = GenerateUniqueLabel("index_end");
 
         // Si el índice es mayor o igual que el tamaño, es un error (fuera de rango)
-        c.B("lt", indexOkLabel); // Saltar si el índice es menor que el tamaño
-
-        // Manejar error de índice fuera de rango
-        c.Label(indexErrorLabel);
-        c.Comment("Index out of bounds error: Using default value 0");
-        c.Mov(Register.X0, 0); // Valor por defecto en caso de error
-        c.B(endLabel);
-
-        // Índice válido, acceder al elemento
-        c.Label(indexOkLabel);
+        c.B("ge", indexErrorLabel); // Saltar a error si índice >= tamaño (corregido)
 
         // 2. Calcular la dirección del elemento: dirección_base + 8 (longitud) + índice * 8
         c.Comment("Calculating element address: base + 8 + index*8");
         c.Add(Register.X0, Register.X0, "8"); // Saltar los primeros 8 bytes (longitud)
         c.Mov(Register.X2, 8); // Tamaño de cada elemento (8 bytes)
         c.Mul(Register.X1, Register.X1, Register.X2); // X1 = índice * 8
-        c.Add(Register.X0, Register.X0, Register.X1); // X0 = base + 8 + índice*8
+        c.Add(Register.X0, Register.X0, Register.X1); // X0 = dirección_base + 8 + índice*8
 
-        // 3. Cargar el valor del elemento desde la dirección calculada
-        c.Ldr(Register.X0, Register.X0); // X0 = valor en la dirección calculada
+        // 3. Cargar el valor desde la dirección calculada
+        c.Comment("Loading value from calculated address");
+        c.Ldr(Register.X0, Register.X0);
 
-        // Fin del acceso
+        c.Comment("Element loaded successfully");
+        c.B(endLabel);
+
+        // Manejar error de índice fuera de rango
+        c.Label(indexErrorLabel);
+        c.Comment("Index out of bounds error");
+        if (isStringSlice)
+        {
+            c.Comment("Creating empty string for out of bounds access");
+            // Para strings fuera de rango, crear una cadena vacía en el heap
+            c.MovReg(Register.X0, Register.HP); // Guardar dirección actual del heap como resultado
+            c.Mov("w1", 0); // Byte NULL como terminador
+            c.Strb("w1", Register.HP); // Guardar terminador NULL
+            c.Mov(Register.X1, 1);
+            c.Add(Register.HP, Register.HP, Register.X1); // Avanzar el heap pointer
+        }
+        else
+        {
+            c.Comment("Returning 0 for out of bounds access");
+            c.Mov(Register.X0, 0); // Valor predeterminado para enteros
+        }
+
+        // Etiqueta para el final
         c.Label(endLabel);
 
-        // Guardar el resultado en la pila
-        c.Comment("Pushing element value to stack");
+        // Guardar el valor en la pila
         c.Push(Register.X0);
 
-        // Crear un objeto entero para el resultado
-        var intObject = c.IntObject();
-        c.PushObject(intObject);
+        // Crear un objeto apropiado para el resultado
+        if (isStringSlice)
+        {
+            c.Comment("Creating string object for slice element");
+            var stringResultObject = c.StringObject();
+            c.PushObject(stringResultObject);
+        }
+        else
+        {
+            c.Comment("Creating integer object for slice element");
+            var intResultObject = c.IntObject();
+            c.PushObject(intResultObject);
+        }
 
         return null;
     }
@@ -2179,8 +2283,9 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         // Obtener el objeto slice de la pila
         var sliceObj = c.PopObject(Register.X0);
 
-        // Verificar si estamos trabajando con un slice
-        if (sliceObj.Type != StackObject.StackObjectType.IntSlice)
+        // Verificar si estamos trabajando con un slice (ya sea de enteros o strings)
+        if (sliceObj.Type != StackObject.StackObjectType.IntSlice &&
+            sliceObj.Type != StackObject.StackObjectType.StringSlice)
         {
             c.Comment("Warning: Attempting to get length of non-slice object");
             // Por defecto, devolvemos 0 para tipos no compatibles
@@ -2188,7 +2293,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         }
         else
         {
-            // Para un slice, la longitud está almacenada en los primeros 8 bytes
+            // Para cualquier tipo de slice, la longitud está almacenada en los primeros 8 bytes
             c.Comment("Loading slice length (stored in first 8 bytes of slice)");
             c.Ldr(Register.X0, Register.X0);
         }
@@ -2232,7 +2337,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         // Llamar a la función de biblioteca estándar para hacer append
         c.UseStdLib("append_to_slice");
         c.Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
-        
+
         // X0 contiene la dirección del slice original
         // X1 contiene el elemento a añadir
         c.Comment("X0 = slice address, X1 = element to append");
@@ -2244,6 +2349,63 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         // Crear un objeto slice para el resultado
         var resultSliceObj = c.IntSliceObject();
         c.PushObject(resultSliceObj);
+
+        return null;
+    }
+
+    public override Object? VisitStringsJoin(GoLangParser.StringsJoinContext context)
+    {
+        c.Comment("strings.Join - Une elementos de un slice de strings con un separador");
+
+        // Visitar el slice de strings (primer argumento)
+        c.Comment("Visiting slice expression");
+        Visit(context.expr(0));
+
+        // Visitar el separador (segundo argumento)
+        c.Comment("Visiting separator expression");
+        Visit(context.expr(1));
+
+        // Desapilar los argumentos en registros
+        c.Comment("Popping separator");
+        var separatorObj = c.PopObject(Register.X1);
+
+        c.Comment("Popping slice");
+        var sliceObj = c.PopObject(Register.X0);
+
+        // Verificar que el primer argumento sea un slice de strings
+        if (sliceObj.Type != StackObject.StackObjectType.StringSlice)
+        {
+            c.Comment("Error: El primer argumento de strings.Join debe ser un slice de strings");
+            // En caso de error, devolver string vacío como valor por defecto
+            c.MovReg(Register.X0, Register.HP);
+            c.Mov("w1", 0);
+            c.Strb("w1", Register.HP);
+            c.Mov(Register.X1, 1);
+            c.Add(Register.HP, Register.HP, Register.X1);
+        }
+        else if (separatorObj.Type != StackObject.StackObjectType.String)
+        {
+            c.Comment("Error: El segundo argumento de strings.Join debe ser un string");
+            // En caso de error, devolver string vacío como valor por defecto
+            c.MovReg(Register.X0, Register.HP);
+            c.Mov("w1", 0);
+            c.Strb("w1", Register.HP);
+            c.Mov(Register.X1, 1);
+            c.Add(Register.HP, Register.HP, Register.X1);
+        }
+        else
+        {
+            // Llamar a la función strings_join
+            c.Comment("Calling strings_join to join slice elements with separator");
+            c.StringsJoin(Register.X0, Register.X1);
+        }
+
+        // Guardar el resultado en la pila
+        c.Push(Register.X0);
+
+        // Crear un objeto de tipo string para el resultado
+        var resultObj = c.StringObject();
+        c.PushObject(resultObj);
 
         return null;
     }

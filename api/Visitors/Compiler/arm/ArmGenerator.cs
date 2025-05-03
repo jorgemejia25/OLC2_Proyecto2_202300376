@@ -9,7 +9,8 @@ public class StackObject
         String,
         Boolean,
         Rune,    // Nuevo tipo para caracteres rune
-        IntSlice // Nuevo tipo para slices de enteros
+        IntSlice, // Nuevo tipo para slices de enteros
+        StringSlice // Nuevo tipo para slices de strings
     }
 
     public StackObjectType Type { get; set; }
@@ -45,7 +46,7 @@ public class ArmGenerator
 
     public string GetFunctionLabel(string funcName)
     {
-        if (_functionLabels.TryGetValue(funcName, out string label))
+        if (_functionLabels.TryGetValue(funcName, out string? label) && label != null)
             return label;
 
         throw new Exception($"Function '{funcName}' not found");
@@ -188,6 +189,97 @@ public class ArmGenerator
                     Addi(Register.HP, Register.HP, 8);  // Avanzar 8 bytes por cada entero
                 }
                 break;
+
+            case StackObject.StackObjectType.StringSlice:
+                // Manejar slices de strings
+                string[] stringArray = (string[])value;
+                int strLength = stringArray.Length;
+
+                // Guardar la dirección inicial del slice en el heap
+                Push(Register.HP);
+
+                // Primero guardar la longitud del slice (8 bytes)
+                Comment($"Pushing string slice length: {strLength}");
+                Mov(Register.X0, strLength);
+                Str(Register.X0, Register.HP);
+                Addi(Register.HP, Register.HP, 8);  // Avanzar 8 bytes (tamaño de la longitud)
+
+                // Guardar un marcador para recordar dónde comienzan los punteros
+                Comment($"Reserving space for {strLength} string pointers");
+                // En lugar de intentar almacenar Register.HP en una variable int,
+                // simplemente avanzamos el heap y trabajamos directamente con los registros
+                Addi(Register.HP, Register.HP, strLength * 8);
+
+                // Luego guardar cada string del slice (como punteros)
+                for (int i = 0; i < strLength; i++)
+                {
+                    Comment($"Processing string slice element {i}: {stringArray[i]}");
+
+                    // Guardar la dirección actual del heap como dirección del string
+                    Comment($"Storing pointer to string at position {i}");
+
+                    // Usar variables temporales para calcular la dirección
+                    int offset = 8 + (i * 8); // 8 bytes para longitud + offset para este puntero
+                    Comment($"Calculating address for string pointer at offset {offset}");
+
+                    // Guardar la dirección actual del heap (dónde se guardará el string)
+                    MovReg(Register.X0, Register.HP);
+
+                    // Cargar la dirección base del slice desde la pila
+                    Comment("Getting base address of slice");
+                    Mov(Register.X1, offset);          // X1 = offset para este puntero
+                    Ldr(Register.X2, Register.SP, 8);  // X2 = dirección base del slice
+                    Add(Register.X2, Register.X2, Register.X1); // X2 = dirección donde guardar este puntero
+
+                    // Guardar la dirección del string (X0) en la posición calculada del slice
+                    Str(Register.X0, Register.X2);     // Guardar dirección del string en el slice
+
+                    // Procesar la cadena actual carácter por carácter
+                    string currentString = stringArray[i];
+                    for (int j = 0; j < currentString.Length; j++)
+                    {
+                        char c = currentString[j];
+
+                        // Verificar si es el inicio de una secuencia de escape
+                        if (c == '\\' && j + 1 < currentString.Length)
+                        {
+                            // Mantener el backslash literal en el string
+                            Comment($"Pushing escape sequence character: \\");
+                            Mov("w0", (int)'\\');
+                            Strb("w0", Register.HP);
+                            Mov(Register.X0, 1);
+                            Add(Register.HP, Register.HP, Register.X0);
+
+                            // Obtener el siguiente carácter después del backslash
+                            j++;
+                            c = currentString[j];
+
+                            // Añadir el siguiente carácter tal cual
+                            Comment($"Pushing escape sequence character: {c}");
+                            Mov("w0", (int)c);
+                            Strb("w0", Register.HP);
+                            Mov(Register.X0, 1);
+                            Add(Register.HP, Register.HP, Register.X0);
+                        }
+                        else
+                        {
+                            // Carácter normal
+                            Comment($"Pushing character: {c} ({(int)c})");
+                            Mov("w0", (int)c);
+                            Strb("w0", Register.HP);
+                            Mov(Register.X0, 1);
+                            Add(Register.HP, Register.HP, Register.X0);
+                        }
+                    }
+
+                    // Añadir terminador NULL para cada string
+                    Comment("Pushing NULL terminator for string");
+                    Mov("w0", 0);
+                    Strb("w0", Register.HP);
+                    Mov(Register.X0, 1);
+                    Add(Register.HP, Register.HP, Register.X0);
+                }
+                break;
         }
 
         PushObject(obj);
@@ -277,6 +369,19 @@ public class ArmGenerator
         var obj = new StackObject
         {
             Type = StackObject.StackObjectType.IntSlice,
+            ID = null,
+            Length = 8,
+            Depth = _stackDepth
+        };
+        _stackDepth += 8;
+        return obj;
+    }
+
+    public StackObject StringSliceObject()
+    {
+        var obj = new StackObject
+        {
+            Type = StackObject.StackObjectType.StringSlice,
             ID = null,
             Length = 8,
             Depth = _stackDepth
@@ -635,6 +740,26 @@ public class ArmGenerator
         Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
         _instructions.Add($"MOV X0, {rs}");
         _instructions.Add($"BL print_int_slice");
+    }
+
+    public void PrintStringSlice(string rs)
+    {
+        _stdLib.Use("print_string_slice");
+        _stdLib.Use("print_string"); // Añadir dependencia explícita a print_string
+        Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
+        _instructions.Add($"MOV X0, {rs}");
+        _instructions.Add($"BL print_string_slice");
+    }
+
+    public void StringsJoin(string sliceReg, string separatorReg)
+    {
+        _stdLib.Use("strings_join");
+        _stdLib.Use("concat_strings");  // Añadir dependencia explícita a concat_strings
+        Align(16); // Garantizar alineamiento a 16 bytes para llamadas a función
+        Comment($"Calling strings_join with slice in {sliceReg} and separator in {separatorReg}");
+        _instructions.Add($"MOV X0, {sliceReg}");
+        _instructions.Add($"MOV X1, {separatorReg}");
+        _instructions.Add($"BL strings_join");
     }
 
     // Método público para usar funciones de la biblioteca estándar

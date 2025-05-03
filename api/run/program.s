@@ -206,7 +206,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -374,7 +373,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -521,7 +519,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -540,8 +537,15 @@ SVC #0
 ADD SP, SP, #16
 // Variable declaration: numeros
 // Slice initialization
-// Initializing slice wimasters oth 5 elements
+// Initializing slice with 5 elements
+// Evaluating first element to determine slice type
+// Constant 1
+MOV x0, #1
+STR x0, [SP, #-8]!
+// Assuming int slice type
+LDR x0, [SP], #8
 STR x10, [SP, #-8]!
+// Storing slice length: 5
 MOV x0, #5
 STR x0, [x10, #0]
 ADD x10, x10, #8
@@ -691,7 +695,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -759,7 +762,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -784,7 +786,6 @@ ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'numeros'
 STR x0, [SP, #-8]!
-// Popping value 2 for printing
 LDR x0, [SP], #8
 // Printing int slice
 .balign 16     // Garantizar alineamiento a 16 bytes
@@ -988,7 +989,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -1198,7 +1198,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -1320,7 +1319,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -1358,21 +1356,23 @@ LDR x0, [SP], #8
 // Checking index bounds
 LDR x2, [x0, #0]
 CMP x1, x2
-B.lt index_ok_3c954505
-index_error_80e46f59:
-// Index out of bounds error: Using default value 0
-MOV x0, #0
-B index_end_827b0c5c
-index_ok_3c954505:
+B.ge index_error_4dafd953
 // Calculating element address: base + 8 + index*8
 ADD x0, x0, 8
 MOV x2, #8
 MUL x1, x1, x2
 ADD x0, x0, x1
+// Loading value from calculated address
 LDR x0, [x0, #0]
-index_end_827b0c5c:
-// Pushing element value to stack
+// Element loaded successfully
+B index_end_11da3e71
+index_error_4dafd953:
+// Index out of bounds error
+// Returning 0 for out of bounds access
+MOV x0, #0
+index_end_11da3e71:
 STR x0, [SP, #-8]!
+// Creating integer object for slice element
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 2 expressions to print
@@ -1464,7 +1464,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -1489,7 +1488,6 @@ ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'primerElemento'
 STR x0, [SP, #-8]!
-// Popping value 2 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -1526,16 +1524,16 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_d862155a
+B.eq eq_true_23baff3e
 MOV x0, #0
-B eq_end_2bcc103c
-eq_true_d862155a:
+B eq_end_003ffb0b
+eq_true_23baff3e:
 MOV x0, #1
-eq_end_2bcc103c:
+eq_end_003ffb0b:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_f975673b
+CBZ x0, else_23fbee3c
 // Then block
 // Block statement
 // Assignment statement
@@ -1726,7 +1724,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -1743,8 +1740,8 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-B endif_0270b41a
-else_f975673b:
+B endif_75efea39
+else_23fbee3c:
 // Else block
 // Else branch with block
 // Block statement
@@ -1914,7 +1911,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -1931,7 +1927,7 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-endif_0270b41a:
+endif_75efea39:
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 1 expressions to print
@@ -2083,7 +2079,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -2127,11 +2122,11 @@ LDR x2, [SP], #8
 // Checking index bounds
 LDR x3, [x2, #0]
 CMP x1, x3
-B.lt assign_index_ok_283e331c
-assign_index_error_e81e2929:
+B.lt assign_index_ok_9f5bc044
+assign_index_error_229eefaf:
 // Index out of bounds error in assignment
-B assign_index_end_17b800d3
-assign_index_ok_283e331c:
+B assign_index_end_2a2bf42f
+assign_index_ok_9f5bc044:
 // Calculating element address: base + 8 + index*8
 ADD x2, x2, 8
 MOV x3, #8
@@ -2139,7 +2134,7 @@ MUL x1, x1, x3
 ADD x2, x2, x1
 // Storing value at the calculated address
 STR x0, [x2, #0]
-assign_index_end_17b800d3:
+assign_index_end_2a2bf42f:
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 2 expressions to print
@@ -2296,7 +2291,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -2321,7 +2315,6 @@ ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'numeros'
 STR x0, [SP, #-8]!
-// Popping value 2 for printing
 LDR x0, [SP], #8
 // Printing int slice
 .balign 16     // Garantizar alineamiento a 16 bytes
@@ -2363,21 +2356,23 @@ LDR x0, [SP], #8
 // Checking index bounds
 LDR x2, [x0, #0]
 CMP x1, x2
-B.lt index_ok_c76957ec
-index_error_6112c556:
-// Index out of bounds error: Using default value 0
-MOV x0, #0
-B index_end_3e047cc6
-index_ok_c76957ec:
+B.ge index_error_c5f3cb67
 // Calculating element address: base + 8 + index*8
 ADD x0, x0, 8
 MOV x2, #8
 MUL x1, x1, x2
 ADD x0, x0, x1
+// Loading value from calculated address
 LDR x0, [x0, #0]
-index_end_3e047cc6:
-// Pushing element value to stack
+// Element loaded successfully
+B index_end_7babaedc
+index_error_c5f3cb67:
+// Index out of bounds error
+// Returning 0 for out of bounds access
+MOV x0, #0
+index_end_7babaedc:
 STR x0, [SP, #-8]!
+// Creating integer object for slice element
 // Visiting right operand
 // Constant 10
 MOV x0, #10
@@ -2387,16 +2382,16 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_5d69609e
+B.eq eq_true_8c0cb3fb
 MOV x0, #0
-B eq_end_a88b30dc
-eq_true_5d69609e:
+B eq_end_33daf298
+eq_true_8c0cb3fb:
 MOV x0, #1
-eq_end_a88b30dc:
+eq_end_33daf298:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_4b6b7f49
+CBZ x0, else_79df8253
 // Then block
 // Block statement
 // Assignment statement
@@ -2627,7 +2622,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -2644,8 +2638,8 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-B endif_c9aa3407
-else_4b6b7f49:
+B endif_09771389
+else_79df8253:
 // Else block
 // Else branch with block
 // Block statement
@@ -2855,7 +2849,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -2872,7 +2865,7 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-endif_c9aa3407:
+endif_09771389:
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 1 expressions to print
@@ -3044,7 +3037,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -3271,7 +3263,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -3291,8 +3282,15 @@ ADD SP, SP, #16
 // Assignment statement
 // Assignment to variable: numeros
 // Slice initialization
-// Initializing slice wimasters oth 5 elements
+// Initializing slice with 5 elements
+// Evaluating first element to determine slice type
+// Constant 10
+MOV x0, #10
+STR x0, [SP, #-8]!
+// Assuming int slice type
+LDR x0, [SP], #8
 STR x10, [SP, #-8]!
+// Storing slice length: 5
 MOV x0, #5
 STR x0, [x10, #0]
 ADD x10, x10, #8
@@ -3359,9 +3357,9 @@ MOV x2, x0
 LDR x3, [x2, #0]
 MOV x4, #0
 MOV x5, x1
-sliceindex_loop_890378e2:
+sliceindex_loop_857a461f:
 CMP x4, x3
-B.ge sliceindex_notfound_9465a81a
+B.ge sliceindex_notfound_6e7bc2c6
 // Calculating element address: base + 8 + index*8
 MOV x6, x2
 ADD x6, x6, 8
@@ -3370,15 +3368,15 @@ MUL x8, x4, x7
 ADD x6, x6, x8
 LDR x7, [x6, #0]
 CMP x7, x5
-B.eq sliceindex_found_38f7759a
+B.eq sliceindex_found_52401f6a
 ADD x4, x4, 1
-B sliceindex_loop_890378e2
-sliceindex_found_38f7759a:
+B sliceindex_loop_857a461f
+sliceindex_found_52401f6a:
 MOV x0, x4
-B sliceindex_end_3975823e
-sliceindex_notfound_9465a81a:
+B sliceindex_end_a85a1f67
+sliceindex_notfound_6e7bc2c6:
 MOV x0, #-1
-sliceindex_end_3975823e:
+sliceindex_end_a85a1f67:
 STR x0, [SP, #-8]!
 // Implicit declaration: indice2
 // slices.Index operation
@@ -3402,9 +3400,9 @@ MOV x2, x0
 LDR x3, [x2, #0]
 MOV x4, #0
 MOV x5, x1
-sliceindex_loop_cab8f64c:
+sliceindex_loop_7b540d79:
 CMP x4, x3
-B.ge sliceindex_notfound_27bfbf22
+B.ge sliceindex_notfound_5680274d
 // Calculating element address: base + 8 + index*8
 MOV x6, x2
 ADD x6, x6, 8
@@ -3413,15 +3411,15 @@ MUL x8, x4, x7
 ADD x6, x6, x8
 LDR x7, [x6, #0]
 CMP x7, x5
-B.eq sliceindex_found_1f68ef4c
+B.eq sliceindex_found_52d90f9b
 ADD x4, x4, 1
-B sliceindex_loop_cab8f64c
-sliceindex_found_1f68ef4c:
+B sliceindex_loop_7b540d79
+sliceindex_found_52d90f9b:
 MOV x0, x4
-B sliceindex_end_11dcdf32
-sliceindex_notfound_27bfbf22:
+B sliceindex_end_066bed19
+sliceindex_notfound_5680274d:
 MOV x0, #-1
-sliceindex_end_11dcdf32:
+sliceindex_end_066bed19:
 STR x0, [SP, #-8]!
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
@@ -3499,7 +3497,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -3524,7 +3521,6 @@ ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'indice1'
 STR x0, [SP, #-8]!
-// Popping value 2 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -3617,7 +3613,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -3642,7 +3637,6 @@ ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'indice2'
 STR x0, [SP, #-8]!
-// Popping value 2 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -3681,16 +3675,16 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_48ecef57
+B.eq eq_true_2f8e9d15
 MOV x0, #0
-B eq_end_ce377fd7
-eq_true_48ecef57:
+B eq_end_0999e3ee
+eq_true_2f8e9d15:
 MOV x0, #1
-eq_end_ce377fd7:
+eq_end_0999e3ee:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Short-circuit evaluation: if first operand is false, result is false
-CBZ x0, and_false_45041dca
+CBZ x0, and_false_6b349527
 // First operand is true, evaluating second operand
 // Equality operation
 // Visiting left operand
@@ -3719,22 +3713,22 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_ebb8f3dd
+B.eq eq_true_0e38f1e7
 MOV x0, #0
-B eq_end_b53f4164
-eq_true_ebb8f3dd:
+B eq_end_04f200f1
+eq_true_0e38f1e7:
 MOV x0, #1
-eq_end_b53f4164:
+eq_end_04f200f1:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
-B and_end_e26dc49f
-and_false_45041dca:
+B and_end_90dbceef
+and_false_6b349527:
 MOV x0, #0
-and_end_e26dc49f:
+and_end_90dbceef:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_51a7376e
+CBZ x0, else_2f32299a
 // Then block
 // Block statement
 // Assignment statement
@@ -3900,7 +3894,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -3917,8 +3910,8 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-B endif_a0e2c166
-else_51a7376e:
+B endif_22802107
+else_2f32299a:
 // Else block
 // Else branch with block
 // Block statement
@@ -4063,7 +4056,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -4080,7 +4072,7 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-endif_a0e2c166:
+endif_22802107:
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 1 expressions to print
@@ -4252,7 +4244,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -4454,7 +4445,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -4473,11 +4463,44 @@ SVC #0
 ADD SP, SP, #16
 // Variable declaration: palabras
 // Slice initialization
-// Initializing slice wimasters oth 4 elements
+// Initializing slice with 4 elements
+// Evaluating first element to determine slice type
+// String constant: Hola
 STR x10, [SP, #-8]!
+// Pushing character 0: 72
+MOV w0, #72
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 1: 111
+MOV w0, #111
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 2: 108
+MOV w0, #108
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing character 3: 97
+MOV w0, #97
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Pushing NULL terminator
+MOV w0, #0
+STRB w0, [x10]
+MOV x0, #1
+ADD x10, x10, x0
+// Detected string slice type
+LDR x0, [SP], #8
+STR x10, [SP, #-8]!
+// Storing slice length: 4
 MOV x0, #4
 STR x0, [x10, #0]
 ADD x10, x10, #8
+// Reserving space for 4 string pointers
+ADD x10, x10, #32
 // Evaluating and storing element 0
 // String constant: Hola
 STR x10, [SP, #-8]!
@@ -4507,8 +4530,13 @@ STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
 LDR x0, [SP], #8
-STR x0, [x10, #0]
-ADD x10, x10, #8
+// Storing string pointer in slice
+STR x0, [SP, #-8]!
+MOV x1, #8
+LDR x2, [sp, #8]
+ADD x2, x2, x1
+LDR x0, [SP], #8
+STR x0, [x2, #0]
 // Evaluating and storing element 1
 // String constant: mundo
 STR x10, [SP, #-8]!
@@ -4543,8 +4571,13 @@ STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
 LDR x0, [SP], #8
-STR x0, [x10, #0]
-ADD x10, x10, #8
+// Storing string pointer in slice
+STR x0, [SP, #-8]!
+MOV x1, #16
+LDR x2, [sp, #8]
+ADD x2, x2, x1
+LDR x0, [SP], #8
+STR x0, [x2, #0]
 // Evaluating and storing element 2
 // String constant: desde
 STR x10, [SP, #-8]!
@@ -4579,8 +4612,13 @@ STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
 LDR x0, [SP], #8
-STR x0, [x10, #0]
-ADD x10, x10, #8
+// Storing string pointer in slice
+STR x0, [SP, #-8]!
+MOV x1, #24
+LDR x2, [sp, #8]
+ADD x2, x2, x1
+LDR x0, [SP], #8
+STR x0, [x2, #0]
 // Evaluating and storing element 3
 // String constant: Go
 STR x10, [SP, #-8]!
@@ -4600,9 +4638,16 @@ STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
 LDR x0, [SP], #8
-STR x0, [x10, #0]
-ADD x10, x10, #8
+// Storing string pointer in slice
+STR x0, [SP, #-8]!
+MOV x1, #32
+LDR x2, [sp, #8]
+ADD x2, x2, x1
+LDR x0, [SP], #8
+STR x0, [x2, #0]
 // Implicit declaration: frase
+// strings.Join - Une elementos de un slice de strings con un separador
+// Visiting slice expression
 // Loading variable 'palabras'
 // Calculating offset for variable 'palabras'
 MOV x0, #0
@@ -4610,6 +4655,7 @@ ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'palabras'
 STR x0, [SP, #-8]!
+// Visiting separator expression
 // String constant:  
 STR x10, [SP, #-8]!
 // Pushing character 0: 32
@@ -4622,14 +4668,29 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
+// Popping separator
+LDR x1, [SP], #8
+// Popping slice
+LDR x0, [SP], #8
+// Calling strings_join to join slice elements with separator
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Calling strings_join with slice in x0 and separator in x1
+MOV X0, x0
+MOV X1, x1
+BL strings_join
+.balign 16     // Garantizar alineamiento después de llamada a función
+STR x0, [SP, #-8]!
 // Implicit declaration: fraseConComas
+// strings.Join - Une elementos de un slice de strings con un separador
+// Visiting slice expression
 // Loading variable 'palabras'
 // Calculating offset for variable 'palabras'
-MOV x0, #16
+MOV x0, #8
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'palabras'
 STR x0, [SP, #-8]!
+// Visiting separator expression
 // String constant: , 
 STR x10, [SP, #-8]!
 // Pushing character 0: 44
@@ -4647,6 +4708,18 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
+// Popping separator
+LDR x1, [SP], #8
+// Popping slice
+LDR x0, [SP], #8
+// Calling strings_join to join slice elements with separator
+.balign 16     // Garantizar alineamiento a 16 bytes
+// Calling strings_join with slice in x0 and separator in x1
+MOV X0, x0
+MOV X1, x1
+BL strings_join
+.balign 16     // Garantizar alineamiento después de llamada a función
+STR x0, [SP, #-8]!
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 2 expressions to print
@@ -4753,7 +4826,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -4773,12 +4845,11 @@ ADD SP, SP, #16
 // Processing expression 2 of 2
 // Loading variable 'frase'
 // Calculating offset for variable 'frase'
-MOV x0, #16
+MOV x0, #8
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'frase'
 STR x0, [SP, #-8]!
-// Popping value 2 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -4886,7 +4957,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -4911,7 +4981,6 @@ ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'fraseConComas'
 STR x0, [SP, #-8]!
-// Popping value 2 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -4936,7 +5005,7 @@ ADD SP, SP, #16
 // Visiting left operand
 // Loading variable 'frase'
 // Calculating offset for variable 'frase'
-MOV x0, #16
+MOV x0, #8
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'frase'
@@ -5056,7 +5125,7 @@ BL string_equals
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Short-circuit evaluation: if first operand is false, result is false
-CBZ x0, and_false_823baf0a
+CBZ x0, and_false_b2fdf911
 // First operand is true, evaluating second operand
 // Equality operation
 // Visiting left operand
@@ -5196,14 +5265,14 @@ BL string_equals
 .balign 16     // Garantizar alineamiento después de llamada a función
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
-B and_end_a5a59b91
-and_false_823baf0a:
+B and_end_c376d43c
+and_false_b2fdf911:
 MOV x0, #0
-and_end_a5a59b91:
+and_end_c376d43c:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_7e08d749
+CBZ x0, else_426c536a
 // Then block
 // Block statement
 // Assignment statement
@@ -5212,7 +5281,7 @@ CBZ x0, else_7e08d749
 // Visiting left operand
 // Loading variable 'puntosJoin'
 // Calculating offset for variable 'puntosJoin'
-MOV x0, #40
+MOV x0, #24
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'puntosJoin'
@@ -5228,8 +5297,8 @@ ADD x0, x0, x1
 // Pushing integer result
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
-// Storing value to variable 'puntosJoin' at offset 40
-MOV x1, #40
+// Storing value to variable 'puntosJoin' at offset 24
+MOV x1, #24
 ADD x1, sp, x1
 STR x0, [x1, #0]
 // Assignment complete
@@ -5369,7 +5438,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -5386,8 +5454,8 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-B endif_3e6e2c11
-else_7e08d749:
+B endif_64f77017
+else_426c536a:
 // Else block
 // Else branch with block
 // Block statement
@@ -5532,7 +5600,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -5549,7 +5616,7 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-endif_3e6e2c11:
+endif_64f77017:
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 1 expressions to print
@@ -5676,7 +5743,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -5843,7 +5909,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -5864,7 +5929,7 @@ ADD SP, SP, #16
 // Function len - Get length of slice
 // Loading variable 'numeros'
 // Calculating offset for variable 'numeros'
-MOV x0, #96
+MOV x0, #80
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'numeros'
@@ -5877,7 +5942,7 @@ STR x0, [SP, #-8]!
 // Function len - Get length of slice
 // Loading variable 'palabras'
 // Calculating offset for variable 'palabras'
-MOV x0, #48
+MOV x0, #32
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'palabras'
@@ -5997,7 +6062,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -6022,7 +6086,6 @@ ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'longitud1'
 STR x0, [SP, #-8]!
-// Popping value 2 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -6155,7 +6218,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -6180,7 +6242,6 @@ ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'longitud2'
 STR x0, [SP, #-8]!
-// Popping value 2 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -6219,16 +6280,16 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_d378f166
+B.eq eq_true_0a1c7181
 MOV x0, #0
-B eq_end_21fa3f96
-eq_true_d378f166:
+B eq_end_a1f95a22
+eq_true_0a1c7181:
 MOV x0, #1
-eq_end_21fa3f96:
+eq_end_a1f95a22:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Short-circuit evaluation: if first operand is false, result is false
-CBZ x0, and_false_3f6c377b
+CBZ x0, and_false_7f553ea4
 // First operand is true, evaluating second operand
 // Equality operation
 // Visiting left operand
@@ -6248,22 +6309,22 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_72b957bd
+B.eq eq_true_2a75e26f
 MOV x0, #0
-B eq_end_0d84f665
-eq_true_72b957bd:
+B eq_end_3970fa67
+eq_true_2a75e26f:
 MOV x0, #1
-eq_end_0d84f665:
+eq_end_3970fa67:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
-B and_end_2e0f6a3e
-and_false_3f6c377b:
+B and_end_951195d6
+and_false_7f553ea4:
 MOV x0, #0
-and_end_2e0f6a3e:
+and_end_951195d6:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_9c7af7b7
+CBZ x0, else_114e379a
 // Then block
 // Block statement
 // Assignment statement
@@ -6384,7 +6445,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -6401,8 +6461,8 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-B endif_d15588a6
-else_9c7af7b7:
+B endif_d6acd66f
+else_114e379a:
 // Else block
 // Else branch with block
 // Block statement
@@ -6502,7 +6562,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -6519,7 +6578,7 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-endif_d15588a6:
+endif_d6acd66f:
 // Print statement
 .balign 16     // Garantizar alineamiento a 16 bytes
 // Processing 1 expressions to print
@@ -6661,7 +6720,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -6838,7 +6896,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -6858,8 +6915,15 @@ ADD SP, SP, #16
 // Assignment statement
 // Assignment to variable: numeros
 // Slice initialization
-// Initializing slice wimasters oth 3 elements
+// Initializing slice with 3 elements
+// Evaluating first element to determine slice type
+// Constant 1
+MOV x0, #1
+STR x0, [SP, #-8]!
+// Assuming int slice type
+LDR x0, [SP], #8
 STR x10, [SP, #-8]!
+// Storing slice length: 3
 MOV x0, #3
 STR x0, [x10, #0]
 ADD x10, x10, #8
@@ -6885,8 +6949,8 @@ LDR x0, [SP], #8
 STR x0, [x10, #0]
 ADD x10, x10, #8
 LDR x0, [SP], #8
-// Storing value to variable 'numeros' at offset 120
-MOV x1, #120
+// Storing value to variable 'numeros' at offset 104
+MOV x1, #104
 ADD x1, sp, x1
 STR x0, [x1, #0]
 // Assignment complete
@@ -6896,7 +6960,7 @@ STR x0, [x1, #0]
 // Visiting slice expression
 // Loading variable 'numeros'
 // Calculating offset for variable 'numeros'
-MOV x0, #120
+MOV x0, #104
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'numeros'
@@ -6915,8 +6979,8 @@ BL append_to_slice
 .balign 16     // Garantizar alineamiento después de llamada a función
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
-// Storing value to variable 'numeros' at offset 120
-MOV x1, #120
+// Storing value to variable 'numeros' at offset 104
+MOV x1, #104
 ADD x1, sp, x1
 STR x0, [x1, #0]
 // Assignment complete
@@ -7121,7 +7185,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -7141,12 +7204,11 @@ ADD SP, SP, #16
 // Processing expression 2 of 2
 // Loading variable 'numeros'
 // Calculating offset for variable 'numeros'
-MOV x0, #120
+MOV x0, #104
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'numeros'
 STR x0, [SP, #-8]!
-// Popping value 2 for printing
 LDR x0, [SP], #8
 // Printing int slice
 .balign 16     // Garantizar alineamiento a 16 bytes
@@ -7173,7 +7235,7 @@ ADD SP, SP, #16
 // Function len - Get length of slice
 // Loading variable 'numeros'
 // Calculating offset for variable 'numeros'
-MOV x0, #120
+MOV x0, #104
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'numeros'
@@ -7191,16 +7253,16 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_d2c48a21
+B.eq eq_true_91899166
 MOV x0, #0
-B eq_end_f9c9a120
-eq_true_d2c48a21:
+B eq_end_a8d7b284
+eq_true_91899166:
 MOV x0, #1
-eq_end_f9c9a120:
+eq_end_a8d7b284:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Short-circuit evaluation: if first operand is false, result is false
-CBZ x0, and_false_0e4dc25c
+CBZ x0, and_false_04b07e88
 // First operand is true, evaluating second operand
 // Equality operation
 // Visiting left operand
@@ -7208,7 +7270,7 @@ CBZ x0, and_false_0e4dc25c
 // Visiting slice expression
 // Loading variable 'numeros'
 // Calculating offset for variable 'numeros'
-MOV x0, #120
+MOV x0, #104
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'numeros'
@@ -7224,21 +7286,23 @@ LDR x0, [SP], #8
 // Checking index bounds
 LDR x2, [x0, #0]
 CMP x1, x2
-B.lt index_ok_9f838440
-index_error_48f7b054:
-// Index out of bounds error: Using default value 0
-MOV x0, #0
-B index_end_41e94a78
-index_ok_9f838440:
+B.ge index_error_0c151668
 // Calculating element address: base + 8 + index*8
 ADD x0, x0, 8
 MOV x2, #8
 MUL x1, x1, x2
 ADD x0, x0, x1
+// Loading value from calculated address
 LDR x0, [x0, #0]
-index_end_41e94a78:
-// Pushing element value to stack
+// Element loaded successfully
+B index_end_56197a90
+index_error_0c151668:
+// Index out of bounds error
+// Returning 0 for out of bounds access
+MOV x0, #0
+index_end_56197a90:
 STR x0, [SP, #-8]!
+// Creating integer object for slice element
 // Visiting right operand
 // Constant 4
 MOV x0, #4
@@ -7248,22 +7312,22 @@ LDR x1, [SP], #8
 LDR x0, [SP], #8
 // Integer equality check with operator: ==
 CMP x0, x1
-B.eq eq_true_f2e6c4fb
+B.eq eq_true_39b4680b
 MOV x0, #0
-B eq_end_79dbbf2d
-eq_true_f2e6c4fb:
+B eq_end_405afefc
+eq_true_39b4680b:
 MOV x0, #1
-eq_end_79dbbf2d:
+eq_end_405afefc:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
-B and_end_c6d540f9
-and_false_0e4dc25c:
+B and_end_62d25b5f
+and_false_04b07e88:
 MOV x0, #0
-and_end_c6d540f9:
+and_end_62d25b5f:
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
 // Checking condition
-CBZ x0, else_57bcb3f9
+CBZ x0, else_53ad311b
 // Then block
 // Block statement
 // Assignment statement
@@ -7464,7 +7528,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -7481,8 +7544,8 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-B endif_b7531964
-else_57bcb3f9:
+B endif_32f6c236
+else_53ad311b:
 // Else block
 // Else branch with block
 // Block statement
@@ -7662,7 +7725,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -7679,7 +7741,7 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-endif_b7531964:
+endif_32f6c236:
 // Assignment statement
 // Assignment to variable: puntos
 // AddSub operation
@@ -7694,7 +7756,7 @@ endif_b7531964:
 // Visiting left operand
 // Loading variable 'puntosCreacion'
 // Calculating offset for variable 'puntosCreacion'
-MOV x0, #128
+MOV x0, #112
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'puntosCreacion'
@@ -7702,7 +7764,7 @@ STR x0, [SP, #-8]!
 // Visiting right operand
 // Loading variable 'puntosAcceso'
 // Calculating offset for variable 'puntosAcceso'
-MOV x0, #120
+MOV x0, #104
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'puntosAcceso'
@@ -7716,7 +7778,7 @@ STR x0, [SP, #-8]!
 // Visiting right operand
 // Loading variable 'puntosIndex'
 // Calculating offset for variable 'puntosIndex'
-MOV x0, #104
+MOV x0, #88
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'puntosIndex'
@@ -7730,7 +7792,7 @@ STR x0, [SP, #-8]!
 // Visiting right operand
 // Loading variable 'puntosJoin'
 // Calculating offset for variable 'puntosJoin'
-MOV x0, #80
+MOV x0, #64
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'puntosJoin'
@@ -7770,8 +7832,8 @@ ADD x0, x0, x1
 // Pushing integer result
 STR x0, [SP, #-8]!
 LDR x0, [SP], #8
-// Storing value to variable 'puntos' at offset 136
-MOV x1, #136
+// Storing value to variable 'puntos' at offset 120
+MOV x1, #120
 ADD x1, sp, x1
 STR x0, [x1, #0]
 // Assignment complete
@@ -7931,7 +7993,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -8224,7 +8285,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -8517,7 +8577,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -8810,7 +8869,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -9023,7 +9081,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -9043,12 +9100,11 @@ ADD SP, SP, #16
 // Processing expression 2 of 3
 // Loading variable 'puntosCreacion'
 // Calculating offset for variable 'puntosCreacion'
-MOV x0, #128
+MOV x0, #112
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'puntosCreacion'
 STR x0, [SP, #-8]!
-// Popping value 2 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -9138,7 +9194,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 3 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -9351,7 +9406,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -9371,12 +9425,11 @@ ADD SP, SP, #16
 // Processing expression 2 of 3
 // Loading variable 'puntosAcceso'
 // Calculating offset for variable 'puntosAcceso'
-MOV x0, #112
+MOV x0, #96
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'puntosAcceso'
 STR x0, [SP, #-8]!
-// Popping value 2 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -9466,7 +9519,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 3 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -9679,7 +9731,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -9699,12 +9750,11 @@ ADD SP, SP, #16
 // Processing expression 2 of 3
 // Loading variable 'puntosIndex'
 // Calculating offset for variable 'puntosIndex'
-MOV x0, #96
+MOV x0, #80
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'puntosIndex'
 STR x0, [SP, #-8]!
-// Popping value 2 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -9794,7 +9844,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 3 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -10007,7 +10056,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -10027,12 +10075,11 @@ ADD SP, SP, #16
 // Processing expression 2 of 3
 // Loading variable 'puntosJoin'
 // Calculating offset for variable 'puntosJoin'
-MOV x0, #72
+MOV x0, #56
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'puntosJoin'
 STR x0, [SP, #-8]!
-// Popping value 2 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -10122,7 +10169,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 3 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -10335,7 +10381,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -10360,7 +10405,6 @@ ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'puntosLen'
 STR x0, [SP, #-8]!
-// Popping value 2 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -10450,7 +10494,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 3 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -10663,7 +10706,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -10688,7 +10730,6 @@ ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'puntosAppend'
 STR x0, [SP, #-8]!
-// Popping value 2 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -10778,7 +10819,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 3 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -11071,7 +11111,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -11284,7 +11323,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -11304,12 +11342,11 @@ ADD SP, SP, #16
 // Processing expression 2 of 3
 // Loading variable 'puntos'
 // Calculating offset for variable 'puntos'
-MOV x0, #136
+MOV x0, #120
 ADD x0, sp, x0
 LDR x0, [x0, #0]
 // Pushing copy of variable value for 'puntos'
 STR x0, [SP, #-8]!
-// Popping value 2 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -11394,7 +11431,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 3 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -11687,7 +11723,6 @@ MOV w0, #0
 STRB w0, [x10]
 MOV x0, #1
 ADD x10, x10, x0
-// Popping value 1 for printing
 LDR x0, [SP], #8
 .balign 16     // Garantizar alineamiento a 16 bytes
 MOV X0, x0
@@ -11704,10 +11739,6 @@ MOV X2, #1
 MOV W8, #64
 SVC #0
 ADD SP, SP, #16
-// Removing leftover object from stack
-LDR x0, [SP], #8
-// Removing leftover object from stack
-LDR x0, [SP], #8
 // Removing leftover object from stack
 LDR x0, [SP], #8
 // Removing leftover object from stack
@@ -12157,6 +12188,203 @@ print_result_nonl:
 .balign 4       // Alinear a 4 bytes (una palabra)
 minus_sign_nonl:
     .ascii "-"               // Minus sign
+
+
+
+//--------------------------------------------------------------
+// strings_join - Une los elementos de un slice de strings con un separador
+//
+// Input:
+//   x0 - Dirección del slice de strings
+//   x1 - Dirección del separador (cadena)
+//
+// Output:
+//   x0 - Dirección de la cadena resultante (en heap)
+//--------------------------------------------------------------
+.balign 4       // Alinear a 4 bytes (una palabra)
+strings_join:
+    // Guardar registros
+    stp x29, x30, [sp, #-16]!  // Guardar frame pointer y link register
+    stp x19, x20, [sp, #-16]!  // Guardar registros callee-saved
+    stp x21, x22, [sp, #-16]!
+    stp x23, x24, [sp, #-16]!
+    
+    // x19 = dirección del slice de strings
+    mov x19, x0
+    // x20 = dirección del separador
+    mov x20, x1
+    
+    // Cargar la longitud del slice (primeros 8 bytes)
+    ldr x21, [x19]             // x21 = longitud del slice
+    
+    // Verificar si el slice está vacío
+    cbz x21, return_empty_string
+    
+    // Si solo hay un elemento, devolver ese elemento sin concatenar
+    cmp x21, #1
+    beq return_single_element
+    
+    // Inicializar el resultado con el primer elemento
+    add x19, x19, #8           // Saltar los primeros 8 bytes (longitud)
+    ldr x0, [x19]              // Cargar la dirección del primer string
+    
+    // x22 = índice actual (empezamos desde el segundo elemento)
+    mov x22, #1
+    
+.balign 4       // Alinear a 4 bytes (una palabra)
+join_loop:
+    // Verificar si hemos llegado al final del slice
+    cmp x22, x21
+    bge join_done
+    
+    // Guardar el resultado actual
+    mov x23, x0
+    
+    // Concatenar el separador
+    mov x0, x23                // Primer argumento: resultado actual
+    mov x1, x20                // Segundo argumento: separador
+    bl concat_strings          // Llamar a concat_strings
+    
+    // Guardar el resultado de la concatenación
+    mov x23, x0
+    
+    // Obtener la dirección del siguiente string
+    mov x0, x22                // Índice actual
+    mov x1, #8                 // Tamaño de cada dirección de string (8 bytes)
+    mul x0, x0, x1             // Calcular desplazamiento
+    add x0, x19, x0            // Agregar desplazamiento a la dirección base
+    ldr x24, [x0]              // Cargar la dirección del siguiente string
+    
+    // Concatenar el siguiente string
+    mov x0, x23                // Primer argumento: resultado actual + separador
+    mov x1, x24                // Segundo argumento: siguiente string
+    bl concat_strings          // Llamar a concat_strings
+    
+    // Incrementar el índice y continuar
+    add x22, x22, #1           // Incrementar índice
+    b join_loop
+    
+.balign 4       // Alinear a 4 bytes (una palabra)
+return_empty_string:
+    // Caso especial: slice vacío - devolver string vacío
+    // Reservar un byte en el heap para string vacío
+    mov x0, x10                // Guardar posición actual del heap
+    mov w1, #0                 // Byte NULL para terminador
+    strb w1, [x10]             // Almacenar NULL
+    add x10, x10, #1           // Avanzar el puntero del heap
+    b join_done
+    
+.balign 4       // Alinear a 4 bytes (una palabra)
+return_single_element:
+    // Caso especial: slice con un solo elemento - devolver ese elemento
+    add x19, x19, #8           // Saltar los primeros 8 bytes (longitud)
+    ldr x0, [x19]              // Cargar la dirección del único string
+    
+.balign 4       // Alinear a 4 bytes (una palabra)
+join_done:
+    // Restaurar registros y retornar
+    ldp x23, x24, [sp], #16
+    ldp x21, x22, [sp], #16
+    ldp x19, x20, [sp], #16
+    ldp x29, x30, [sp], #16
+    ret
+
+
+
+//--------------------------------------------------------------
+// concat_strings - Concatenates two strings
+//
+// Input:
+//   x0 - Address of the first string
+//   x1 - Address of the second string
+//
+// Output:
+//   x0 - Address of the concatenated string (in heap)
+//--------------------------------------------------------------
+.balign 4       // Alinear a 4 bytes (una palabra)
+concat_strings:
+    // Save registers
+    stp x29, x30, [sp, #-16]!  // Save frame pointer and link register
+    stp x19, x20, [sp, #-16]!  // Save callee-saved registers
+    stp x21, x22, [sp, #-16]!
+    stp x23, x24, [sp, #-16]!
+    
+    // x19 will hold the first string address
+    mov x19, x0
+    // x20 will hold the second string address
+    mov x20, x1
+    
+    // Calculate length of first string
+    mov x21, #0                // Initialize counter for first string length
+.balign 4       // Alinear a 4 bytes (una palabra)
+len_first_loop:
+    ldrb w0, [x19, x21]        // Load byte from string
+    cbz w0, len_first_done     // If zero (end of string), exit loop
+    add x21, x21, #1           // Increment counter
+    b len_first_loop           // Continue loop
+.balign 4       // Alinear a 4 bytes (una palabra)
+len_first_done:
+    
+    // Calculate length of second string
+    mov x22, #0                // Initialize counter for second string length
+.balign 4       // Alinear a 4 bytes (una palabra)
+len_second_loop:
+    ldrb w0, [x20, x22]        // Load byte from string
+    cbz w0, len_second_done    // If zero (end of string), exit loop
+    add x22, x22, #1           // Increment counter
+    b len_second_loop          // Continue loop
+.balign 4       // Alinear a 4 bytes (una palabra)
+len_second_done:
+    
+    // Calculate total size needed
+    add x23, x21, x22
+    add x23, x23, #1           // Add 1 for the NULL terminator
+    
+    // Get heap pointer (assumed to be in x10)
+    mov x24, x10               // Save current heap pointer for our result
+    add x10, x10, x23          // Advance heap pointer for next allocation
+    
+    // Copy first string to the result
+    mov x0, #0                 // Initialize index
+.balign 4       // Alinear a 4 bytes (una palabra)
+copy_first_loop:
+    cmp x0, x21                // Compare with length of first string
+    beq copy_first_done        // If equal, we're done
+    ldrb w1, [x19, x0]         // Load byte from first string
+    strb w1, [x24, x0]         // Store byte to result
+    add x0, x0, #1             // Increment index
+    b copy_first_loop          // Continue loop
+.balign 4       // Alinear a 4 bytes (una palabra)
+copy_first_done:
+
+    // Copy second string to the result (append)
+    mov x0, #0                 // Initialize index for second string
+.balign 4       // Alinear a 4 bytes (una palabra)
+copy_second_loop:
+    cmp x0, x22                // Compare with length of second string
+    beq copy_second_done       // If equal, we're done
+    ldrb w1, [x20, x0]         // Load byte from second string
+    add x2, x0, x21            // Calculate position in result (offset by length of first string)
+    strb w1, [x24, x2]         // Store byte to result
+    add x0, x0, #1             // Increment index
+    b copy_second_loop          // Continue loop
+.balign 4       // Alinear a 4 bytes (una palabra)
+copy_second_done:
+
+    // Add null terminator
+    add x0, x21, x22           // Calculate position for null terminator
+    mov w1, #0                 // Null byte
+    strb w1, [x24, x0]         // Store null terminator
+    
+    // Return pointer to concatenated string
+    mov x0, x24
+    
+    // Clean up and restore registers
+    ldp x23, x24, [sp], #16
+    ldp x21, x22, [sp], #16
+    ldp x19, x20, [sp], #16
+    ldp x29, x30, [sp], #16
+    ret
 
 
 

@@ -16,7 +16,9 @@ public class StandardLibrary
         { "float_mod", "float64" },
         { "string_to_float", "float64" },
         { "print_int_slice", "void" },
-        { "append_to_slice", "[]int" }
+        { "append_to_slice", "[]int" },
+        { "print_string_slice", "void" },
+        { "strings_join", "string" }
     };
 
     private static readonly Dictionary<string, List<(string paramName, string paramType)>> _functionParameters = new Dictionary<string, List<(string, string)>>
@@ -31,7 +33,9 @@ public class StandardLibrary
         { "float_mod", new List<(string, string)> { ("x", "float64"), ("y", "float64") } },
         { "string_to_float", new List<(string, string)> { ("str", "string") } },
         { "print_int_slice", new List<(string, string)> { ("slice", "[]int") } },
-        { "append_to_slice", new List<(string, string)> { ("slice", "[]int"), ("element", "int") } }
+        { "append_to_slice", new List<(string, string)> { ("slice", "[]int"), ("element", "int") } },
+        { "print_string_slice", new List<(string, string)> { ("slice", "[]string") } },
+        { "strings_join", new List<(string, string)> { ("slice", "[]string"), ("separator", "string") } }
     };
 
     public void Use(string function)
@@ -1291,6 +1295,182 @@ append_new_element:
     ldp x19, x20, [sp], #16    // Restaurar registros
     ldp x29, x30, [sp], #16    // Restaurar frame pointer y link register
     ret                        // Retornar a caller
+"},
+    { "print_string_slice", @"
+//--------------------------------------------------------------
+// print_string_slice - Imprime un slice de strings
+//
+// Input:
+//   x0 - Dirección del slice (puntero al primer elemento)
+//--------------------------------------------------------------
+print_string_slice:
+    // Guardar registros
+    stp x29, x30, [sp, #-16]!  // Guardar frame pointer y link register
+    stp x19, x20, [sp, #-16]!  // Guardar registros callee-saved
+    stp x21, x22, [sp, #-16]!  // Guardar registros para trabajo temporal
+    stp x23, x24, [sp, #-16]!  // Guardar más registros
+    
+    // x19 = dirección del slice
+    mov x19, x0
+    
+    // Imprimir corchete de apertura '['
+    mov x0, #1                 // fd = 1 (stdout)
+    sub sp, sp, #16            // Reservar espacio temporal
+    mov w1, #91                // '[' en ASCII
+    strb w1, [sp]              // Guardar en espacio reservado
+    mov x1, sp                 // Dirección del carácter
+    mov x2, #1                 // Longitud = 1 byte
+    mov w8, #64                // Syscall write
+    svc #0
+    
+    // Cargar la longitud del slice (primeros 8 bytes)
+    ldr x20, [x19]             // x20 = longitud
+    add x19, x19, #8           // Avanzar al primer elemento
+    
+    // x21 = contador de elementos
+    mov x21, #0
+    
+print_string_slice_loop:
+    // Verificar si llegamos al final del slice
+    cmp x21, x20
+    beq print_string_slice_end
+    
+    // Si no es el primer elemento, imprimir un espacio
+    cbnz x21, print_string_slice_space
+    b print_string_slice_continue
+    
+print_string_slice_space:
+    // Imprimir espacio entre elementos
+    mov x0, #1                 // fd = 1 (stdout)
+    mov w1, #32                // Espacio en ASCII
+    strb w1, [sp]              // Guardar en espacio reservado
+    mov x1, sp                 // Dirección del carácter
+    mov x2, #1                 // Longitud = 1 byte
+    mov w8, #64                // Syscall write
+    svc #0
+    
+print_string_slice_continue:
+    // Obtener la dirección del string actual
+    ldr x0, [x19, x21, lsl #3] // x0 = dirección del string en posición x21 (x21 * 8)
+    
+    // Llamar a print_string para imprimir el string
+    bl print_string
+    
+    // Incrementar contador y continuar
+    add x21, x21, #1           // Incrementar contador
+    b print_string_slice_loop
+    
+print_string_slice_end:
+    // Imprimir corchete de cierre ']'
+    mov x0, #1                 // fd = 1 (stdout)
+    mov w1, #93                // ']' en ASCII
+    strb w1, [sp]              // Guardar en espacio reservado
+    mov x1, sp                 // Dirección del carácter
+    mov x2, #1                 // Longitud = 1 byte
+    mov w8, #64                // Syscall write
+    svc #0
+    
+    // Liberar espacio y restaurar registros
+    add sp, sp, #16            // Liberar espacio temporal
+    ldp x23, x24, [sp], #16    // Restaurar registros
+    ldp x21, x22, [sp], #16
+    ldp x19, x20, [sp], #16
+    ldp x29, x30, [sp], #16
+    ret
+"},
+    { "strings_join", @"
+//--------------------------------------------------------------
+// strings_join - Une los elementos de un slice de strings con un separador
+//
+// Input:
+//   x0 - Dirección del slice de strings
+//   x1 - Dirección del separador (cadena)
+//
+// Output:
+//   x0 - Dirección de la cadena resultante (en heap)
+//--------------------------------------------------------------
+strings_join:
+    // Guardar registros
+    stp x29, x30, [sp, #-16]!  // Guardar frame pointer y link register
+    stp x19, x20, [sp, #-16]!  // Guardar registros callee-saved
+    stp x21, x22, [sp, #-16]!
+    stp x23, x24, [sp, #-16]!
+    
+    // x19 = dirección del slice de strings
+    mov x19, x0
+    // x20 = dirección del separador
+    mov x20, x1
+    
+    // Cargar la longitud del slice (primeros 8 bytes)
+    ldr x21, [x19]             // x21 = longitud del slice
+    
+    // Verificar si el slice está vacío
+    cbz x21, return_empty_string
+    
+    // Si solo hay un elemento, devolver ese elemento sin concatenar
+    cmp x21, #1
+    beq return_single_element
+    
+    // Inicializar el resultado con el primer elemento
+    add x19, x19, #8           // Saltar los primeros 8 bytes (longitud)
+    ldr x0, [x19]              // Cargar la dirección del primer string
+    
+    // x22 = índice actual (empezamos desde el segundo elemento)
+    mov x22, #1
+    
+join_loop:
+    // Verificar si hemos llegado al final del slice
+    cmp x22, x21
+    bge join_done
+    
+    // Guardar el resultado actual
+    mov x23, x0
+    
+    // Concatenar el separador
+    mov x0, x23                // Primer argumento: resultado actual
+    mov x1, x20                // Segundo argumento: separador
+    bl concat_strings          // Llamar a concat_strings
+    
+    // Guardar el resultado de la concatenación
+    mov x23, x0
+    
+    // Obtener la dirección del siguiente string
+    mov x0, x22                // Índice actual
+    mov x1, #8                 // Tamaño de cada dirección de string (8 bytes)
+    mul x0, x0, x1             // Calcular desplazamiento
+    add x0, x19, x0            // Agregar desplazamiento a la dirección base
+    ldr x24, [x0]              // Cargar la dirección del siguiente string
+    
+    // Concatenar el siguiente string
+    mov x0, x23                // Primer argumento: resultado actual + separador
+    mov x1, x24                // Segundo argumento: siguiente string
+    bl concat_strings          // Llamar a concat_strings
+    
+    // Incrementar el índice y continuar
+    add x22, x22, #1           // Incrementar índice
+    b join_loop
+    
+return_empty_string:
+    // Caso especial: slice vacío - devolver string vacío
+    // Reservar un byte en el heap para string vacío
+    mov x0, x10                // Guardar posición actual del heap
+    mov w1, #0                 // Byte NULL para terminador
+    strb w1, [x10]             // Almacenar NULL
+    add x10, x10, #1           // Avanzar el puntero del heap
+    b join_done
+    
+return_single_element:
+    // Caso especial: slice con un solo elemento - devolver ese elemento
+    add x19, x19, #8           // Saltar los primeros 8 bytes (longitud)
+    ldr x0, [x19]              // Cargar la dirección del único string
+    
+join_done:
+    // Restaurar registros y retornar
+    ldp x23, x24, [sp], #16
+    ldp x21, x22, [sp], #16
+    ldp x19, x20, [sp], #16
+    ldp x29, x30, [sp], #16
+    ret
 "}
 };
 }
