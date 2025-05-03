@@ -1957,7 +1957,7 @@ public class CompilerVisitor : GoLangBaseVisitor<Object?>
         var exprList = context.exprList();
         int length = (exprList == null) ? 0 : exprList.expr().Length;
 
-        c.Comment($"Initializing slice with {length} elements");
+        c.Comment($"Initializing slice wimasters oth {length} elements");
 
         // Calcular cuánto espacio necesitamos en el heap: 
         // 8 bytes para longitud + (8 bytes por elemento)
